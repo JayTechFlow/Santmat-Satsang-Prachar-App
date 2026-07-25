@@ -22,6 +22,13 @@ import '../../features/books/presentation/pages/book_details_page.dart';
 import '../../features/books/presentation/pages/books_secondary_pages.dart';
 import '../../features/daily_quotes/presentation/pages/daily_quotes_home_page.dart';
 import '../../features/daily_quotes/presentation/pages/daily_quotes_secondary_pages.dart';
+import '../../features/search/presentation/pages/search_home_page.dart';
+import '../../features/events/presentation/pages/events_home_page.dart';
+import '../../features/events/presentation/pages/events_secondary_pages.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/notifications/presentation/pages/notification_details_page.dart';
+import '../../features/notifications/presentation/pages/notification_settings_page.dart';
+import '../../features/notifications/domain/entities/notification_entity.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -155,6 +162,55 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/quotes/history',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const QuoteHistoryPage(),
+      ),
+      GoRoute(
+        path: '/search',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SearchHomePage(),
+      ),
+      GoRoute(
+        path: '/events',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const EventsHomePage(),
+      ),
+      GoRoute(
+        path: '/events/details/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return EventDetailsPage(eventId: id);
+        },
+      ),
+      GoRoute(
+        path: '/events/my-events',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const MyEventsPage(),
+      ),
+      GoRoute(
+        path: '/events/register/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return EventRegistrationPage(eventId: id);
+        },
+      ),
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const NotificationsPage(),
+      ),
+      GoRoute(
+        path: '/notifications/details',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final notif = state.extra as NotificationEntity;
+          return NotificationDetailsPage(notification: notif);
+        },
+      ),
+      GoRoute(
+        path: '/notifications/settings',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const NotificationSettingsPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

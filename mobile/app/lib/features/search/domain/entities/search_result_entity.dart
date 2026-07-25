@@ -1,4 +1,14 @@
-enum SearchContentType { satsang, audio, books, dailyQuotes, events, videos, downloads, gallery, unknown }
+enum SearchContentType {
+  satsang,
+  audio,
+  books,
+  dailyQuotes,
+  events,
+  videos,
+  downloads,
+  gallery,
+  unknown,
+}
 
 class SearchResultEntity {
   final String id;

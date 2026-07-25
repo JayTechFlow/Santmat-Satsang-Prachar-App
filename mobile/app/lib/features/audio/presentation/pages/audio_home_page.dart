@@ -25,9 +25,11 @@ class AudioHomePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {
-              // Future search functionality
-            },
+            onPressed: () => context.push('/search'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => context.push('/audio/history'),
           ),
         ],
       ),

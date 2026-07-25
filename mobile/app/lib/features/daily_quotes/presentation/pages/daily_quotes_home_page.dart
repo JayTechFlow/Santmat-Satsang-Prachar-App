@@ -19,6 +19,10 @@ class DailyQuotesHomePage extends ConsumerWidget {
         title: const Text('Daily Quotes'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => context.push('/search'),
+          ),
+          IconButton(
             icon: const Icon(Icons.favorite),
             onPressed: () => context.push('/quotes/favorites'),
           ),

@@ -200,4 +200,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dailyQuotes => 'Daily Quotes';
+
+  @override
+  String get events => 'Events & Programs';
 }

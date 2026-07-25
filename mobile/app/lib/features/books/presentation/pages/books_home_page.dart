@@ -23,16 +23,16 @@ class BooksHomePage extends ConsumerWidget {
         title: Text(l10n.books),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => context.push('/search'),
+          ),
+          IconButton(
             icon: const Icon(Icons.bookmark),
             onPressed: () => context.push('/books/bookmarks'),
           ),
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: () => context.push('/books/history'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {}, // Future search functionality
           ),
         ],
       ),

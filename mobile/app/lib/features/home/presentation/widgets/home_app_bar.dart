@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../l10n/gen/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'notification_icon.dart';
 import 'profile_avatar.dart';
 
@@ -18,6 +19,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(AppLocalizations.of(context)!.appTitle),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () => context.push('/search'),
+        ),
         NotificationIcon(count: notificationCount),
         const SizedBox(width: 8),
         ProfileAvatar(

@@ -469,6 +469,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Daily Quotes'**
   String get dailyQuotes;
+
+  /// No description provided for @events.
+  ///
+  /// In en, this message translates to:
+  /// **'Events & Programs'**
+  String get events;
 }
 
 class _AppLocalizationsDelegate
