@@ -33,19 +33,22 @@ class GetAudioDetailsUseCase {
 class SearchAudioUseCase {
   final AudioRepository repository;
   SearchAudioUseCase(this.repository);
-  Future<Result<List<AudioEntity>>> call(String query) => repository.searchAudio(query);
+  Future<Result<List<AudioEntity>>> call(String query) =>
+      repository.searchAudio(query);
 }
 
 class FilterAudioUseCase {
   final AudioRepository repository;
   FilterAudioUseCase(this.repository);
-  Future<Result<List<AudioEntity>>> call(AudioFilterEntity filter) => repository.filterAudio(filter);
+  Future<Result<List<AudioEntity>>> call(AudioFilterEntity filter) =>
+      repository.filterAudio(filter);
 }
 
 class GetRecentlyPlayedUseCase {
   final AudioRepository repository;
   GetRecentlyPlayedUseCase(this.repository);
-  Future<Result<List<RecentlyPlayedEntity>>> call() => repository.getRecentlyPlayed();
+  Future<Result<List<RecentlyPlayedEntity>>> call() =>
+      repository.getRecentlyPlayed();
 }
 
 class GetFavoritesUseCase {
@@ -57,11 +60,13 @@ class GetFavoritesUseCase {
 class ToggleFavoriteAudioUseCase {
   final AudioRepository repository;
   ToggleFavoriteAudioUseCase(this.repository);
-  Future<Result<bool>> call(String audioId) => repository.toggleFavoriteAudio(audioId);
+  Future<Result<bool>> call(String audioId) =>
+      repository.toggleFavoriteAudio(audioId);
 }
 
 class GetAudioCategoriesUseCase {
   final AudioRepository repository;
   GetAudioCategoriesUseCase(this.repository);
-  Future<Result<List<AudioCategoryEntity>>> call() => repository.getCategories();
+  Future<Result<List<AudioCategoryEntity>>> call() =>
+      repository.getCategories();
 }

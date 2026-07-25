@@ -182,4 +182,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duration => 'Duration';
+
+  @override
+  String get audio => 'Audio';
+
+  @override
+  String get recentlyPlayed => 'Recently Played';
+
+  @override
+  String get featuredAudio => 'Featured Audio';
+
+  @override
+  String get popularAudio => 'Popular Audio';
+
+  @override
+  String get books => 'Books';
+
+  @override
+  String get dailyQuotes => 'Daily Quotes';
 }

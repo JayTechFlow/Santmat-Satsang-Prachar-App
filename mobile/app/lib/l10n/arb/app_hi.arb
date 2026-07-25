@@ -80,5 +80,11 @@
   "searchSatsangs": "सत्संग खोजें...",
   "description": "विवरण",
   "category": "श्रेणी",
-  "duration": "अवधि"
+  "duration": "अवधि",
+  "audio": "ऑडियो",
+  "recentlyPlayed": "हाल ही में बजाया गया",
+  "featuredAudio": "प्रमुख ऑडियो",
+  "popularAudio": "लोकप्रिय ऑडियो",
+  "books": "किताबें",
+  "dailyQuotes": "दैनिक सुविचार"
 }

@@ -37,13 +37,19 @@ final getCategoriesUseCaseProvider = Provider((ref) {
 });
 
 class SatsangHomeNotifier extends Notifier<SatsangHomeState> {
+  bool _mounted = true;
+
   @override
   SatsangHomeState build() {
-    Future.microtask(loadHomeData);
+    ref.onDispose(() => _mounted = false);
+    Future.microtask(() {
+      if (_mounted) loadHomeData();
+    });
     return const SatsangHomeState(isLoading: true);
   }
 
   Future<void> loadHomeData() async {
+    if (!_mounted) return;
     state = state.copyWith(isLoading: true, error: null);
 
     final featuredResult = await ref.read(getFeaturedSatsangsUseCaseProvider)();
@@ -52,6 +58,8 @@ class SatsangHomeNotifier extends Notifier<SatsangHomeState> {
     final categoriesResult = await ref
         .read(satsangRepositoryProvider)
         .getCategories();
+
+    if (!_mounted) return;
 
     if (featuredResult.isSuccess &&
         latestResult.isSuccess &&

@@ -433,6 +433,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Duration'**
   String get duration;
+
+  /// No description provided for @audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get audio;
+
+  /// No description provided for @recentlyPlayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Played'**
+  String get recentlyPlayed;
+
+  /// No description provided for @featuredAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Audio'**
+  String get featuredAudio;
+
+  /// No description provided for @popularAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Audio'**
+  String get popularAudio;
+
+  /// No description provided for @books.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get books;
+
+  /// No description provided for @dailyQuotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Quotes'**
+  String get dailyQuotes;
 }
 
 class _AppLocalizationsDelegate

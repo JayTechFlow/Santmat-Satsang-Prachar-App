@@ -1,13 +1,6 @@
 import 'audio_entity.dart';
 
-enum PlaybackStatus {
-  idle,
-  loading,
-  playing,
-  paused,
-  completed,
-  error,
-}
+enum PlaybackStatus { idle, loading, playing, paused, completed, error }
 
 class PlaybackStateEntity {
   final AudioEntity? currentAudio;

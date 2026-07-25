@@ -182,4 +182,22 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get duration => 'अवधि';
+
+  @override
+  String get audio => 'ऑडियो';
+
+  @override
+  String get recentlyPlayed => 'हाल ही में बजाया गया';
+
+  @override
+  String get featuredAudio => 'प्रमुख ऑडियो';
+
+  @override
+  String get popularAudio => 'लोकप्रिय ऑडियो';
+
+  @override
+  String get books => 'किताबें';
+
+  @override
+  String get dailyQuotes => 'दैनिक सुविचार';
 }

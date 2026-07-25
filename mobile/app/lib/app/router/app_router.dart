@@ -14,7 +14,14 @@ import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/satsang/presentation/pages/satsang_home_page.dart';
 import '../../features/satsang/presentation/pages/satsang_details_page.dart';
 import '../../features/satsang/presentation/pages/category_page.dart';
-import '../../shared/widgets/placeholder_page.dart';
+import '../../features/audio/presentation/pages/audio_home_page.dart';
+import '../../features/audio/presentation/pages/audio_details_page.dart';
+import '../../features/audio/presentation/pages/audio_category_page.dart';
+import '../../features/books/presentation/pages/books_home_page.dart';
+import '../../features/books/presentation/pages/book_details_page.dart';
+import '../../features/books/presentation/pages/books_secondary_pages.dart';
+import '../../features/daily_quotes/presentation/pages/daily_quotes_home_page.dart';
+import '../../features/daily_quotes/presentation/pages/daily_quotes_secondary_pages.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -84,6 +91,71 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return CategoryPage(categoryId: id);
         },
       ),
+      GoRoute(
+        path: '/audio/details/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AudioDetailsPage(audioId: id);
+        },
+      ),
+      GoRoute(
+        path: '/audio/category/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AudioCategoryPage(categoryId: id);
+        },
+      ),
+      GoRoute(
+        path: '/books/details/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return BookDetailsPage(bookId: id);
+        },
+      ),
+      GoRoute(
+        path: '/books/category/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return BookCategoryPage(categoryId: id);
+        },
+      ),
+      GoRoute(
+        path: '/books/bookmarks',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const BookmarksPage(),
+      ),
+      GoRoute(
+        path: '/books/history',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ReadingHistoryPage(),
+      ),
+      GoRoute(
+        path: '/quotes',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const DailyQuotesHomePage(),
+      ),
+      GoRoute(
+        path: '/quotes/details/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return QuoteDetailsPage(quoteId: id);
+        },
+      ),
+      GoRoute(
+        path: '/quotes/favorites',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const FavoriteQuotesPage(),
+      ),
+      GoRoute(
+        path: '/quotes/history',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const QuoteHistoryPage(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return HomeShellPage(navigationShell: navigationShell);
@@ -106,8 +178,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/audio',
-                builder: (context, state) =>
-                    const PlaceholderPage(title: 'Audio'),
+                builder: (context, state) => const AudioHomePage(),
               ),
             ],
           ),
@@ -115,8 +186,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/books',
-                builder: (context, state) =>
-                    const PlaceholderPage(title: 'Books'),
+                builder: (context, state) => const BooksHomePage(),
               ),
             ],
           ),

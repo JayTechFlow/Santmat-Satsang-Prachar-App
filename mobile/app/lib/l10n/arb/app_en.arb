@@ -80,5 +80,11 @@
   "searchSatsangs": "Search satsangs...",
   "description": "Description",
   "category": "Category",
-  "duration": "Duration"
+  "duration": "Duration",
+  "audio": "Audio",
+  "recentlyPlayed": "Recently Played",
+  "featuredAudio": "Featured Audio",
+  "popularAudio": "Popular Audio",
+  "books": "Books",
+  "dailyQuotes": "Daily Quotes"
 }
