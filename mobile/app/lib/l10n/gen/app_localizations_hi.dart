@@ -203,4 +203,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get events => 'कार्यक्रम और आयोजन';
+
+  @override
+  String get donations => 'दान';
 }

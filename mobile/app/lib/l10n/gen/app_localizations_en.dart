@@ -203,4 +203,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get events => 'Events & Programs';
+
+  @override
+  String get donations => 'Donations';
 }

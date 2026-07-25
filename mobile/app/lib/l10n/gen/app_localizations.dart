@@ -475,6 +475,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Events & Programs'**
   String get events;
+
+  /// No description provided for @donations.
+  ///
+  /// In en, this message translates to:
+  /// **'Donations'**
+  String get donations;
 }
 
 class _AppLocalizationsDelegate

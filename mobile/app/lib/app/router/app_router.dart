@@ -29,6 +29,8 @@ import '../../features/notifications/presentation/pages/notifications_page.dart'
 import '../../features/notifications/presentation/pages/notification_details_page.dart';
 import '../../features/notifications/presentation/pages/notification_settings_page.dart';
 import '../../features/notifications/domain/entities/notification_entity.dart';
+import '../../features/donations/presentation/pages/donations_home_page.dart';
+import '../../features/donations/presentation/pages/donations_secondary_pages.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -211,6 +213,40 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/notifications/settings',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const NotificationSettingsPage(),
+      ),
+      GoRoute(
+        path: '/donations',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const DonationsHomePage(),
+      ),
+      GoRoute(
+        path: '/donations/details/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DonationDetailsPage(campaignId: id);
+        },
+      ),
+      GoRoute(
+        path: '/donations/checkout/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DonationCheckoutPage(campaignId: id);
+        },
+      ),
+      GoRoute(
+        path: '/donations/history',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const DonationHistoryPage(),
+      ),
+      GoRoute(
+        path: '/donations/receipt/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DonationReceiptPage(receiptId: id);
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
