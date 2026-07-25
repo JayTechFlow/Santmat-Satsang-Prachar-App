@@ -34,6 +34,8 @@ import '../../features/donations/presentation/pages/donations_secondary_pages.da
 import '../../features/downloads/presentation/pages/downloads_home_page.dart';
 import '../../features/downloads/presentation/pages/download_details_page.dart';
 import '../../features/downloads/presentation/pages/storage_management_page.dart';
+import '../../features/library/presentation/pages/library_home_page.dart';
+import '../../features/library/presentation/pages/library_secondary_pages.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -268,6 +270,31 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/downloads/storage',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const StorageManagementPage(),
+      ),
+      GoRoute(
+        path: '/library',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LibraryHomePage(),
+      ),
+      GoRoute(
+        path: '/library/bookmarks',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LibraryBookmarksPage(),
+      ),
+      GoRoute(
+        path: '/library/favorites',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LibraryFavoritesPage(),
+      ),
+      GoRoute(
+        path: '/library/history',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LibraryHistoryPage(),
+      ),
+      GoRoute(
+        path: '/library/recent',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LibraryRecentActivityPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

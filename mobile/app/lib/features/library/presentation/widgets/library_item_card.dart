@@ -63,7 +63,11 @@ class LibraryItemCard extends StatelessWidget {
                         if (onDelete != null)
                           GestureDetector(
                             onTap: onDelete,
-                            child: const Icon(Icons.close, size: 18, color: Colors.grey),
+                            child: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
                           ),
                       ],
                     ),
@@ -87,7 +91,8 @@ class LibraryItemCard extends StatelessWidget {
                       const SizedBox(height: AppSpacing.sm),
                       LinearProgressIndicator(
                         value: item.progress,
-                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                        backgroundColor:
+                            theme.colorScheme.surfaceContainerHighest,
                       ),
                     ],
                   ],
@@ -99,7 +104,9 @@ class LibraryItemCard extends StatelessWidget {
                   if (onFavoriteToggle != null)
                     IconButton(
                       icon: Icon(
-                        item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                        item.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
                         color: item.isFavorite ? Colors.red : Colors.grey,
                       ),
                       onPressed: onFavoriteToggle,
@@ -107,8 +114,12 @@ class LibraryItemCard extends StatelessWidget {
                   if (onBookmarkToggle != null)
                     IconButton(
                       icon: Icon(
-                        item.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: item.isBookmarked ? theme.colorScheme.primary : Colors.grey,
+                        item.isBookmarked
+                            ? Icons.bookmark
+                            : Icons.bookmark_border,
+                        color: item.isBookmarked
+                            ? theme.colorScheme.primary
+                            : Colors.grey,
                       ),
                       onPressed: onBookmarkToggle,
                     ),
@@ -124,7 +135,7 @@ class LibraryItemCard extends StatelessWidget {
   Widget _buildContentTypeChip(BuildContext context) {
     Color color;
     IconData icon;
-    
+
     switch (item.contentType) {
       case 'audio':
         color = Colors.blue;
@@ -158,7 +169,11 @@ class LibraryItemCard extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           item.contentType.toUpperCase(),
-          style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 10,
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );

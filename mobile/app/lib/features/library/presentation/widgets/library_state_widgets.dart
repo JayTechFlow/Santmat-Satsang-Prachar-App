@@ -5,9 +5,7 @@ class LibraryLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
+    return const Center(child: CircularProgressIndicator());
   }
 }
 
@@ -31,10 +29,7 @@ class LibraryErrorWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Text(message, textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onRetry,
-            child: const Text('Retry'),
-          ),
+          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
@@ -61,9 +56,9 @@ class LibraryEmptyWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             message,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
           ),
         ],
       ),

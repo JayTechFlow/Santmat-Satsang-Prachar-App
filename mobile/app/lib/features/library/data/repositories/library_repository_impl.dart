@@ -13,7 +13,9 @@ class LibraryRepositoryImpl implements LibraryRepository {
   LibraryRepositoryImpl(this.dataSource);
 
   @override
-  Future<Result<List<BookmarkEntity>>> getBookmarks(LibraryFilterEntity filter) async {
+  Future<Result<List<BookmarkEntity>>> getBookmarks(
+    LibraryFilterEntity filter,
+  ) async {
     try {
       final res = await dataSource.getBookmarks(filter);
       return Result.success(res);
@@ -23,7 +25,9 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   @override
-  Future<Result<List<FavoriteEntity>>> getFavorites(LibraryFilterEntity filter) async {
+  Future<Result<List<FavoriteEntity>>> getFavorites(
+    LibraryFilterEntity filter,
+  ) async {
     try {
       final res = await dataSource.getFavorites(filter);
       return Result.success(res);
@@ -33,7 +37,9 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   @override
-  Future<Result<List<HistoryEntity>>> getHistory(LibraryFilterEntity filter) async {
+  Future<Result<List<HistoryEntity>>> getHistory(
+    LibraryFilterEntity filter,
+  ) async {
     try {
       final res = await dataSource.getHistory(filter);
       return Result.success(res);
@@ -63,7 +69,10 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   @override
-  Future<Result<void>> removeBookmark(String contentId, String contentType) async {
+  Future<Result<void>> removeBookmark(
+    String contentId,
+    String contentType,
+  ) async {
     try {
       await dataSource.removeBookmark(contentId, contentType);
       return const Result.success(null);
@@ -73,7 +82,10 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   @override
-  Future<Result<void>> toggleFavorite(String contentId, String contentType) async {
+  Future<Result<void>> toggleFavorite(
+    String contentId,
+    String contentType,
+  ) async {
     try {
       await dataSource.toggleFavorite(contentId, contentType);
       return const Result.success(null);
@@ -83,7 +95,11 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   @override
-  Future<Result<void>> addHistoryItem(String contentId, String contentType, double? progress) async {
+  Future<Result<void>> addHistoryItem(
+    String contentId,
+    String contentType,
+    double? progress,
+  ) async {
     try {
       await dataSource.addHistoryItem(contentId, contentType, progress);
       return const Result.success(null);

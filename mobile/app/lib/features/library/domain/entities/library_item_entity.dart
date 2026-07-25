@@ -1,7 +1,8 @@
 class LibraryItemEntity {
   final String id;
   final String contentId;
-  final String contentType; // 'audio', 'book', 'satsang', 'quote', 'event', 'download'
+  final String
+  contentType; // 'audio', 'book', 'satsang', 'quote', 'event', 'download'
   final String title;
   final String subtitle;
   final String thumbnail;

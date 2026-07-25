@@ -487,6 +487,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Downloads'**
   String get downloads;
+
+  /// No description provided for @library.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get library;
 }
 
 class _AppLocalizationsDelegate

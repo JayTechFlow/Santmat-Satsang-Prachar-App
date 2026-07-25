@@ -10,12 +10,16 @@ abstract class LibraryRepository {
   Future<Result<List<FavoriteEntity>>> getFavorites(LibraryFilterEntity filter);
   Future<Result<List<HistoryEntity>>> getHistory(LibraryFilterEntity filter);
   Future<Result<List<RecentActivityEntity>>> getRecentActivities();
-  
+
   Future<Result<void>> addBookmark(String contentId, String contentType);
   Future<Result<void>> removeBookmark(String contentId, String contentType);
   Future<Result<void>> toggleFavorite(String contentId, String contentType);
-  
-  Future<Result<void>> addHistoryItem(String contentId, String contentType, double? progress);
+
+  Future<Result<void>> addHistoryItem(
+    String contentId,
+    String contentType,
+    double? progress,
+  );
   Future<Result<void>> deleteHistoryItem(String historyId);
   Future<Result<void>> clearHistory();
 }

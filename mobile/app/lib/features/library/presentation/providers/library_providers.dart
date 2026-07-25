@@ -6,24 +6,46 @@ import '../../domain/usecases/library_usecases.dart';
 import '../../domain/entities/library_filter_entity.dart';
 import 'library_state.dart';
 
-final mockLibraryDataSourceProvider = Provider((ref) => MockLibraryDataSource());
+final mockLibraryDataSourceProvider = Provider(
+  (ref) => MockLibraryDataSource(),
+);
 
 final libraryRepositoryProvider = Provider<LibraryRepository>((ref) {
   return LibraryRepositoryImpl(ref.watch(mockLibraryDataSourceProvider));
 });
 
-final getBookmarksUseCaseProvider = Provider((ref) => GetBookmarksUseCase(ref.watch(libraryRepositoryProvider)));
-final getFavoritesUseCaseProvider = Provider((ref) => GetFavoritesUseCase(ref.watch(libraryRepositoryProvider)));
-final getHistoryUseCaseProvider = Provider((ref) => GetHistoryUseCase(ref.watch(libraryRepositoryProvider)));
-final getRecentActivitiesUseCaseProvider = Provider((ref) => GetRecentActivitiesUseCase(ref.watch(libraryRepositoryProvider)));
+final getBookmarksUseCaseProvider = Provider(
+  (ref) => GetBookmarksUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final getFavoritesUseCaseProvider = Provider(
+  (ref) => GetFavoritesUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final getHistoryUseCaseProvider = Provider(
+  (ref) => GetHistoryUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final getRecentActivitiesUseCaseProvider = Provider(
+  (ref) => GetRecentActivitiesUseCase(ref.watch(libraryRepositoryProvider)),
+);
 
-final addBookmarkUseCaseProvider = Provider((ref) => AddBookmarkUseCase(ref.watch(libraryRepositoryProvider)));
-final removeBookmarkUseCaseProvider = Provider((ref) => RemoveBookmarkUseCase(ref.watch(libraryRepositoryProvider)));
-final toggleFavoriteUseCaseProvider = Provider((ref) => ToggleFavoriteUseCase(ref.watch(libraryRepositoryProvider)));
+final addBookmarkUseCaseProvider = Provider(
+  (ref) => AddBookmarkUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final removeBookmarkUseCaseProvider = Provider(
+  (ref) => RemoveBookmarkUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final toggleFavoriteUseCaseProvider = Provider(
+  (ref) => ToggleFavoriteUseCase(ref.watch(libraryRepositoryProvider)),
+);
 
-final addHistoryItemUseCaseProvider = Provider((ref) => AddHistoryItemUseCase(ref.watch(libraryRepositoryProvider)));
-final deleteHistoryItemUseCaseProvider = Provider((ref) => DeleteHistoryItemUseCase(ref.watch(libraryRepositoryProvider)));
-final clearHistoryUseCaseProvider = Provider((ref) => ClearHistoryUseCase(ref.watch(libraryRepositoryProvider)));
+final addHistoryItemUseCaseProvider = Provider(
+  (ref) => AddHistoryItemUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final deleteHistoryItemUseCaseProvider = Provider(
+  (ref) => DeleteHistoryItemUseCase(ref.watch(libraryRepositoryProvider)),
+);
+final clearHistoryUseCaseProvider = Provider(
+  (ref) => ClearHistoryUseCase(ref.watch(libraryRepositoryProvider)),
+);
 
 class LibraryNotifier extends Notifier<LibraryState> {
   bool _mounted = true;
@@ -42,10 +64,18 @@ class LibraryNotifier extends Notifier<LibraryState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final bookmarksRes = await ref.read(getBookmarksUseCaseProvider).call(state.filter);
-      final favoritesRes = await ref.read(getFavoritesUseCaseProvider).call(state.filter);
-      final historyRes = await ref.read(getHistoryUseCaseProvider).call(state.filter);
-      final recentRes = await ref.read(getRecentActivitiesUseCaseProvider).call();
+      final bookmarksRes = await ref
+          .read(getBookmarksUseCaseProvider)
+          .call(state.filter);
+      final favoritesRes = await ref
+          .read(getFavoritesUseCaseProvider)
+          .call(state.filter);
+      final historyRes = await ref
+          .read(getHistoryUseCaseProvider)
+          .call(state.filter);
+      final recentRes = await ref
+          .read(getRecentActivitiesUseCaseProvider)
+          .call();
 
       if (!_mounted) return;
 
@@ -99,4 +129,6 @@ class LibraryNotifier extends Notifier<LibraryState> {
   }
 }
 
-final libraryProvider = NotifierProvider<LibraryNotifier, LibraryState>(LibraryNotifier.new);
+final libraryProvider = NotifierProvider<LibraryNotifier, LibraryState>(
+  LibraryNotifier.new,
+);

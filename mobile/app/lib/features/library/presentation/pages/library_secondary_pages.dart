@@ -6,8 +6,8 @@ import '../widgets/library_state_widgets.dart';
 import '../widgets/library_item_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
 
-class FavoritesPage extends ConsumerWidget {
-  const FavoritesPage({super.key});
+class LibraryFavoritesPage extends ConsumerWidget {
+  const LibraryFavoritesPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,7 +17,10 @@ class FavoritesPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Favorites')),
       body: state.favorites.isEmpty
-          ? const LibraryEmptyWidget(message: 'No favorites yet', icon: Icons.favorite_border)
+          ? const LibraryEmptyWidget(
+              message: 'No favorites yet',
+              icon: Icons.favorite_border,
+            )
           : ListView.builder(
               padding: AppSpacing.paddingAllMd,
               itemCount: state.favorites.length,
@@ -26,7 +29,8 @@ class FavoritesPage extends ConsumerWidget {
                 return LibraryItemCard(
                   item: item,
                   onTap: () => context.push(item.route),
-                  onFavoriteToggle: () => notifier.toggleFavorite(item.contentId, item.contentType),
+                  onFavoriteToggle: () =>
+                      notifier.toggleFavorite(item.contentId, item.contentType),
                 );
               },
             ),
@@ -34,8 +38,8 @@ class FavoritesPage extends ConsumerWidget {
   }
 }
 
-class BookmarksPage extends ConsumerWidget {
-  const BookmarksPage({super.key});
+class LibraryBookmarksPage extends ConsumerWidget {
+  const LibraryBookmarksPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,7 +49,10 @@ class BookmarksPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Bookmarks')),
       body: state.bookmarks.isEmpty
-          ? const LibraryEmptyWidget(message: 'No bookmarks yet', icon: Icons.bookmark_border)
+          ? const LibraryEmptyWidget(
+              message: 'No bookmarks yet',
+              icon: Icons.bookmark_border,
+            )
           : ListView.builder(
               padding: AppSpacing.paddingAllMd,
               itemCount: state.bookmarks.length,
@@ -54,7 +61,8 @@ class BookmarksPage extends ConsumerWidget {
                 return LibraryItemCard(
                   item: item,
                   onTap: () => context.push(item.route),
-                  onBookmarkToggle: () => notifier.removeBookmark(item.contentId, item.contentType),
+                  onBookmarkToggle: () =>
+                      notifier.removeBookmark(item.contentId, item.contentType),
                 );
               },
             ),
@@ -62,8 +70,8 @@ class BookmarksPage extends ConsumerWidget {
   }
 }
 
-class HistoryPage extends ConsumerWidget {
-  const HistoryPage({super.key});
+class LibraryHistoryPage extends ConsumerWidget {
+  const LibraryHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,7 +85,7 @@ class HistoryPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: () => notifier.clearHistory(),
-          )
+          ),
         ],
       ),
       body: state.history.isEmpty
@@ -98,8 +106,8 @@ class HistoryPage extends ConsumerWidget {
   }
 }
 
-class RecentActivityPage extends ConsumerWidget {
-  const RecentActivityPage({super.key});
+class LibraryRecentActivityPage extends ConsumerWidget {
+  const LibraryRecentActivityPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -108,7 +116,10 @@ class RecentActivityPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Recent Activity')),
       body: state.recentActivities.isEmpty
-          ? const LibraryEmptyWidget(message: 'No recent activity', icon: Icons.history)
+          ? const LibraryEmptyWidget(
+              message: 'No recent activity',
+              icon: Icons.history,
+            )
           : ListView.builder(
               padding: AppSpacing.paddingAllMd,
               itemCount: state.recentActivities.length,

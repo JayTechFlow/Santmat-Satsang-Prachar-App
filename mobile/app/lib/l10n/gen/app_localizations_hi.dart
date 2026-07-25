@@ -209,4 +209,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get downloads => 'डाउनलोड';
+
+  @override
+  String get library => 'संग्रह';
 }

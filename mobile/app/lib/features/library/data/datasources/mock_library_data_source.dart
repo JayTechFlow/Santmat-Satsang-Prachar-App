@@ -14,8 +14,22 @@ class MockLibraryDataSource {
 
   MockLibraryDataSource() {
     _allItems = List.generate(15, (index) {
-      final contentType = ['audio', 'book', 'satsang', 'quote', 'event'][index % 5];
-      final routePrefix = contentType == 'audio' ? '/audio' : contentType == 'book' ? '/books' : contentType == 'satsang' ? '/satsang' : contentType == 'quote' ? '/daily-quotes' : '/events';
+      final contentType = [
+        'audio',
+        'book',
+        'satsang',
+        'quote',
+        'event',
+      ][index % 5];
+      final routePrefix = contentType == 'audio'
+          ? '/audio'
+          : contentType == 'book'
+          ? '/books'
+          : contentType == 'satsang'
+          ? '/satsang'
+          : contentType == 'quote'
+          ? '/daily-quotes'
+          : '/events';
       return LibraryItemEntity(
         id: 'item_$index',
         contentId: 'cid_$index',
@@ -37,40 +51,52 @@ class MockLibraryDataSource {
 
     _bookmarks = _allItems
         .where((item) => item.isBookmarked)
-        .map((item) => BookmarkEntity(
-              id: 'bm_${item.id}',
-              item: item,
-              bookmarkedDate: DateTime.now().subtract(const Duration(days: 1)),
-            ))
+        .map(
+          (item) => BookmarkEntity(
+            id: 'bm_${item.id}',
+            item: item,
+            bookmarkedDate: DateTime.now().subtract(const Duration(days: 1)),
+          ),
+        )
         .toList();
 
     _favorites = _allItems
         .where((item) => item.isFavorite)
-        .map((item) => FavoriteEntity(
-              id: 'fav_${item.id}',
-              item: item,
-              favoritedDate: DateTime.now().subtract(const Duration(days: 2)),
-            ))
+        .map(
+          (item) => FavoriteEntity(
+            id: 'fav_${item.id}',
+            item: item,
+            favoritedDate: DateTime.now().subtract(const Duration(days: 2)),
+          ),
+        )
         .toList();
 
     _history = _allItems
         .take(10)
-        .map((item) => HistoryEntity(
-              id: 'hist_${item.id}',
-              item: item,
-              accessedDate: item.lastOpened ?? DateTime.now(),
-              sessionProgress: item.progress,
-            ))
+        .map(
+          (item) => HistoryEntity(
+            id: 'hist_${item.id}',
+            item: item,
+            accessedDate: item.lastOpened ?? DateTime.now(),
+            sessionProgress: item.progress,
+          ),
+        )
         .toList();
 
     _recentActivities = _history
         .take(5)
-        .map((h) => RecentActivityEntity(
-              id: 'act_${h.item.id}',
-              item: h.item,
-              activityDate: h.accessedDate,
-              activityType: h.item.contentType == 'book' ? 'read' : h.item.contentType == 'audio' ? 'listened' : 'viewed',
-            ))
+        .map(
+          (h) => RecentActivityEntity(
+            id: 'act_${h.item.id}',
+            item: h.item,
+            activityDate: h.accessedDate,
+            activityType: h.item.contentType == 'book'
+                ? 'read'
+                : h.item.contentType == 'audio'
+                ? 'listened'
+                : 'viewed',
+          ),
+        )
         .toList();
   }
 
@@ -109,47 +135,75 @@ class MockLibraryDataSource {
 
   Future<void> addBookmark(String contentId, String contentType) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    final item = _allItems.firstWhere((i) => i.contentId == contentId && i.contentType == contentType, orElse: () => _allItems.first);
+    final item = _allItems.firstWhere(
+      (i) => i.contentId == contentId && i.contentType == contentType,
+      orElse: () => _allItems.first,
+    );
     if (!_bookmarks.any((b) => b.item.contentId == contentId)) {
-      _bookmarks.add(BookmarkEntity(
-        id: 'bm_${item.id}',
-        item: item,
-        bookmarkedDate: DateTime.now(),
-      ));
+      _bookmarks.add(
+        BookmarkEntity(
+          id: 'bm_${item.id}',
+          item: item,
+          bookmarkedDate: DateTime.now(),
+        ),
+      );
     }
   }
 
   Future<void> removeBookmark(String contentId, String contentType) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    _bookmarks.removeWhere((b) => b.item.contentId == contentId && b.item.contentType == contentType);
+    _bookmarks.removeWhere(
+      (b) => b.item.contentId == contentId && b.item.contentType == contentType,
+    );
   }
 
   Future<void> toggleFavorite(String contentId, String contentType) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    final exists = _favorites.any((f) => f.item.contentId == contentId && f.item.contentType == contentType);
+    final exists = _favorites.any(
+      (f) => f.item.contentId == contentId && f.item.contentType == contentType,
+    );
     if (exists) {
-      _favorites.removeWhere((f) => f.item.contentId == contentId && f.item.contentType == contentType);
+      _favorites.removeWhere(
+        (f) =>
+            f.item.contentId == contentId && f.item.contentType == contentType,
+      );
     } else {
-      final item = _allItems.firstWhere((i) => i.contentId == contentId && i.contentType == contentType, orElse: () => _allItems.first);
-      _favorites.add(FavoriteEntity(
-        id: 'fav_${item.id}',
-        item: item,
-        favoritedDate: DateTime.now(),
-      ));
+      final item = _allItems.firstWhere(
+        (i) => i.contentId == contentId && i.contentType == contentType,
+        orElse: () => _allItems.first,
+      );
+      _favorites.add(
+        FavoriteEntity(
+          id: 'fav_${item.id}',
+          item: item,
+          favoritedDate: DateTime.now(),
+        ),
+      );
     }
   }
 
-  Future<void> addHistoryItem(String contentId, String contentType, double? progress) async {
+  Future<void> addHistoryItem(
+    String contentId,
+    String contentType,
+    double? progress,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    final item = _allItems.firstWhere((i) => i.contentId == contentId && i.contentType == contentType, orElse: () => _allItems.first);
-    
-    _history.removeWhere((h) => h.item.contentId == contentId && h.item.contentType == contentType);
-    _history.add(HistoryEntity(
-      id: 'hist_${item.id}',
-      item: item,
-      accessedDate: DateTime.now(),
-      sessionProgress: progress,
-    ));
+    final item = _allItems.firstWhere(
+      (i) => i.contentId == contentId && i.contentType == contentType,
+      orElse: () => _allItems.first,
+    );
+
+    _history.removeWhere(
+      (h) => h.item.contentId == contentId && h.item.contentType == contentType,
+    );
+    _history.add(
+      HistoryEntity(
+        id: 'hist_${item.id}',
+        item: item,
+        accessedDate: DateTime.now(),
+        sessionProgress: progress,
+      ),
+    );
   }
 
   Future<void> deleteHistoryItem(String historyId) async {
