@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import '../l10n/arb/app_localizations.dart';
+import '../l10n/gen/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'router/app_router.dart';
@@ -13,6 +13,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentLocale = ref.watch(localeProvider);
+    final goRouter = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
       title: 'Santmat Satsang Prachar',
