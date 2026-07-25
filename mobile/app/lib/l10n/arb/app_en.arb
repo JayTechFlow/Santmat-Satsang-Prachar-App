@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "appTitle": "Santmat Satsang Prachar",
+  "home": "Home",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "errorGeneric": "An unexpected error occurred.",
+  "errorNetwork": "Please check your internet connection.",
+  "emptyStateTitle": "Nothing here yet",
+  "emptyStateMessage": "Check back later for updates."
+}
