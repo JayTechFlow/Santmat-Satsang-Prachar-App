@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "488234518159",
+    "project_id": "santmat-satsang-prachar",
+    "storage_bucket": "santmat-satsang-prachar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488234518159:android:8b440fb731b0900b05d2fa",
+        "android_client_info": {
+          "package_name": "com.santmat.santmat_satsang_prachar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm8LxSLljkqwiqiXc-7047LRF_ep5baF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488234518159:android:2eebb801735938ed05d2fa",
+        "android_client_info": {
+          "package_name": "com.santmat.satsangprachar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm8LxSLljkqwiqiXc-7047LRF_ep5baF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
