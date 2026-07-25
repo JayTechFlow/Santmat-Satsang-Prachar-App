@@ -481,6 +481,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Donations'**
   String get donations;
+
+  /// No description provided for @downloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get downloads;
 }
 
 class _AppLocalizationsDelegate

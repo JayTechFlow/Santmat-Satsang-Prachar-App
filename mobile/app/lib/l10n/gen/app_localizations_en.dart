@@ -206,4 +206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get donations => 'Donations';
+
+  @override
+  String get downloads => 'Downloads';
 }

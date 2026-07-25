@@ -3,12 +3,14 @@ import 'download_category_entity.dart';
 class DownloadEntity {
   final String id;
   final String title;
-  final String contentType; // 'audio', 'book', 'document', 'image', 'video', 'podcast', 'pdf'
+  final String
+  contentType; // 'audio', 'book', 'document', 'image', 'video', 'podcast', 'pdf'
   final DownloadCategoryEntity category;
   final int totalSize;
   final int downloadedSize;
   final double progress; // 0.0 to 1.0
-  final String status; // 'pending', 'downloading', 'paused', 'completed', 'failed'
+  final String
+  status; // 'pending', 'downloading', 'paused', 'completed', 'failed'
   final int priority;
   final DateTime createdDate;
   final DateTime? completedDate;

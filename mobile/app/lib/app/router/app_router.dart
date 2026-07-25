@@ -31,6 +31,9 @@ import '../../features/notifications/presentation/pages/notification_settings_pa
 import '../../features/notifications/domain/entities/notification_entity.dart';
 import '../../features/donations/presentation/pages/donations_home_page.dart';
 import '../../features/donations/presentation/pages/donations_secondary_pages.dart';
+import '../../features/downloads/presentation/pages/downloads_home_page.dart';
+import '../../features/downloads/presentation/pages/download_details_page.dart';
+import '../../features/downloads/presentation/pages/storage_management_page.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -247,6 +250,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           return DonationReceiptPage(receiptId: id);
         },
+      ),
+      GoRoute(
+        path: '/downloads',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const DownloadsHomePage(),
+      ),
+      GoRoute(
+        path: '/downloads/details/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return DownloadDetailsPage(downloadId: id);
+        },
+      ),
+      GoRoute(
+        path: '/downloads/storage',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const StorageManagementPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

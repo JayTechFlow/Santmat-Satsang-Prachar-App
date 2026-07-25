@@ -206,4 +206,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get donations => 'दान';
+
+  @override
+  String get downloads => 'डाउनलोड';
 }
