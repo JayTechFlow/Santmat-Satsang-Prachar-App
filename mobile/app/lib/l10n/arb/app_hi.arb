@@ -8,5 +8,77 @@
   "errorGeneric": "एक अप्रत्याशित त्रुटि हुई।",
   "errorNetwork": "कृपया अपने इंटरनेट कनेक्शन की जांच करें।",
   "emptyStateTitle": "अभी यहाँ कुछ नहीं है",
-  "emptyStateMessage": "अपडेट के लिए बाद में वापस आएं।"
+  "emptyStateMessage": "अपडेट के लिए बाद में वापस आएं।",
+  "greeting": "जय गुरु, {name}",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "todaysQuote": "आज का सुविचार",
+  "latestSatsang": "नवीनतम सत्संग",
+  "upcomingEvents": "आगामी कार्यक्रम",
+  "latestAudios": "नवीनतम ऑडियो",
+  "featuredBooks": "प्रमुख पुस्तकें",
+  "seeAll": "सभी देखें",
+  "quickActions": "त्वरित क्रियाएं",
+  "notifications": "सूचनाएं",
+  "profile": "प्रोफाइल",
+  "tabSatsang": "सत्संग",
+  "tabAudio": "ऑडियो",
+  "tabBooks": "पुस्तकें",
+  "tabSettings": "सेटिंग्स",
+  "statDownloads": "डाउनलोड",
+  "statFavorites": "पसंदीदा",
+  "statBookmarks": "बुकमार्क",
+  "emptyStateTitle": "अभी तक कुछ नहीं",
+  "emptyStateMessage": "बाद में देखें।",
+  "retry": "पुनः प्रयास करें",
+  "errorGeneric": "कुछ गलत हो गया।",
+  "memberSince": "{date} से सदस्य",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "appVersion": "संस्करण {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "भाषा",
+  "themeLight": "लाइट",
+  "themeDark": "डार्क",
+  "themeSystem": "सिस्टम डिफ़ॉल्ट",
+  "theme": "थीम",
+  "logout": "लॉग आउट",
+  "deleteAccount": "खाता हटाएं",
+  "deleteAccountConfirmation": "क्या आप वाकई अपना खाता हटाना चाहते हैं?",
+  "editProfile": "प्रोफ़ाइल संपादित करें",
+  "accountSettings": "खाता सेटिंग्स",
+  "save": "सहेजें",
+  "name": "नाम",
+  "phone": "फ़ोन",
+  "email": "ईमेल",
+  "privacyPolicy": "गोपनीयता नीति",
+  "termsConditions": "नियम एवं शर्तें",
+  "aboutApp": "ऐप के बारे में",
+  "preferences": "प्राथमिकताएं",
+  "satsang": "सत्संग",
+  "categories": "श्रेणियाँ",
+  "latestSatsangs": "नवीनतम सत्संग",
+  "popularSatsangs": "लोकप्रिय सत्संग",
+  "filters": "फ़िल्टर",
+  "applyFilters": "फ़िल्टर लागू करें",
+  "searchSatsangs": "सत्संग खोजें...",
+  "description": "विवरण",
+  "category": "श्रेणी",
+  "duration": "अवधि"
 }

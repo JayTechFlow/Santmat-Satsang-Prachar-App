@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorGeneric.
   ///
   /// In en, this message translates to:
-  /// **'An unexpected error occurred.'**
+  /// **'Something went wrong.'**
   String get errorGeneric;
 
   /// No description provided for @errorNetwork.
@@ -143,14 +143,296 @@ abstract class AppLocalizations {
   /// No description provided for @emptyStateTitle.
   ///
   /// In en, this message translates to:
-  /// **'Nothing here yet'**
+  /// **'Nothing Here Yet'**
   String get emptyStateTitle;
 
   /// No description provided for @emptyStateMessage.
   ///
   /// In en, this message translates to:
-  /// **'Check back later for updates.'**
+  /// **'Check back later.'**
   String get emptyStateMessage;
+
+  /// No description provided for @greeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Jai Guru, {name}'**
+  String greeting(String name);
+
+  /// No description provided for @todaysQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Quote'**
+  String get todaysQuote;
+
+  /// No description provided for @latestSatsang.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Satsang'**
+  String get latestSatsang;
+
+  /// No description provided for @upcomingEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Events'**
+  String get upcomingEvents;
+
+  /// No description provided for @latestAudios.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Audios'**
+  String get latestAudios;
+
+  /// No description provided for @featuredBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Books'**
+  String get featuredBooks;
+
+  /// No description provided for @seeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All'**
+  String get seeAll;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @tabSatsang.
+  ///
+  /// In en, this message translates to:
+  /// **'Satsang'**
+  String get tabSatsang;
+
+  /// No description provided for @tabAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get tabAudio;
+
+  /// No description provided for @tabBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get tabBooks;
+
+  /// No description provided for @tabSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get tabSettings;
+
+  /// No description provided for @statDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get statDownloads;
+
+  /// No description provided for @statFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get statFavorites;
+
+  /// No description provided for @statBookmarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarks'**
+  String get statBookmarks;
+
+  /// No description provided for @memberSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since {date}'**
+  String memberSince(String date);
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String appVersion(String version);
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get themeSystem;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logout;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account?'**
+  String get deleteAccountConfirmation;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @accountSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Settings'**
+  String get accountSettings;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsConditions;
+
+  /// No description provided for @aboutApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About App'**
+  String get aboutApp;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @satsang.
+  ///
+  /// In en, this message translates to:
+  /// **'Satsang'**
+  String get satsang;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @latestSatsangs.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Satsangs'**
+  String get latestSatsangs;
+
+  /// No description provided for @popularSatsangs.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Satsangs'**
+  String get popularSatsangs;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filters'**
+  String get applyFilters;
+
+  /// No description provided for @searchSatsangs.
+  ///
+  /// In en, this message translates to:
+  /// **'Search satsangs...'**
+  String get searchSatsangs;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
 }
 
 class _AppLocalizationsDelegate

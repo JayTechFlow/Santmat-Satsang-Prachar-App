@@ -8,5 +8,77 @@
   "errorGeneric": "An unexpected error occurred.",
   "errorNetwork": "Please check your internet connection.",
   "emptyStateTitle": "Nothing here yet",
-  "emptyStateMessage": "Check back later for updates."
+  "emptyStateMessage": "Check back later for updates.",
+  "greeting": "Jai Guru, {name}",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "todaysQuote": "Today's Quote",
+  "latestSatsang": "Latest Satsang",
+  "upcomingEvents": "Upcoming Events",
+  "latestAudios": "Latest Audios",
+  "featuredBooks": "Featured Books",
+  "seeAll": "See All",
+  "quickActions": "Quick Actions",
+  "notifications": "Notifications",
+  "profile": "Profile",
+  "tabSatsang": "Satsang",
+  "tabAudio": "Audio",
+  "tabBooks": "Books",
+  "tabSettings": "Settings",
+  "statDownloads": "Downloads",
+  "statFavorites": "Favorites",
+  "statBookmarks": "Bookmarks",
+  "emptyStateTitle": "Nothing Here Yet",
+  "emptyStateMessage": "Check back later.",
+  "retry": "Retry",
+  "errorGeneric": "Something went wrong.",
+  "memberSince": "Member since {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Language",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System Default",
+  "theme": "Theme",
+  "logout": "Log Out",
+  "deleteAccount": "Delete Account",
+  "deleteAccountConfirmation": "Are you sure you want to delete your account?",
+  "editProfile": "Edit Profile",
+  "accountSettings": "Account Settings",
+  "save": "Save",
+  "name": "Name",
+  "phone": "Phone",
+  "email": "Email",
+  "privacyPolicy": "Privacy Policy",
+  "termsConditions": "Terms & Conditions",
+  "aboutApp": "About App",
+  "preferences": "Preferences",
+  "satsang": "Satsang",
+  "categories": "Categories",
+  "latestSatsangs": "Latest Satsangs",
+  "popularSatsangs": "Popular Satsangs",
+  "filters": "Filters",
+  "applyFilters": "Apply Filters",
+  "searchSatsangs": "Search satsangs...",
+  "description": "Description",
+  "category": "Category",
+  "duration": "Duration"
 }
