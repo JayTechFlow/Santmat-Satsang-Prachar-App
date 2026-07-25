@@ -3,8 +3,9 @@ import '../../domain/entities/notification_category_entity.dart';
 import '../../domain/entities/notification_action_entity.dart';
 import '../../domain/entities/notification_filter_entity.dart';
 import '../../domain/entities/notification_preference_entity.dart';
+import 'notification_data_source.dart';
 
-class MockNotificationDataSource {
+class MockNotificationDataSource implements NotificationDataSource {
   final List<NotificationCategoryEntity> _categories = [
     const NotificationCategoryEntity(id: 'c1', name: 'Satsang'),
     const NotificationCategoryEntity(id: 'c2', name: 'System'),

@@ -5,8 +5,9 @@ import '../../domain/entities/book_chapter_entity.dart';
 import '../../domain/entities/book_filter_entity.dart';
 import '../../domain/entities/book_bookmark_entity.dart';
 import '../../domain/entities/reading_progress_entity.dart';
+import 'book_data_source.dart';
 
-class MockBookDataSource {
+class MockBookDataSource implements BookDataSource {
   final List<BookCategoryEntity> _categories = [
     const BookCategoryEntity(
       id: 'bc1',

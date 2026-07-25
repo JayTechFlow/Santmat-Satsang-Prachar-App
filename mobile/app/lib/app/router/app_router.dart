@@ -36,6 +36,8 @@ import '../../features/downloads/presentation/pages/download_details_page.dart';
 import '../../features/downloads/presentation/pages/storage_management_page.dart';
 import '../../features/library/presentation/pages/library_home_page.dart';
 import '../../features/library/presentation/pages/library_secondary_pages.dart';
+import '../../features/preferences/presentation/pages/preferences_home_page.dart';
+import '../../features/preferences/presentation/pages/preferences_secondary_pages.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -295,6 +297,47 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/library/recent',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const LibraryRecentActivityPage(),
+      ),
+      GoRoute(
+        path: '/settings',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferencesHomePage(),
+      ),
+      GoRoute(
+        path: '/settings/appearance',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferenceAppearanceSettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/accessibility',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            const PreferenceAccessibilitySettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/notifications',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferenceNotificationSettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/privacy',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferencePrivacySettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/playback',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferencePlaybackSettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/reading',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferenceReadingSettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/downloads',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PreferenceDownloadSettingsPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

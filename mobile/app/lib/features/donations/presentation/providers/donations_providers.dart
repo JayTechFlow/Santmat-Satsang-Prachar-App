@@ -9,12 +9,20 @@ import '../../domain/entities/donation_history_entity.dart';
 import '../../domain/entities/donation_preference_entity.dart';
 import 'donations_state.dart';
 
-final mockDonationDataSourceProvider = Provider(
-  (ref) => MockDonationDataSource(),
-);
+import '../../data/datasources/firestore_donation_data_source.dart';
+import '../../data/datasources/donation_data_source.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+
+final donationDataSourceProvider = Provider<DonationDataSource>((ref) {
+  final env = ref.watch(environmentConfigurationProvider);
+  if (env.isDev) {
+    return MockDonationDataSource();
+  }
+  return FirestoreDonationDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final donationRepositoryProvider = Provider<DonationRepository>((ref) {
-  return DonationRepositoryImpl(ref.watch(mockDonationDataSourceProvider));
+  return DonationRepositoryImpl(ref.watch(donationDataSourceProvider));
 });
 
 final getDonationCampaignsUseCaseProvider = Provider(

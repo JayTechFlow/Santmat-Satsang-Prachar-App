@@ -3,10 +3,10 @@ import '../../domain/entities/user_preference_entity.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../../authentication/domain/repositories/auth_repository.dart';
-import '../datasources/mock_profile_data_source.dart';
+import '../datasources/profile_data_source.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final MockProfileDataSource _dataSource;
+  final ProfileDataSource _dataSource;
   final AuthRepository _authRepository;
 
   ProfileRepositoryImpl(this._dataSource, this._authRepository);

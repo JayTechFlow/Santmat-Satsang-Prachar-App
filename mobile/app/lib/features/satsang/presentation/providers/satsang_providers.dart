@@ -1,17 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+import '../../data/datasources/satsang_data_source.dart';
 import '../../data/datasources/mock_satsang_data_source.dart';
+import '../../data/datasources/firestore_satsang_data_source.dart';
 import '../../data/repositories/satsang_repository_impl.dart';
 import '../../domain/repositories/satsang_repository.dart';
 import '../../domain/usecases/satsang_usecases.dart';
 import '../../domain/entities/satsang_entity.dart';
 import 'satsang_state.dart';
 
-final mockSatsangDataSourceProvider = Provider<MockSatsangDataSource>((ref) {
-  return MockSatsangDataSource();
+final satsangDataSourceProvider = Provider<SatsangDataSource>((ref) {
+  final isDev = ref.watch(environmentConfigurationProvider).isDev;
+  if (isDev) {
+    return MockSatsangDataSource();
+  }
+  return FirestoreSatsangDataSource(ref.watch(firestoreServiceProvider));
 });
 
 final satsangRepositoryProvider = Provider<SatsangRepository>((ref) {
-  return SatsangRepositoryImpl(ref.watch(mockSatsangDataSourceProvider));
+  return SatsangRepositoryImpl(ref.watch(satsangDataSourceProvider));
 });
 
 final getLatestSatsangsUseCaseProvider = Provider<GetLatestSatsangsUseCase>((

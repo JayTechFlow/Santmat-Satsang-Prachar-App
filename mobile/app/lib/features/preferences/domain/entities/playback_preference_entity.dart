@@ -21,7 +21,8 @@ class PlaybackPreferenceEntity {
       autoPlay: autoPlay ?? this.autoPlay,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       backgroundAudio: backgroundAudio ?? this.backgroundAudio,
-      continueFromLastPosition: continueFromLastPosition ?? this.continueFromLastPosition,
+      continueFromLastPosition:
+          continueFromLastPosition ?? this.continueFromLastPosition,
     );
   }
 }

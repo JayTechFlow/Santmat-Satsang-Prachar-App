@@ -5,17 +5,17 @@ import '../../domain/entities/audio_filter_entity.dart';
 import '../../domain/entities/recently_played_entity.dart';
 import '../../domain/entities/favorite_audio_entity.dart';
 import '../../domain/repositories/audio_repository.dart';
-import '../datasources/mock_audio_data_source.dart';
+import '../datasources/audio_data_source.dart';
 
 class AudioRepositoryImpl implements AudioRepository {
-  final MockAudioDataSource dataSource;
+  final AudioDataSource _dataSource;
 
-  AudioRepositoryImpl(this.dataSource);
+  AudioRepositoryImpl(this._dataSource);
 
   @override
   Future<Result<List<AudioEntity>>> getLatestAudio() async {
     try {
-      final res = await dataSource.getLatestAudio();
+      final res = await _dataSource.getLatestAudio();
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);

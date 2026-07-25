@@ -5,7 +5,9 @@ import '../../domain/entities/history_entity.dart';
 import '../../domain/entities/recent_activity_entity.dart';
 import '../../domain/entities/library_filter_entity.dart';
 
-class MockLibraryDataSource {
+import 'library_data_source.dart';
+
+class MockLibraryDataSource implements LibraryDataSource {
   late List<LibraryItemEntity> _allItems;
   late List<BookmarkEntity> _bookmarks;
   late List<FavoriteEntity> _favorites;
@@ -100,6 +102,7 @@ class MockLibraryDataSource {
         .toList();
   }
 
+  @override
   Future<List<BookmarkEntity>> getBookmarks(LibraryFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 300));
     var res = List<BookmarkEntity>.from(_bookmarks);
@@ -109,6 +112,7 @@ class MockLibraryDataSource {
     return res;
   }
 
+  @override
   Future<List<FavoriteEntity>> getFavorites(LibraryFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 300));
     var res = List<FavoriteEntity>.from(_favorites);
@@ -118,6 +122,7 @@ class MockLibraryDataSource {
     return res;
   }
 
+  @override
   Future<List<HistoryEntity>> getHistory(LibraryFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 300));
     var res = List<HistoryEntity>.from(_history);
@@ -128,11 +133,13 @@ class MockLibraryDataSource {
     return res;
   }
 
+  @override
   Future<List<RecentActivityEntity>> getRecentActivities() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _recentActivities;
   }
 
+  @override
   Future<void> addBookmark(String contentId, String contentType) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final item = _allItems.firstWhere(
@@ -150,6 +157,7 @@ class MockLibraryDataSource {
     }
   }
 
+  @override
   Future<void> removeBookmark(String contentId, String contentType) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _bookmarks.removeWhere(
@@ -157,6 +165,7 @@ class MockLibraryDataSource {
     );
   }
 
+  @override
   Future<void> toggleFavorite(String contentId, String contentType) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final exists = _favorites.any(
@@ -182,6 +191,7 @@ class MockLibraryDataSource {
     }
   }
 
+  @override
   Future<void> addHistoryItem(
     String contentId,
     String contentType,
@@ -206,11 +216,13 @@ class MockLibraryDataSource {
     );
   }
 
+  @override
   Future<void> deleteHistoryItem(String historyId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _history.removeWhere((h) => h.id == historyId);
   }
 
+  @override
   Future<void> clearHistory() async {
     await Future.delayed(const Duration(milliseconds: 200));
     _history.clear();

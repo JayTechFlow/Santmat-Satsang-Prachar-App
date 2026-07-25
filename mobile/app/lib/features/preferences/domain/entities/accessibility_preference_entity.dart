@@ -21,7 +21,8 @@ class AccessibilityPreferenceEntity {
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       highContrast: highContrast ?? this.highContrast,
       reducedMotion: reducedMotion ?? this.reducedMotion,
-      screenReaderOptimized: screenReaderOptimized ?? this.screenReaderOptimized,
+      screenReaderOptimized:
+          screenReaderOptimized ?? this.screenReaderOptimized,
     );
   }
 }

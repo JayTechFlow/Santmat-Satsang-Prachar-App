@@ -6,10 +6,10 @@ import '../../domain/entities/favorite_quote_entity.dart';
 import '../../domain/entities/quote_history_entity.dart';
 import '../../domain/entities/quote_filter_entity.dart';
 import '../../domain/repositories/daily_quote_repository.dart';
-import '../datasources/mock_daily_quote_data_source.dart';
+import '../datasources/daily_quote_data_source.dart';
 
 class DailyQuoteRepositoryImpl implements DailyQuoteRepository {
-  final MockDailyQuoteDataSource dataSource;
+  final DailyQuoteDataSource dataSource;
 
   DailyQuoteRepositoryImpl(this.dataSource);
 

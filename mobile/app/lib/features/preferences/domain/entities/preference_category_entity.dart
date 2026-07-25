@@ -18,8 +18,5 @@ class PreferenceFilterEntity {
   final String? searchQuery;
   final String? categoryId;
 
-  const PreferenceFilterEntity({
-    this.searchQuery,
-    this.categoryId,
-  });
+  const PreferenceFilterEntity({this.searchQuery, this.categoryId});
 }

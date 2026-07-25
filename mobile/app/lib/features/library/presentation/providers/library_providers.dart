@@ -1,17 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+import '../../data/datasources/library_data_source.dart';
 import '../../data/datasources/mock_library_data_source.dart';
+import '../../data/datasources/firestore_library_data_source.dart';
 import '../../data/repositories/library_repository_impl.dart';
 import '../../domain/repositories/library_repository.dart';
 import '../../domain/usecases/library_usecases.dart';
 import '../../domain/entities/library_filter_entity.dart';
 import 'library_state.dart';
 
-final mockLibraryDataSourceProvider = Provider(
-  (ref) => MockLibraryDataSource(),
-);
+final libraryDataSourceProvider = Provider<LibraryDataSource>((ref) {
+  final isDev = ref.watch(environmentConfigurationProvider).isDev;
+  if (isDev) {
+    return MockLibraryDataSource();
+  }
+  return FirestoreLibraryDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final libraryRepositoryProvider = Provider<LibraryRepository>((ref) {
-  return LibraryRepositoryImpl(ref.watch(mockLibraryDataSourceProvider));
+  return LibraryRepositoryImpl(ref.watch(libraryDataSourceProvider));
 });
 
 final getBookmarksUseCaseProvider = Provider(

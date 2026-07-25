@@ -13,22 +13,55 @@ import '../../domain/entities/reading_preference_entity.dart';
 import '../../domain/entities/download_preference_entity.dart';
 import 'preferences_state.dart';
 
-final mockPreferenceDataSourceProvider = Provider((ref) => MockPreferenceDataSource());
+final mockPreferenceDataSourceProvider = Provider(
+  (ref) => MockPreferenceDataSource(),
+);
 
 final preferenceRepositoryProvider = Provider<PreferenceRepository>((ref) {
   return PreferenceRepositoryImpl(ref.watch(mockPreferenceDataSourceProvider));
 });
 
-final getPreferencesUseCaseProvider = Provider((ref) => GetPreferencesUseCase(ref.watch(preferenceRepositoryProvider)));
-final updateAppearancePreferenceUseCaseProvider = Provider((ref) => UpdateAppearancePreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updateLanguagePreferenceUseCaseProvider = Provider((ref) => UpdateLanguagePreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updateAccessibilityPreferenceUseCaseProvider = Provider((ref) => UpdateAccessibilityPreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updateNotificationPreferenceUseCaseProvider = Provider((ref) => UpdateNotificationPreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updatePrivacyPreferenceUseCaseProvider = Provider((ref) => UpdatePrivacyPreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updatePlaybackPreferenceUseCaseProvider = Provider((ref) => UpdatePlaybackPreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updateReadingPreferenceUseCaseProvider = Provider((ref) => UpdateReadingPreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final updateDownloadPreferenceUseCaseProvider = Provider((ref) => UpdateDownloadPreferenceUseCase(ref.watch(preferenceRepositoryProvider)));
-final resetPreferencesUseCaseProvider = Provider((ref) => ResetPreferencesUseCase(ref.watch(preferenceRepositoryProvider)));
+final getPreferencesUseCaseProvider = Provider(
+  (ref) => GetPreferencesUseCase(ref.watch(preferenceRepositoryProvider)),
+);
+final updateAppearancePreferenceUseCaseProvider = Provider(
+  (ref) => UpdateAppearancePreferenceUseCase(
+    ref.watch(preferenceRepositoryProvider),
+  ),
+);
+final updateLanguagePreferenceUseCaseProvider = Provider(
+  (ref) =>
+      UpdateLanguagePreferenceUseCase(ref.watch(preferenceRepositoryProvider)),
+);
+final updateAccessibilityPreferenceUseCaseProvider = Provider(
+  (ref) => UpdateAccessibilityPreferenceUseCase(
+    ref.watch(preferenceRepositoryProvider),
+  ),
+);
+final updateNotificationPreferenceUseCaseProvider = Provider(
+  (ref) => UpdateNotificationPreferenceUseCase(
+    ref.watch(preferenceRepositoryProvider),
+  ),
+);
+final updatePrivacyPreferenceUseCaseProvider = Provider(
+  (ref) =>
+      UpdatePrivacyPreferenceUseCase(ref.watch(preferenceRepositoryProvider)),
+);
+final updatePlaybackPreferenceUseCaseProvider = Provider(
+  (ref) =>
+      UpdatePlaybackPreferenceUseCase(ref.watch(preferenceRepositoryProvider)),
+);
+final updateReadingPreferenceUseCaseProvider = Provider(
+  (ref) =>
+      UpdateReadingPreferenceUseCase(ref.watch(preferenceRepositoryProvider)),
+);
+final updateDownloadPreferenceUseCaseProvider = Provider(
+  (ref) =>
+      UpdateDownloadPreferenceUseCase(ref.watch(preferenceRepositoryProvider)),
+);
+final resetPreferencesUseCaseProvider = Provider(
+  (ref) => ResetPreferencesUseCase(ref.watch(preferenceRepositoryProvider)),
+);
 
 class PreferencesNotifier extends Notifier<PreferencesState> {
   bool _mounted = true;
@@ -52,10 +85,7 @@ class PreferencesNotifier extends Notifier<PreferencesState> {
 
       if (res.isError) throw Exception(res.error);
 
-      state = state.copyWith(
-        isLoading: false,
-        preferences: res.data,
-      );
+      state = state.copyWith(isLoading: false, preferences: res.data);
     } catch (e) {
       if (_mounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
@@ -109,4 +139,7 @@ class PreferencesNotifier extends Notifier<PreferencesState> {
   }
 }
 
-final preferencesProvider = NotifierProvider<PreferencesNotifier, PreferencesState>(PreferencesNotifier.new);
+final preferencesProvider =
+    NotifierProvider<PreferencesNotifier, PreferencesState>(
+      PreferencesNotifier.new,
+    );

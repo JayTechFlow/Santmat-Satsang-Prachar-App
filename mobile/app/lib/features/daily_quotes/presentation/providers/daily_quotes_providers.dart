@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+import '../../data/datasources/daily_quote_data_source.dart';
 import '../../data/datasources/mock_daily_quote_data_source.dart';
+import '../../data/datasources/firestore_daily_quote_data_source.dart';
 import '../../data/repositories/daily_quote_repository_impl.dart';
 import '../../domain/repositories/daily_quote_repository.dart';
 import '../../domain/usecases/daily_quote_usecases.dart';
@@ -10,12 +13,16 @@ import '../../domain/entities/quote_category_entity.dart';
 import '../../domain/entities/quote_author_entity.dart';
 import 'daily_quotes_state.dart';
 
-final mockDailyQuoteDataSourceProvider = Provider(
-  (ref) => MockDailyQuoteDataSource(),
-);
+final dailyQuoteDataSourceProvider = Provider<DailyQuoteDataSource>((ref) {
+  final isDev = ref.watch(environmentConfigurationProvider).isDev;
+  if (isDev) {
+    return MockDailyQuoteDataSource();
+  }
+  return FirestoreDailyQuoteDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final dailyQuoteRepositoryProvider = Provider<DailyQuoteRepository>((ref) {
-  return DailyQuoteRepositoryImpl(ref.watch(mockDailyQuoteDataSourceProvider));
+  return DailyQuoteRepositoryImpl(ref.watch(dailyQuoteDataSourceProvider));
 });
 
 final getTodayQuoteUseCaseProvider = Provider(

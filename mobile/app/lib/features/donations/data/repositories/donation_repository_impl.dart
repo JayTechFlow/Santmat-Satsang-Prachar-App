@@ -6,10 +6,10 @@ import '../../domain/entities/donation_preference_entity.dart';
 import '../../domain/entities/donation_filter_entity.dart';
 import '../../domain/entities/donation_entity.dart';
 import '../../domain/repositories/donation_repository.dart';
-import '../datasources/mock_donation_data_source.dart';
+import '../datasources/donation_data_source.dart';
 
 class DonationRepositoryImpl implements DonationRepository {
-  final MockDonationDataSource dataSource;
+  final DonationDataSource dataSource;
 
   DonationRepositoryImpl(this.dataSource);
 

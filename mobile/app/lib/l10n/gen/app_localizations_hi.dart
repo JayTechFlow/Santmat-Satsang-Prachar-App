@@ -212,4 +212,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get library => 'संग्रह';
+
+  @override
+  String get settings => 'सेटिंग्स';
 }

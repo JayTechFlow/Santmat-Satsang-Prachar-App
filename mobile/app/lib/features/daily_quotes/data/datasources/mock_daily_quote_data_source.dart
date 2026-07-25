@@ -4,8 +4,9 @@ import '../../domain/entities/quote_author_entity.dart';
 import '../../domain/entities/quote_filter_entity.dart';
 import '../../domain/entities/favorite_quote_entity.dart';
 import '../../domain/entities/quote_history_entity.dart';
+import 'daily_quote_data_source.dart';
 
-class MockDailyQuoteDataSource {
+class MockDailyQuoteDataSource implements DailyQuoteDataSource {
   final List<QuoteCategoryEntity> _categories = [
     const QuoteCategoryEntity(
       id: 'c1',

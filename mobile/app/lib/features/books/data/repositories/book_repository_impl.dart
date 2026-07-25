@@ -6,10 +6,10 @@ import '../../domain/entities/book_filter_entity.dart';
 import '../../domain/entities/book_bookmark_entity.dart';
 import '../../domain/entities/reading_progress_entity.dart';
 import '../../domain/repositories/book_repository.dart';
-import '../datasources/mock_book_data_source.dart';
+import '../datasources/book_data_source.dart';
 
 class BookRepositoryImpl implements BookRepository {
-  final MockBookDataSource dataSource;
+  final BookDataSource dataSource;
 
   BookRepositoryImpl(this.dataSource);
 

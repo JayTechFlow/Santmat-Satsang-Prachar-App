@@ -3,10 +3,10 @@ import '../../domain/entities/satsang_entity.dart';
 import '../../domain/entities/satsang_filter_entity.dart';
 import '../../domain/entities/satsang_category_entity.dart';
 import '../../domain/repositories/satsang_repository.dart';
-import '../datasources/mock_satsang_data_source.dart';
+import '../datasources/satsang_data_source.dart';
 
 class SatsangRepositoryImpl implements SatsangRepository {
-  final MockSatsangDataSource _dataSource;
+  final SatsangDataSource _dataSource;
 
   SatsangRepositoryImpl(this._dataSource);
 

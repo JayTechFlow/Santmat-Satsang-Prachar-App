@@ -5,8 +5,9 @@ import '../../domain/entities/donation_receipt_entity.dart';
 import '../../domain/entities/donation_history_entity.dart';
 import '../../domain/entities/donation_preference_entity.dart';
 import '../../domain/entities/donation_filter_entity.dart';
+import 'donation_data_source.dart';
 
-class MockDonationDataSource {
+class MockDonationDataSource implements DonationDataSource {
   final List<DonationCategoryEntity> _categories = [
     const DonationCategoryEntity(id: 'c1', name: 'Ashram Construction'),
     const DonationCategoryEntity(

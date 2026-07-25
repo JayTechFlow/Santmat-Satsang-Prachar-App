@@ -3,8 +3,9 @@ import '../../domain/entities/download_filter_entity.dart';
 import '../../domain/entities/offline_content_entity.dart';
 import '../../domain/entities/storage_statistics_entity.dart';
 import '../../domain/entities/download_category_entity.dart';
+import 'download_data_source.dart';
 
-class MockDownloadDataSource {
+class MockDownloadDataSource implements DownloadDataSource {
   final List<DownloadCategoryEntity> _categories = [
     const DownloadCategoryEntity(id: 'c1', name: 'Satsang'),
     const DownloadCategoryEntity(id: 'c2', name: 'Audio'),

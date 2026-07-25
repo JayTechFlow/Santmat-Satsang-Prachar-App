@@ -7,7 +7,7 @@ void main() {
   test('BooksHomeNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockBookDataSourceProvider.overrideWithValue(MockBookDataSource()),
+        bookDataSourceProvider.overrideWithValue(MockBookDataSource()),
       ],
     );
     addTearDown(container.dispose);

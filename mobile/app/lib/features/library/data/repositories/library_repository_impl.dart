@@ -5,10 +5,10 @@ import '../../domain/entities/favorite_entity.dart';
 import '../../domain/entities/history_entity.dart';
 import '../../domain/entities/recent_activity_entity.dart';
 import '../../domain/repositories/library_repository.dart';
-import '../datasources/mock_library_data_source.dart';
+import '../datasources/library_data_source.dart';
 
 class LibraryRepositoryImpl implements LibraryRepository {
-  final MockLibraryDataSource dataSource;
+  final LibraryDataSource dataSource;
 
   LibraryRepositoryImpl(this.dataSource);
 

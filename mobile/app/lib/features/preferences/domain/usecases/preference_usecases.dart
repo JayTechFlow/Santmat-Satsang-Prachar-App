@@ -19,49 +19,57 @@ class GetPreferencesUseCase {
 class UpdateAppearancePreferenceUseCase {
   final PreferenceRepository repository;
   UpdateAppearancePreferenceUseCase(this.repository);
-  Future<Result<void>> call(AppearancePreferenceEntity pref) => repository.updateAppearancePreference(pref);
+  Future<Result<void>> call(AppearancePreferenceEntity pref) =>
+      repository.updateAppearancePreference(pref);
 }
 
 class UpdateLanguagePreferenceUseCase {
   final PreferenceRepository repository;
   UpdateLanguagePreferenceUseCase(this.repository);
-  Future<Result<void>> call(LanguagePreferenceEntity pref) => repository.updateLanguagePreference(pref);
+  Future<Result<void>> call(LanguagePreferenceEntity pref) =>
+      repository.updateLanguagePreference(pref);
 }
 
 class UpdateAccessibilityPreferenceUseCase {
   final PreferenceRepository repository;
   UpdateAccessibilityPreferenceUseCase(this.repository);
-  Future<Result<void>> call(AccessibilityPreferenceEntity pref) => repository.updateAccessibilityPreference(pref);
+  Future<Result<void>> call(AccessibilityPreferenceEntity pref) =>
+      repository.updateAccessibilityPreference(pref);
 }
 
 class UpdateNotificationPreferenceUseCase {
   final PreferenceRepository repository;
   UpdateNotificationPreferenceUseCase(this.repository);
-  Future<Result<void>> call(NotificationPreferenceEntity pref) => repository.updateNotificationPreference(pref);
+  Future<Result<void>> call(NotificationPreferenceEntity pref) =>
+      repository.updateNotificationPreference(pref);
 }
 
 class UpdatePrivacyPreferenceUseCase {
   final PreferenceRepository repository;
   UpdatePrivacyPreferenceUseCase(this.repository);
-  Future<Result<void>> call(PrivacyPreferenceEntity pref) => repository.updatePrivacyPreference(pref);
+  Future<Result<void>> call(PrivacyPreferenceEntity pref) =>
+      repository.updatePrivacyPreference(pref);
 }
 
 class UpdatePlaybackPreferenceUseCase {
   final PreferenceRepository repository;
   UpdatePlaybackPreferenceUseCase(this.repository);
-  Future<Result<void>> call(PlaybackPreferenceEntity pref) => repository.updatePlaybackPreference(pref);
+  Future<Result<void>> call(PlaybackPreferenceEntity pref) =>
+      repository.updatePlaybackPreference(pref);
 }
 
 class UpdateReadingPreferenceUseCase {
   final PreferenceRepository repository;
   UpdateReadingPreferenceUseCase(this.repository);
-  Future<Result<void>> call(ReadingPreferenceEntity pref) => repository.updateReadingPreference(pref);
+  Future<Result<void>> call(ReadingPreferenceEntity pref) =>
+      repository.updateReadingPreference(pref);
 }
 
 class UpdateDownloadPreferenceUseCase {
   final PreferenceRepository repository;
   UpdateDownloadPreferenceUseCase(this.repository);
-  Future<Result<void>> call(DownloadPreferenceEntity pref) => repository.updateDownloadPreference(pref);
+  Future<Result<void>> call(DownloadPreferenceEntity pref) =>
+      repository.updateDownloadPreference(pref);
 }
 
 class ResetPreferencesUseCase {
@@ -79,5 +87,6 @@ class ExportPreferencesUseCase {
 class ImportPreferencesUseCase {
   final PreferenceRepository repository;
   ImportPreferencesUseCase(this.repository);
-  Future<Result<void>> call(String jsonString) => repository.importPreferences(jsonString);
+  Future<Result<void>> call(String jsonString) =>
+      repository.importPreferences(jsonString);
 }

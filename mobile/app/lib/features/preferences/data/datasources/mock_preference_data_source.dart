@@ -83,7 +83,9 @@ class MockPreferenceDataSource {
     return _preferences;
   }
 
-  Future<void> updateAppearancePreference(AppearancePreferenceEntity pref) async {
+  Future<void> updateAppearancePreference(
+    AppearancePreferenceEntity pref,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(appearance: pref);
   }
@@ -93,12 +95,16 @@ class MockPreferenceDataSource {
     _preferences = _preferences.copyWith(language: pref);
   }
 
-  Future<void> updateAccessibilityPreference(AccessibilityPreferenceEntity pref) async {
+  Future<void> updateAccessibilityPreference(
+    AccessibilityPreferenceEntity pref,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(accessibility: pref);
   }
 
-  Future<void> updateNotificationPreference(NotificationPreferenceEntity pref) async {
+  Future<void> updateNotificationPreference(
+    NotificationPreferenceEntity pref,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(notification: pref);
   }

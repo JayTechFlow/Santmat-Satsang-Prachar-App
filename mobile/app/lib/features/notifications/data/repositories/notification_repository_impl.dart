@@ -3,10 +3,10 @@ import '../../domain/entities/notification_entity.dart';
 import '../../domain/entities/notification_filter_entity.dart';
 import '../../domain/entities/notification_preference_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
-import '../datasources/mock_notification_data_source.dart';
+import '../datasources/notification_data_source.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
-  final MockNotificationDataSource dataSource;
+  final NotificationDataSource dataSource;
 
   NotificationRepositoryImpl(this.dataSource);
 

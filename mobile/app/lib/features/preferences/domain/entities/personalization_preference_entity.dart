@@ -19,8 +19,11 @@ class PersonalizationPreferenceEntity {
   }) {
     return PersonalizationPreferenceEntity(
       favoriteCategories: favoriteCategories ?? this.favoriteCategories,
-      preferredContentTypes: preferredContentTypes ?? this.preferredContentTypes,
-      enablePersonalizedRecommendations: enablePersonalizedRecommendations ?? this.enablePersonalizedRecommendations,
+      preferredContentTypes:
+          preferredContentTypes ?? this.preferredContentTypes,
+      enablePersonalizedRecommendations:
+          enablePersonalizedRecommendations ??
+          this.enablePersonalizedRecommendations,
       dashboardLayout: dashboardLayout ?? this.dashboardLayout,
     );
   }

@@ -27,7 +27,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updateAppearancePreference(AppearancePreferenceEntity pref) async {
+  Future<Result<void>> updateAppearancePreference(
+    AppearancePreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updateAppearancePreference(pref);
       return const Result.success(null);
@@ -37,7 +39,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updateLanguagePreference(LanguagePreferenceEntity pref) async {
+  Future<Result<void>> updateLanguagePreference(
+    LanguagePreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updateLanguagePreference(pref);
       return const Result.success(null);
@@ -47,7 +51,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updateAccessibilityPreference(AccessibilityPreferenceEntity pref) async {
+  Future<Result<void>> updateAccessibilityPreference(
+    AccessibilityPreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updateAccessibilityPreference(pref);
       return const Result.success(null);
@@ -57,7 +63,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updateNotificationPreference(NotificationPreferenceEntity pref) async {
+  Future<Result<void>> updateNotificationPreference(
+    NotificationPreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updateNotificationPreference(pref);
       return const Result.success(null);
@@ -67,7 +75,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updatePrivacyPreference(PrivacyPreferenceEntity pref) async {
+  Future<Result<void>> updatePrivacyPreference(
+    PrivacyPreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updatePrivacyPreference(pref);
       return const Result.success(null);
@@ -77,7 +87,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updatePlaybackPreference(PlaybackPreferenceEntity pref) async {
+  Future<Result<void>> updatePlaybackPreference(
+    PlaybackPreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updatePlaybackPreference(pref);
       return const Result.success(null);
@@ -87,7 +99,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updateReadingPreference(ReadingPreferenceEntity pref) async {
+  Future<Result<void>> updateReadingPreference(
+    ReadingPreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updateReadingPreference(pref);
       return const Result.success(null);
@@ -97,7 +111,9 @@ class PreferenceRepositoryImpl implements PreferenceRepository {
   }
 
   @override
-  Future<Result<void>> updateDownloadPreference(DownloadPreferenceEntity pref) async {
+  Future<Result<void>> updateDownloadPreference(
+    DownloadPreferenceEntity pref,
+  ) async {
     try {
       await dataSource.updateDownloadPreference(pref);
       return const Result.success(null);

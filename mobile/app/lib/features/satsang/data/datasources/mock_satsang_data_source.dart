@@ -3,7 +3,9 @@ import '../../domain/entities/satsang_category_entity.dart';
 import '../../domain/entities/speaker_entity.dart';
 import '../../domain/entities/satsang_filter_entity.dart';
 
-class MockSatsangDataSource {
+import 'satsang_data_source.dart';
+
+class MockSatsangDataSource implements SatsangDataSource {
   final List<SatsangCategoryEntity> _categories = const [
     SatsangCategoryEntity(id: 'c1', name: 'Meditation'),
     SatsangCategoryEntity(id: 'c2', name: 'Philosophy'),

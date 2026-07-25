@@ -4,7 +4,9 @@ import '../../domain/entities/audio_filter_entity.dart';
 import '../../domain/entities/recently_played_entity.dart';
 import '../../domain/entities/favorite_audio_entity.dart';
 
-class MockAudioDataSource {
+import 'audio_data_source.dart';
+
+class MockAudioDataSource implements AudioDataSource {
   final List<AudioCategoryEntity> _categories = [
     const AudioCategoryEntity(
       id: 'c1',

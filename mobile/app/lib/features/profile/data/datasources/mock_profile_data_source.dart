@@ -3,7 +3,9 @@ import '../../domain/entities/user_preference_entity.dart';
 import '../../domain/entities/user_statistics_entity.dart';
 import '../../domain/entities/account_information_entity.dart';
 
-class MockProfileDataSource {
+import 'profile_data_source.dart';
+
+class MockProfileDataSource implements ProfileDataSource {
   UserProfileEntity _mockProfile = UserProfileEntity(
     id: 'user_123',
     name: 'Santmat Devotee',
