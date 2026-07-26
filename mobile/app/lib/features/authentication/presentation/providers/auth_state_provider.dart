@@ -1,14 +1,33 @@
+import 'package:flutter/foundation.dart'; // Added for kDebugMode
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/session_model.dart';
+import '../../domain/entities/user_entity.dart'; // Added for mock user
 import 'auth_providers.dart';
 import 'dart:developer' as developer;
+
+const bool _bypassAuth = bool.fromEnvironment('BYPASS_AUTH', defaultValue: true);
+bool get _shouldBypassAuth => kDebugMode && _bypassAuth;
 
 class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
   StreamSubscription? _authSubscription;
 
   @override
   AsyncValue<SessionModel> build() {
+    if (_shouldBypassAuth) {
+      developer.log('AUTH BYPASS ENABLED: Returning mock session');
+      return const AsyncValue.data(
+        SessionModel(
+          isFirstLaunch: false,
+          user: UserEntity(
+            id: 'dev_bypass_user',
+            displayName: 'Dev User',
+            isAnonymous: false,
+          ),
+        ),
+      );
+    }
+
     final repository = ref.read(authRepositoryProvider);
 
     _authSubscription = repository.authStateChanges.listen((user) {
@@ -25,6 +44,8 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
   }
 
   Future<void> checkSession() async {
+    if (_shouldBypassAuth) return;
+    
     developer.log('9. checkSession() entered');
     // Idempotency: Don't set loading if we already have a valid session to avoid UI flicker
     if (!state.hasValue && !state.isLoading) {
@@ -95,6 +116,10 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
   }
 
   Future<void> signOut() async {
+    if (_shouldBypassAuth) {
+      developer.log('AUTH BYPASS ENABLED: Skipping signOut');
+      return;
+    }
     state = const AsyncValue.loading();
     final useCase = ref.read(signOutUseCaseProvider);
     await useCase.call();
