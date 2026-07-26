@@ -31,11 +31,6 @@ class FirebaseAuthDataSource {
     final GoogleSignInAccount googleUser = await GoogleSignIn.instance
         .authenticate();
 
-    if (googleUser == null) {
-      developer.log('FLOW_TRACE: Google login cancelled by user');
-      throw Exception('Google login cancelled');
-    }
-
     developer.log('FLOW_TRACE: googleUser obtained: ${googleUser.email}');
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 

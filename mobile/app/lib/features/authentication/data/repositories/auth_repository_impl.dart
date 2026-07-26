@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/utils/result.dart';
 import '../../domain/entities/session_model.dart';
@@ -65,7 +66,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return Result.failure(Exception('Google sign in failed'));
     } catch (e) {
-      developer.log('FLOW_TRACE: AuthRepositoryImpl.signInWithGoogle error: $e');
+      developer.log(
+        'FLOW_TRACE: AuthRepositoryImpl.signInWithGoogle error: $e',
+      );
       return Result.failure(Exception(e.toString()));
     }
   }

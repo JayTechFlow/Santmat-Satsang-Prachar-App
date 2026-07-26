@@ -59,8 +59,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: refreshNotifier,
     redirect: (context, state) {
       final authState = ref.read(authStateProvider);
-      
-      developer.log('ROUTER_TRACE: redirect triggered. path=${state.uri.path}, isLoading=${authState.isLoading}, hasValue=${authState.hasValue}');
+
+      developer.log(
+        'ROUTER_TRACE: redirect triggered. path=${state.uri.path}, isLoading=${authState.isLoading}, hasValue=${authState.hasValue}',
+      );
 
       final isSplash = state.uri.path == '/splash';
       final isOnboarding = state.uri.path == '/onboarding';
@@ -86,7 +88,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final isFirstLaunch = session.isFirstLaunch;
       final isAuthenticated = session.isAuthenticated;
 
-      developer.log('ROUTER_TRACE: session data: isFirstLaunch=$isFirstLaunch, isAuthenticated=$isAuthenticated');
+      developer.log(
+        'ROUTER_TRACE: session data: isFirstLaunch=$isFirstLaunch, isAuthenticated=$isAuthenticated',
+      );
 
       if (isFirstLaunch) {
         if (!isOnboarding) {

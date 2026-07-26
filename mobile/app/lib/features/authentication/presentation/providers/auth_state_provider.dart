@@ -30,17 +30,19 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
     if (!state.hasValue && !state.isLoading) {
       state = const AsyncValue.loading();
     }
-    
+
     final useCase = ref.read(checkSessionUseCaseProvider);
     final result = await useCase.call();
     result.when(
       success: (session) {
-        developer.log('11. SessionModel values: isAuthenticated=${session.isAuthenticated}, isFirstLaunch=${session.isFirstLaunch}, user.uid=${session.user?.id}');
-        
+        developer.log(
+          '11. SessionModel values: isAuthenticated=${session.isAuthenticated}, isFirstLaunch=${session.isFirstLaunch}, user.uid=${session.user?.id}',
+        );
+
         // Idempotency: Only update state if the session actually changed
         final currentSession = state.value;
-        if (currentSession?.isAuthenticated != session.isAuthenticated || 
-            currentSession?.isFirstLaunch != session.isFirstLaunch || 
+        if (currentSession?.isAuthenticated != session.isAuthenticated ||
+            currentSession?.isFirstLaunch != session.isFirstLaunch ||
             currentSession?.user?.id != session.user?.id) {
           state = AsyncValue.data(session);
         } else if (state.isLoading) {
@@ -60,7 +62,7 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
     final useCase = ref.read(completeOnboardingUseCaseProvider);
     final result = await useCase.call();
     if (result.isSuccess) {
-      await checkSession(); 
+      await checkSession();
     }
   }
 
@@ -69,7 +71,7 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
     state = const AsyncValue.loading();
     final useCase = ref.read(signInWithGoogleUseCaseProvider);
     final result = await useCase.call();
-    
+
     if (result.isSuccess) {
       // Synchronization step: ensure state is correctly mapped if stream missed it or was delayed
       await checkSession();
@@ -83,7 +85,7 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
     state = const AsyncValue.loading();
     final useCase = ref.read(signInAnonymouslyUseCaseProvider);
     final result = await useCase.call();
-    
+
     if (result.isSuccess) {
       // Synchronization step: ensure state is correctly mapped if stream missed it or was delayed
       await checkSession();

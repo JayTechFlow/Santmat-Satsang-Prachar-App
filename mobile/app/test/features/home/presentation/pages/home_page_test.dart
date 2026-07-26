@@ -77,6 +77,6 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
 
     // Verify custom sections rendered (since list is empty, GreetingCard should be there)
-    expect(find.textContaining('Jai Guru'), findsOneWidget);
+    expect(find.textContaining('जय गुरुदेव'), findsOneWidget);
   });
 }

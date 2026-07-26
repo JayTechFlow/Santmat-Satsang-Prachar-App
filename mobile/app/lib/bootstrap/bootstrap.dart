@@ -15,11 +15,14 @@ Future<void> bootstrap(Widget Function() builder) async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-      
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+
       // Initialize Google Sign-In exactly once as required by google_sign_in v7.2.0
       await GoogleSignIn.instance.initialize(
-        serverClientId: '488234518159-n8slcs9rk9759g69dq0av83gml8214jq.apps.googleusercontent.com',
+        serverClientId:
+            '488234518159-n8slcs9rk9759g69dq0av83gml8214jq.apps.googleusercontent.com',
       );
 
       // Initialize core services
