@@ -66,21 +66,25 @@ class MockSatsangDataSource implements SatsangDataSource {
     ),
   ];
 
+  @override
   Future<List<SatsangEntity>> getLatestSatsangs() async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _satsangs.where((s) => s.isRecentlyAdded).toList();
   }
 
+  @override
   Future<List<SatsangEntity>> getFeaturedSatsangs() async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _satsangs.where((s) => s.isFeatured).toList();
   }
 
+  @override
   Future<List<SatsangEntity>> getPopularSatsangs() async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _satsangs.where((s) => s.isPopular).toList();
   }
 
+  @override
   Future<SatsangEntity> getSatsangDetails(String id) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _satsangs.firstWhere(
@@ -89,6 +93,7 @@ class MockSatsangDataSource implements SatsangDataSource {
     );
   }
 
+  @override
   Future<List<SatsangEntity>> searchSatsangs(String query) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final q = query.toLowerCase();
@@ -99,6 +104,7 @@ class MockSatsangDataSource implements SatsangDataSource {
     }).toList();
   }
 
+  @override
   Future<List<SatsangEntity>> filterSatsangs(SatsangFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _satsangs.where((s) {
@@ -128,6 +134,7 @@ class MockSatsangDataSource implements SatsangDataSource {
     }).toList();
   }
 
+  @override
   Future<List<SatsangCategoryEntity>> getCategories() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _categories;

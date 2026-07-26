@@ -15,5 +15,9 @@ abstract class BookDataSource {
   Future<List<BookBookmarkEntity>> getBookmarks();
   Future<bool> toggleBookmark(String bookId, int pageNumber);
   Future<List<ReadingProgressEntity>> getReadingHistory();
-  Future<void> updateReadingProgress(String bookId, int pageNumber, double percentage);
+  Future<void> updateReadingProgress(
+    String bookId,
+    int pageNumber,
+    double percentage,
+  );
 }

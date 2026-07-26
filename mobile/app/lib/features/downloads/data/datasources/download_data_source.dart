@@ -5,7 +5,13 @@ import '../../domain/entities/storage_statistics_entity.dart';
 
 abstract class DownloadDataSource {
   Future<List<DownloadEntity>> getDownloads(DownloadFilterEntity filter);
-  Future<void> startDownload(String remoteUrl, String title, String contentType, String categoryId, String? thumbnail);
+  Future<void> startDownload(
+    String remoteUrl,
+    String title,
+    String contentType,
+    String categoryId,
+    String? thumbnail,
+  );
   Future<void> pauseDownload(String downloadId);
   Future<void> resumeDownload(String downloadId);
   Future<void> cancelDownload(String downloadId);

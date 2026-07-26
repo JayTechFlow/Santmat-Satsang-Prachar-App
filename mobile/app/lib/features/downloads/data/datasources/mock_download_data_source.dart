@@ -86,6 +86,7 @@ class MockDownloadDataSource implements DownloadDataSource {
     );
   }
 
+  @override
   Future<List<DownloadEntity>> getDownloads(DownloadFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 300));
     var results = List<DownloadEntity>.from(_downloads);
@@ -135,6 +136,7 @@ class MockDownloadDataSource implements DownloadDataSource {
     return results;
   }
 
+  @override
   Future<void> startDownload(
     String remoteUrl,
     String title,
@@ -163,6 +165,7 @@ class MockDownloadDataSource implements DownloadDataSource {
     _downloads.insert(0, newDownload);
   }
 
+  @override
   Future<void> pauseDownload(String downloadId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final index = _downloads.indexWhere((d) => d.id == downloadId);
@@ -185,6 +188,7 @@ class MockDownloadDataSource implements DownloadDataSource {
     }
   }
 
+  @override
   Future<void> resumeDownload(String downloadId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final index = _downloads.indexWhere((d) => d.id == downloadId);
@@ -207,26 +211,31 @@ class MockDownloadDataSource implements DownloadDataSource {
     }
   }
 
+  @override
   Future<void> cancelDownload(String downloadId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _downloads.removeWhere((d) => d.id == downloadId);
   }
 
+  @override
   Future<void> deleteDownload(String downloadId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _downloads.removeWhere((d) => d.id == downloadId);
   }
 
+  @override
   Future<void> retryDownload(String downloadId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     await resumeDownload(downloadId);
   }
 
+  @override
   Future<void> clearDownloads() async {
     await Future.delayed(const Duration(milliseconds: 200));
     _downloads.clear();
   }
 
+  @override
   Future<List<OfflineContentEntity>> getOfflineContent() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _downloads.where((d) => d.isCompleted).map((d) {
@@ -239,6 +248,7 @@ class MockDownloadDataSource implements DownloadDataSource {
     }).toList();
   }
 
+  @override
   Future<StorageStatisticsEntity> getStorageStatistics() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _storageStats;

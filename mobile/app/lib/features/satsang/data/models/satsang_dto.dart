@@ -110,10 +110,7 @@ class SatsangDto {
         photoUrl: speakerPhotoUrl,
         bio: speakerBio,
       ),
-      category: SatsangCategoryEntity(
-        id: categoryId,
-        name: categoryName,
-      ),
+      category: SatsangCategoryEntity(id: categoryId, name: categoryName),
       duration: Duration(minutes: durationMinutes),
       language: language,
       date: date,

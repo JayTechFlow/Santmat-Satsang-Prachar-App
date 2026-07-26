@@ -5,6 +5,7 @@ import '../../../../shared/widgets/primary_button.dart';
 import '../../../../shared/widgets/secondary_button.dart';
 import '../providers/auth_state_provider.dart';
 import '../../../../core/utils/extensions/context_extension.dart';
+import 'dart:developer' as developer;
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -37,6 +38,7 @@ class LoginPage extends ConsumerWidget {
                 text: 'Sign in with Google',
                 isLoading: isLoading,
                 onPressed: () {
+                  developer.log('1. Login button pressed (Google)');
                   ref.read(authStateProvider.notifier).signInWithGoogle();
                 },
               ),
@@ -48,6 +50,7 @@ class LoginPage extends ConsumerWidget {
                 text: 'Continue as Guest',
                 isLoading: isLoading,
                 onPressed: () {
+                  developer.log('1. Login button pressed (Guest)');
                   ref.read(authStateProvider.notifier).signInAnonymously();
                 },
               ),

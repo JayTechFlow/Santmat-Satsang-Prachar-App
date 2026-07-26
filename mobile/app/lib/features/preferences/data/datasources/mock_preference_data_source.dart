@@ -10,7 +10,9 @@ import '../../domain/entities/reading_preference_entity.dart';
 import '../../domain/entities/download_preference_entity.dart';
 import '../../domain/entities/personalization_preference_entity.dart';
 
-class MockPreferenceDataSource {
+import 'preference_data_source.dart';
+
+class MockPreferenceDataSource implements PreferenceDataSource {
   late UserPreferenceEntity _preferences;
 
   MockPreferenceDataSource() {
@@ -78,11 +80,13 @@ class MockPreferenceDataSource {
     );
   }
 
+  @override
   Future<UserPreferenceEntity> getPreferences() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _preferences;
   }
 
+  @override
   Future<void> updateAppearancePreference(
     AppearancePreferenceEntity pref,
   ) async {
@@ -90,11 +94,13 @@ class MockPreferenceDataSource {
     _preferences = _preferences.copyWith(appearance: pref);
   }
 
+  @override
   Future<void> updateLanguagePreference(LanguagePreferenceEntity pref) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(language: pref);
   }
 
+  @override
   Future<void> updateAccessibilityPreference(
     AccessibilityPreferenceEntity pref,
   ) async {
@@ -102,6 +108,7 @@ class MockPreferenceDataSource {
     _preferences = _preferences.copyWith(accessibility: pref);
   }
 
+  @override
   Future<void> updateNotificationPreference(
     NotificationPreferenceEntity pref,
   ) async {
@@ -109,31 +116,37 @@ class MockPreferenceDataSource {
     _preferences = _preferences.copyWith(notification: pref);
   }
 
+  @override
   Future<void> updatePrivacyPreference(PrivacyPreferenceEntity pref) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(privacy: pref);
   }
 
+  @override
   Future<void> updatePlaybackPreference(PlaybackPreferenceEntity pref) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(playback: pref);
   }
 
+  @override
   Future<void> updateReadingPreference(ReadingPreferenceEntity pref) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(reading: pref);
   }
 
+  @override
   Future<void> updateDownloadPreference(DownloadPreferenceEntity pref) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _preferences = _preferences.copyWith(download: pref);
   }
 
+  @override
   Future<void> resetPreferences() async {
     await Future.delayed(const Duration(milliseconds: 300));
     _initDefaults();
   }
 
+  @override
   Future<String> exportPreferences() async {
     await Future.delayed(const Duration(milliseconds: 200));
     // Simulated JSON export
@@ -144,6 +157,7 @@ class MockPreferenceDataSource {
     return jsonEncode(map);
   }
 
+  @override
   Future<void> importPreferences(String jsonString) async {
     await Future.delayed(const Duration(milliseconds: 200));
     // Simulated JSON import

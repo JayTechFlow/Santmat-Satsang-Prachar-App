@@ -16,17 +16,24 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
 
   FirestoreLibraryDataSource(this._firestoreService);
 
-  String get _libraryPath => '${FirestoreCollections.users}/$_userId/${FirestoreCollections.library}';
+  String get _libraryPath =>
+      '${FirestoreCollections.users}/$_userId/${FirestoreCollections.library}';
 
   @override
   Future<List<BookmarkEntity>> getBookmarks(LibraryFilterEntity filter) async {
     final snapshot = await _firestoreService.getCollection(_libraryPath);
     var bookmarks = snapshot.docs
-        .where((doc) => (doc.data() as Map<String, dynamic>).containsKey('bookmarkedDate'))
+        .where(
+          (doc) => (doc.data() as Map<String, dynamic>).containsKey(
+            'bookmarkedDate',
+          ),
+        )
         .map((doc) => BookmarkDto.fromFirestore(doc))
         .toList();
     if (filter.contentType != null) {
-      bookmarks = bookmarks.where((b) => b.item.contentType == filter.contentType).toList();
+      bookmarks = bookmarks
+          .where((b) => b.item.contentType == filter.contentType)
+          .toList();
     }
     return bookmarks;
   }
@@ -35,11 +42,16 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
   Future<List<FavoriteEntity>> getFavorites(LibraryFilterEntity filter) async {
     final snapshot = await _firestoreService.getCollection(_libraryPath);
     var favorites = snapshot.docs
-        .where((doc) => (doc.data() as Map<String, dynamic>).containsKey('favoritedDate'))
+        .where(
+          (doc) =>
+              (doc.data() as Map<String, dynamic>).containsKey('favoritedDate'),
+        )
         .map((doc) => FavoriteDto.fromFirestore(doc))
         .toList();
     if (filter.contentType != null) {
-      favorites = favorites.where((f) => f.item.contentType == filter.contentType).toList();
+      favorites = favorites
+          .where((f) => f.item.contentType == filter.contentType)
+          .toList();
     }
     return favorites;
   }
@@ -48,11 +60,16 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
   Future<List<HistoryEntity>> getHistory(LibraryFilterEntity filter) async {
     final snapshot = await _firestoreService.getCollection(_libraryPath);
     var history = snapshot.docs
-        .where((doc) => (doc.data() as Map<String, dynamic>).containsKey('accessedDate'))
+        .where(
+          (doc) =>
+              (doc.data() as Map<String, dynamic>).containsKey('accessedDate'),
+        )
         .map((doc) => HistoryDto.fromFirestore(doc))
         .toList();
     if (filter.contentType != null) {
-      history = history.where((h) => h.item.contentType == filter.contentType).toList();
+      history = history
+          .where((h) => h.item.contentType == filter.contentType)
+          .toList();
     }
     history.sort((a, b) => b.accessedDate.compareTo(a.accessedDate));
     return history;
@@ -61,12 +78,19 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
   @override
   Future<List<RecentActivityEntity>> getRecentActivities() async {
     final history = await getHistory(const LibraryFilterEntity());
-    return history.take(5).map((h) => RecentActivityDto(
-      id: h.id,
-      item: h.item,
-      activityDate: h.accessedDate,
-      activityType: h.item.contentType == 'book' ? 'read' : (h.item.contentType == 'audio' ? 'listened' : 'viewed'),
-    )).toList();
+    return history
+        .take(5)
+        .map(
+          (h) => RecentActivityDto(
+            id: h.id,
+            item: h.item,
+            activityDate: h.accessedDate,
+            activityType: h.item.contentType == 'book'
+                ? 'read'
+                : (h.item.contentType == 'audio' ? 'listened' : 'viewed'),
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -135,7 +159,11 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
   }
 
   @override
-  Future<void> addHistoryItem(String contentId, String contentType, double? progress) async {
+  Future<void> addHistoryItem(
+    String contentId,
+    String contentType,
+    double? progress,
+  ) async {
     final docId = '${contentId}_$contentType';
     await _firestoreService.setDocument(_libraryPath, docId, {
       'contentId': contentId,

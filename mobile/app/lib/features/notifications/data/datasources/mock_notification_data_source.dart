@@ -60,6 +60,7 @@ class MockNotificationDataSource implements NotificationDataSource {
     );
   }
 
+  @override
   Future<List<NotificationEntity>> getNotifications(
     NotificationFilterEntity filter,
   ) async {
@@ -87,11 +88,13 @@ class MockNotificationDataSource implements NotificationDataSource {
     return results;
   }
 
+  @override
   Future<int> getUnreadNotificationsCount() async {
     await Future.delayed(const Duration(milliseconds: 100));
     return _notifications.where((n) => !n.isRead).length;
   }
 
+  @override
   Future<void> markNotificationAsRead(String id) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final index = _notifications.indexWhere((n) => n.id == id);
@@ -100,6 +103,7 @@ class MockNotificationDataSource implements NotificationDataSource {
     }
   }
 
+  @override
   Future<void> markAllNotificationsAsRead() async {
     await Future.delayed(const Duration(milliseconds: 400));
     _notifications = _notifications
@@ -107,21 +111,25 @@ class MockNotificationDataSource implements NotificationDataSource {
         .toList();
   }
 
+  @override
   Future<void> deleteNotification(String id) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _notifications.removeWhere((n) => n.id == id);
   }
 
+  @override
   Future<void> clearNotifications() async {
     await Future.delayed(const Duration(milliseconds: 400));
     _notifications.clear();
   }
 
+  @override
   Future<NotificationPreferenceEntity> getNotificationPreferences() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _preferences;
   }
 
+  @override
   Future<void> updateNotificationPreferences(
     NotificationPreferenceEntity preferences,
   ) async {

@@ -65,21 +65,25 @@ class MockDailyQuoteDataSource implements DailyQuoteDataSource {
     });
   }
 
+  @override
   Future<DailyQuoteEntity> getTodayQuote() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _quotes.firstWhere((q) => q.isDaily, orElse: () => _quotes.first);
   }
 
+  @override
   Future<DailyQuoteEntity> getRandomQuote() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _quotes[DateTime.now().millisecond % _quotes.length];
   }
 
+  @override
   Future<List<DailyQuoteEntity>> getFeaturedQuotes() async {
     await Future.delayed(const Duration(milliseconds: 400));
     return _quotes.where((q) => q.isFeatured).toList();
   }
 
+  @override
   Future<List<DailyQuoteEntity>> searchQuotes(String query) async {
     await Future.delayed(const Duration(milliseconds: 400));
     final q = query.toLowerCase();
@@ -89,6 +93,7 @@ class MockDailyQuoteDataSource implements DailyQuoteDataSource {
     }).toList();
   }
 
+  @override
   Future<List<DailyQuoteEntity>> filterQuotes(QuoteFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return _quotes.where((q) {
@@ -111,16 +116,19 @@ class MockDailyQuoteDataSource implements DailyQuoteDataSource {
     }).toList();
   }
 
+  @override
   Future<List<QuoteCategoryEntity>> getCategories() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _categories;
   }
 
+  @override
   Future<List<QuoteAuthorEntity>> getAuthors() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _authors;
   }
 
+  @override
   Future<List<FavoriteQuoteEntity>> getFavoriteQuotes() async {
     await Future.delayed(const Duration(milliseconds: 300));
     if (_favorites.isEmpty && _quotes.length > 2) {
@@ -131,6 +139,7 @@ class MockDailyQuoteDataSource implements DailyQuoteDataSource {
     return _favorites;
   }
 
+  @override
   Future<bool> toggleFavoriteQuote(String quoteId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final index = _favorites.indexWhere((f) => f.quote.id == quoteId);
@@ -146,11 +155,13 @@ class MockDailyQuoteDataSource implements DailyQuoteDataSource {
     }
   }
 
+  @override
   Future<List<QuoteHistoryEntity>> getQuoteHistory() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _history;
   }
 
+  @override
   Future<void> addToHistory(String quoteId) async {
     await Future.delayed(const Duration(milliseconds: 100));
     final quote = _quotes.firstWhere((q) => q.id == quoteId);

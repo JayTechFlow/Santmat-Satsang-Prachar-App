@@ -4,10 +4,10 @@ import '../../domain/entities/search_filter_entity.dart';
 import '../../domain/entities/recent_search_entity.dart';
 import '../../domain/entities/search_suggestion_entity.dart';
 import '../../domain/repositories/search_repository.dart';
-import '../datasources/mock_search_data_source.dart';
+import '../datasources/search_data_source.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
-  final MockSearchDataSource dataSource;
+  final SearchDataSource dataSource;
 
   SearchRepositoryImpl(this.dataSource);
 

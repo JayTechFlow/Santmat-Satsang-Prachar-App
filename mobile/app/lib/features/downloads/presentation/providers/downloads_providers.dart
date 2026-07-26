@@ -7,12 +7,20 @@ import '../../domain/entities/download_filter_entity.dart';
 import '../../domain/entities/storage_statistics_entity.dart';
 import 'downloads_state.dart';
 
-final mockDownloadDataSourceProvider = Provider(
-  (ref) => MockDownloadDataSource(),
-);
+import '../../data/datasources/firestore_download_data_source.dart';
+import '../../data/datasources/download_data_source.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+
+final downloadDataSourceProvider = Provider<DownloadDataSource>((ref) {
+  final env = ref.watch(environmentConfigurationProvider);
+  if (env.isDev) {
+    return MockDownloadDataSource();
+  }
+  return FirestoreDownloadDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final downloadRepositoryProvider = Provider<DownloadRepository>((ref) {
-  return DownloadRepositoryImpl(ref.watch(mockDownloadDataSourceProvider));
+  return DownloadRepositoryImpl(ref.watch(downloadDataSourceProvider));
 });
 
 final getDownloadsUseCaseProvider = Provider(

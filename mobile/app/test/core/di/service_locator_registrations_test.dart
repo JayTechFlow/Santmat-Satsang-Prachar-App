@@ -16,7 +16,7 @@ import 'package:santmat_satsang_prachar/core/services/cloud_functions_service.da
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  
+
   test('DI registers EnvironmentConfiguration', () {
     final container = ProviderContainer();
     final config = container.read(environmentConfigurationProvider);

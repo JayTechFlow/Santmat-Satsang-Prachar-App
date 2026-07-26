@@ -5,8 +5,9 @@ import '../../domain/entities/event_speaker_entity.dart';
 import '../../domain/entities/event_schedule_entity.dart';
 import '../../domain/entities/event_registration_entity.dart';
 import '../../domain/entities/event_filter_entity.dart';
+import 'event_data_source.dart';
 
-class MockEventDataSource {
+class MockEventDataSource implements EventDataSource {
   final List<EventCategoryEntity> _categories = [
     const EventCategoryEntity(id: 'c1', name: 'Satsang Program'),
     const EventCategoryEntity(id: 'c2', name: 'Meditation Camp'),
@@ -73,21 +74,25 @@ class MockEventDataSource {
     });
   }
 
+  @override
   Future<List<EventEntity>> getUpcomingEvents() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _events.where((e) => e.isUpcoming).toList();
   }
 
+  @override
   Future<List<EventEntity>> getFeaturedEvents() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _events.where((e) => e.isFeatured).toList();
   }
 
+  @override
   Future<EventEntity> getEventDetails(String id) async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _events.firstWhere((e) => e.id == id);
   }
 
+  @override
   Future<List<EventEntity>> searchEvents(String query) async {
     await Future.delayed(const Duration(milliseconds: 400));
     final q = query.toLowerCase();
@@ -98,6 +103,7 @@ class MockEventDataSource {
     }).toList();
   }
 
+  @override
   Future<List<EventEntity>> filterEvents(EventFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return _events.where((e) {
@@ -124,6 +130,7 @@ class MockEventDataSource {
     }).toList();
   }
 
+  @override
   Future<EventRegistrationEntity> registerForEvent(String eventId) async {
     await Future.delayed(const Duration(milliseconds: 600));
     final event = _events.firstWhere((e) => e.id == eventId);
@@ -150,16 +157,20 @@ class MockEventDataSource {
     return reg;
   }
 
+  @override
   Future<void> cancelEventRegistration(String registrationId) async {
     await Future.delayed(const Duration(milliseconds: 500));
     _registrations.removeWhere((r) => r.id == registrationId);
   }
 
+  @override
   Future<List<EventRegistrationEntity>> getRegisteredEvents() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _registrations;
   }
 
+  @override
   Future<List<EventCategoryEntity>> getCategories() async => _categories;
+  @override
   Future<List<EventSpeakerEntity>> getSpeakers() async => _speakers;
 }

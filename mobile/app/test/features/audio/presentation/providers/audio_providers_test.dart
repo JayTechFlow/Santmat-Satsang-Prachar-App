@@ -8,7 +8,7 @@ void main() {
   test('AudioHomeNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockAudioDataSourceProvider.overrideWithValue(MockAudioDataSource()),
+        audioDataSourceProvider.overrideWithValue(MockAudioDataSource()),
       ],
     );
     addTearDown(container.dispose);

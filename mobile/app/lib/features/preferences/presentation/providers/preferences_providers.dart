@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+import '../../data/datasources/preference_data_source.dart';
 import '../../data/datasources/mock_preference_data_source.dart';
+import '../../data/datasources/firestore_preference_data_source.dart';
 import '../../data/repositories/preference_repository_impl.dart';
 import '../../domain/repositories/preference_repository.dart';
 import '../../domain/usecases/preference_usecases.dart';
@@ -13,12 +16,16 @@ import '../../domain/entities/reading_preference_entity.dart';
 import '../../domain/entities/download_preference_entity.dart';
 import 'preferences_state.dart';
 
-final mockPreferenceDataSourceProvider = Provider(
-  (ref) => MockPreferenceDataSource(),
-);
+final preferenceDataSourceProvider = Provider<PreferenceDataSource>((ref) {
+  final isDev = ref.watch(environmentConfigurationProvider).isDev;
+  if (isDev) {
+    return MockPreferenceDataSource();
+  }
+  return FirestorePreferenceDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final preferenceRepositoryProvider = Provider<PreferenceRepository>((ref) {
-  return PreferenceRepositoryImpl(ref.watch(mockPreferenceDataSourceProvider));
+  return PreferenceRepositoryImpl(ref.watch(preferenceDataSourceProvider));
 });
 
 final getPreferencesUseCaseProvider = Provider(

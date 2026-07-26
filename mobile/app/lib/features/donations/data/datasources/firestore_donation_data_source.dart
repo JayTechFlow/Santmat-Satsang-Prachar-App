@@ -16,8 +16,12 @@ class FirestoreDonationDataSource implements DonationDataSource {
   FirestoreDonationDataSource(this._firestoreService);
 
   @override
-  Future<List<DonationCampaignEntity>> getDonationCampaigns(DonationFilterEntity filter) async {
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.donations); // Assuming donations collection holds campaigns, or maybe there's a campaigns collection.
+  Future<List<DonationCampaignEntity>> getDonationCampaigns(
+    DonationFilterEntity filter,
+  ) async {
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.donations,
+    ); // Assuming donations collection holds campaigns, or maybe there's a campaigns collection.
     // Let's assume FirestoreCollections.donations holds campaigns for now, or we can use 'donation_campaigns'.
     // Wait, FirestoreCollections only has 'donations'. Let's use it for campaigns.
     var results = snapshot.docs
@@ -26,10 +30,14 @@ class FirestoreDonationDataSource implements DonationDataSource {
         .toList();
 
     if (filter.isFeatured != null) {
-      results = results.where((c) => c.isFeatured == filter.isFeatured).toList();
+      results = results
+          .where((c) => c.isFeatured == filter.isFeatured)
+          .toList();
     }
     if (filter.categoryId != null) {
-      results = results.where((c) => c.category.id == filter.categoryId).toList();
+      results = results
+          .where((c) => c.category.id == filter.categoryId)
+          .toList();
     }
 
     return results;
@@ -37,7 +45,10 @@ class FirestoreDonationDataSource implements DonationDataSource {
 
   @override
   Future<DonationCampaignEntity> getCampaignDetails(String id) async {
-    final doc = await _firestoreService.getDocument(FirestoreCollections.donations, id);
+    final doc = await _firestoreService.getDocument(
+      FirestoreCollections.donations,
+      id,
+    );
     return DonationCampaignDto.fromFirestore(doc);
   }
 
@@ -49,7 +60,11 @@ class FirestoreDonationDataSource implements DonationDataSource {
   }
 
   @override
-  Future<DonationEntity> createDonationIntent(String campaignId, double amount, String currency) async {
+  Future<DonationEntity> createDonationIntent(
+    String campaignId,
+    double amount,
+    String currency,
+  ) async {
     final intent = DonationEntity(
       id: 'don_${DateTime.now().millisecondsSinceEpoch}',
       campaignId: campaignId,
@@ -71,7 +86,9 @@ class FirestoreDonationDataSource implements DonationDataSource {
 
   @override
   Future<DonationReceiptEntity> getDonationReceipt(String receiptId) async {
-    throw UnimplementedError('getDonationReceipt not fully implemented for Firestore');
+    throw UnimplementedError(
+      'getDonationReceipt not fully implemented for Firestore',
+    );
   }
 
   @override
@@ -82,7 +99,10 @@ class FirestoreDonationDataSource implements DonationDataSource {
   @override
   Future<DonationPreferenceEntity> getDonationPreferences() async {
     try {
-      final doc = await _firestoreService.getDocument(FirestoreCollections.preferences, 'donations');
+      final doc = await _firestoreService.getDocument(
+        FirestoreCollections.preferences,
+        'donations',
+      );
       if (!doc.exists) {
         return const DonationPreferenceEntity(
           monthlyReminders: false,
@@ -109,23 +129,38 @@ class FirestoreDonationDataSource implements DonationDataSource {
   }
 
   @override
-  Future<void> updateDonationPreference(DonationPreferenceEntity preference) async {
+  Future<void> updateDonationPreference(
+    DonationPreferenceEntity preference,
+  ) async {
     final data = {
       'monthlyReminders': preference.monthlyReminders,
       'taxReceiptsEmails': preference.taxReceiptsEmails,
       'preferredCurrency': preference.preferredCurrency,
       'anonymousDonation': preference.anonymousDonation,
     };
-    
+
     try {
-      final doc = await _firestoreService.getDocument(FirestoreCollections.preferences, 'donations');
+      final doc = await _firestoreService.getDocument(
+        FirestoreCollections.preferences,
+        'donations',
+      );
       if (doc.exists) {
-        await _firestoreService.updateDocument(FirestoreCollections.preferences, 'donations', data);
+        await _firestoreService.updateDocument(
+          FirestoreCollections.preferences,
+          'donations',
+          data,
+        );
       } else {
-        await FirebaseFirestore.instance.collection(FirestoreCollections.preferences).doc('donations').set(data);
+        await FirebaseFirestore.instance
+            .collection(FirestoreCollections.preferences)
+            .doc('donations')
+            .set(data);
       }
     } catch (_) {
-      await FirebaseFirestore.instance.collection(FirestoreCollections.preferences).doc('donations').set(data);
+      await FirebaseFirestore.instance
+          .collection(FirestoreCollections.preferences)
+          .doc('donations')
+          .set(data);
     }
   }
 }

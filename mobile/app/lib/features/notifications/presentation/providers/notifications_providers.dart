@@ -20,9 +20,7 @@ final notificationDataSourceProvider = Provider<NotificationDataSource>((ref) {
 });
 
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
-  return NotificationRepositoryImpl(
-    ref.watch(notificationDataSourceProvider),
-  );
+  return NotificationRepositoryImpl(ref.watch(notificationDataSourceProvider));
 });
 
 final getNotificationsUseCaseProvider = Provider(

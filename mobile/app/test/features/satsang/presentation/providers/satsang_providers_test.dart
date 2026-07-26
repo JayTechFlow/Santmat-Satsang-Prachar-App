@@ -7,9 +7,7 @@ void main() {
   test('SatsangHomeNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockSatsangDataSourceProvider.overrideWithValue(
-          MockSatsangDataSource(),
-        ),
+        satsangDataSourceProvider.overrideWithValue(MockSatsangDataSource()),
       ],
     );
     addTearDown(container.dispose);

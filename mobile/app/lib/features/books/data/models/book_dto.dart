@@ -49,7 +49,7 @@ class BookDto {
 
   factory BookDto.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
-    
+
     final authorMap = data['author'] as Map<String, dynamic>? ?? {};
     final author = BookAuthorEntity(
       id: authorMap['id'] as String? ?? '',
@@ -84,9 +84,12 @@ class BookDto {
       category: category,
       language: data['language'] as String? ?? '',
       edition: data['edition'] as String? ?? '',
-      publicationDate: (data['publicationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      publicationDate:
+          (data['publicationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       pageCount: data['pageCount'] as int? ?? 0,
-      estimatedReadingTime: Duration(minutes: data['estimatedReadingTimeMinutes'] as int? ?? 0),
+      estimatedReadingTime: Duration(
+        minutes: data['estimatedReadingTimeMinutes'] as int? ?? 0,
+      ),
       coverImageUrl: data['coverImageUrl'] as String? ?? '',
       thumbnailUrl: data['thumbnailUrl'] as String? ?? '',
       tags: List<String>.from(data['tags'] ?? []),
@@ -125,11 +128,11 @@ class BookDto {
       'isFeatured': isFeatured,
       'isPopular': isPopular,
       'isRecentlyAdded': isRecentlyAdded,
-      'chapters': chapters.map((c) => {
-        'id': c.id,
-        'title': c.title,
-        'pageNumber': c.pageNumber,
-      }).toList(),
+      'chapters': chapters
+          .map(
+            (c) => {'id': c.id, 'title': c.title, 'pageNumber': c.pageNumber},
+          )
+          .toList(),
       'pdfUrlPlaceholder': pdfUrlPlaceholder,
     };
   }

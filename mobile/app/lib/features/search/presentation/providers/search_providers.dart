@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
+import '../../../../core/di/service_locator_registrations.dart';
+import '../../data/datasources/search_data_source.dart';
 import '../../data/datasources/mock_search_data_source.dart';
+import '../../data/datasources/firestore_search_data_source.dart';
 import '../../data/repositories/search_repository_impl.dart';
 import '../../domain/repositories/search_repository.dart';
 import '../../domain/usecases/search_usecases.dart';
@@ -8,10 +11,16 @@ import '../../domain/entities/search_filter_entity.dart';
 import '../../domain/entities/recent_search_entity.dart';
 import 'search_state.dart';
 
-final mockSearchDataSourceProvider = Provider((ref) => MockSearchDataSource());
+final searchDataSourceProvider = Provider<SearchDataSource>((ref) {
+  final isDev = ref.watch(environmentConfigurationProvider).isDev;
+  if (isDev) {
+    return MockSearchDataSource();
+  }
+  return FirestoreSearchDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final searchRepositoryProvider = Provider<SearchRepository>((ref) {
-  return SearchRepositoryImpl(ref.watch(mockSearchDataSourceProvider));
+  return SearchRepositoryImpl(ref.watch(searchDataSourceProvider));
 });
 
 final searchEverythingUseCaseProvider = Provider(

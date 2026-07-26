@@ -35,7 +35,8 @@ class LibraryItemDto extends LibraryItemEntity {
       thumbnail: data['thumbnail'] ?? '',
       category: data['category'] ?? '',
       author: data['author'],
-      createdDate: (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdDate:
+          (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastOpened: (data['lastOpened'] as Timestamp?)?.toDate(),
       isFavorite: data['isFavorite'] ?? false,
       isBookmarked: data['isBookmarked'] ?? false,
@@ -76,8 +77,11 @@ class BookmarkDto extends BookmarkEntity {
     final data = doc.data() as Map<String, dynamic>? ?? {};
     return BookmarkDto(
       id: doc.id,
-      item: LibraryItemDto.fromFirestore(doc), // In a real app we might reference
-      bookmarkedDate: (data['bookmarkedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      item: LibraryItemDto.fromFirestore(
+        doc,
+      ), // In a real app we might reference
+      bookmarkedDate:
+          (data['bookmarkedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
@@ -100,7 +104,8 @@ class FavoriteDto extends FavoriteEntity {
     return FavoriteDto(
       id: doc.id,
       item: LibraryItemDto.fromFirestore(doc),
-      favoritedDate: (data['favoritedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      favoritedDate:
+          (data['favoritedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
@@ -124,7 +129,8 @@ class HistoryDto extends HistoryEntity {
     return HistoryDto(
       id: doc.id,
       item: LibraryItemDto.fromFirestore(doc),
-      accessedDate: (data['accessedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      accessedDate:
+          (data['accessedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       sessionProgress: (data['sessionProgress'] as num?)?.toDouble(),
     );
   }
@@ -150,7 +156,8 @@ class RecentActivityDto extends RecentActivityEntity {
     return RecentActivityDto(
       id: doc.id,
       item: LibraryItemDto.fromFirestore(doc),
-      activityDate: (data['activityDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      activityDate:
+          (data['activityDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       activityType: data['activityType'] ?? '',
     );
   }

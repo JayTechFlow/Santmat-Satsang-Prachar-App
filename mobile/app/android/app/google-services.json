@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:488234518159:android:8b440fb731b0900b05d2fa",
+        "mobilesdk_app_id": "1:488234518159:android:bbbe7a1fde22751a05d2fa",
         "android_client_info": {
           "package_name": "com.santmat.santmat_satsang_prachar"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "488234518159-3rn9k2fua48ucgkmcemta8ss8ka971tr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.santmat.santmat_satsang_prachar",
+            "certificate_hash": "13934784293bd8dbd54e9b0adb95eb1fb671d807"
+          }
+        },
+        {
+          "client_id": "488234518159-n8slcs9rk9759g69dq0av83gml8214jq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCm8LxSLljkqwiqiXc-7047LRF_ep5baF8"
@@ -20,26 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:488234518159:android:2eebb801735938ed05d2fa",
-        "android_client_info": {
-          "package_name": "com.santmat.satsangprachar"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCm8LxSLljkqwiqiXc-7047LRF_ep5baF8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488234518159-n8slcs9rk9759g69dq0av83gml8214jq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "488234518159-3jv12pp3s2d3mm6558vo8ssdpf9np5iq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.santmat.santmatSatsangPrachar"
+              }
+            }
+          ]
         }
       }
     }

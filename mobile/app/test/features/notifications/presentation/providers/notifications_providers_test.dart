@@ -7,7 +7,7 @@ void main() {
   test('NotificationsNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockNotificationDataSourceProvider.overrideWithValue(
+        notificationDataSourceProvider.overrideWithValue(
           MockNotificationDataSource(),
         ),
       ],

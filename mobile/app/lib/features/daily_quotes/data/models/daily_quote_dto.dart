@@ -58,7 +58,8 @@ class QuoteDto {
       language: data['language'] as String? ?? '',
       reference: data['reference'] as String? ?? '',
       tags: List<String>.from(data['tags'] ?? []),
-      createdDate: (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdDate:
+          (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isFeatured: data['isFeatured'] as bool? ?? false,
       isDaily: data['isDaily'] as bool? ?? false,
       backgroundImageUrl: data['backgroundImageUrl'] as String? ?? '',

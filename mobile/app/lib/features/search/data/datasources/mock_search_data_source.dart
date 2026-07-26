@@ -3,7 +3,9 @@ import '../../domain/entities/recent_search_entity.dart';
 import '../../domain/entities/search_suggestion_entity.dart';
 import '../../domain/entities/search_filter_entity.dart';
 
-class MockSearchDataSource {
+import 'search_data_source.dart';
+
+class MockSearchDataSource implements SearchDataSource {
   late final List<SearchResultEntity> _mockData;
   final List<RecentSearchEntity> _recentSearches = [];
 
@@ -64,6 +66,7 @@ class MockSearchDataSource {
     ];
   }
 
+  @override
   Future<List<SearchResultEntity>> searchEverything(
     String query, {
     SearchFilterEntity? filter,
@@ -93,11 +96,13 @@ class MockSearchDataSource {
     }).toList();
   }
 
+  @override
   Future<List<RecentSearchEntity>> getRecentSearches() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _recentSearches;
   }
 
+  @override
   Future<void> saveRecentSearch(String query) async {
     await Future.delayed(const Duration(milliseconds: 100));
     final q = query.trim();
@@ -116,6 +121,7 @@ class MockSearchDataSource {
     }
   }
 
+  @override
   Future<void> deleteRecentSearch(String query) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _recentSearches.removeWhere(
@@ -123,11 +129,13 @@ class MockSearchDataSource {
     );
   }
 
+  @override
   Future<void> clearRecentSearches() async {
     await Future.delayed(const Duration(milliseconds: 100));
     _recentSearches.clear();
   }
 
+  @override
   Future<List<SearchSuggestionEntity>> getSearchSuggestions(
     String query,
   ) async {

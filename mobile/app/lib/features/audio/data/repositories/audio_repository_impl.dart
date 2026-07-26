@@ -25,7 +25,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<List<AudioEntity>>> getFeaturedAudio() async {
     try {
-      final res = await dataSource.getFeaturedAudio();
+      final res = await _dataSource.getFeaturedAudio();
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -35,7 +35,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<List<AudioEntity>>> getPopularAudio() async {
     try {
-      final res = await dataSource.getPopularAudio();
+      final res = await _dataSource.getPopularAudio();
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -45,7 +45,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<AudioEntity>> getAudioDetails(String id) async {
     try {
-      final res = await dataSource.getAudioDetails(id);
+      final res = await _dataSource.getAudioDetails(id);
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -55,7 +55,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<List<AudioEntity>>> searchAudio(String query) async {
     try {
-      final res = await dataSource.searchAudio(query);
+      final res = await _dataSource.searchAudio(query);
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -67,7 +67,7 @@ class AudioRepositoryImpl implements AudioRepository {
     AudioFilterEntity filter,
   ) async {
     try {
-      final res = await dataSource.filterAudio(filter);
+      final res = await _dataSource.filterAudio(filter);
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -77,7 +77,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<List<RecentlyPlayedEntity>>> getRecentlyPlayed() async {
     try {
-      final res = await dataSource.getRecentlyPlayed();
+      final res = await _dataSource.getRecentlyPlayed();
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -87,7 +87,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<List<FavoriteAudioEntity>>> getFavorites() async {
     try {
-      final res = await dataSource.getFavorites();
+      final res = await _dataSource.getFavorites();
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -97,7 +97,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<bool>> toggleFavoriteAudio(String audioId) async {
     try {
-      final res = await dataSource.toggleFavoriteAudio(audioId);
+      final res = await _dataSource.toggleFavoriteAudio(audioId);
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);
@@ -107,7 +107,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<Result<List<AudioCategoryEntity>>> getCategories() async {
     try {
-      final res = await dataSource.getCategories();
+      final res = await _dataSource.getCategories();
       return Result.success(res);
     } on Exception catch (e) {
       return Result.failure(e);

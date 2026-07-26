@@ -4,10 +4,10 @@ import '../../domain/entities/download_filter_entity.dart';
 import '../../domain/entities/offline_content_entity.dart';
 import '../../domain/entities/storage_statistics_entity.dart';
 import '../../domain/repositories/download_repository.dart';
-import '../datasources/mock_download_data_source.dart';
+import '../datasources/download_data_source.dart';
 
 class DownloadRepositoryImpl implements DownloadRepository {
-  final MockDownloadDataSource dataSource;
+  final DownloadDataSource dataSource;
 
   DownloadRepositoryImpl(this.dataSource);
 

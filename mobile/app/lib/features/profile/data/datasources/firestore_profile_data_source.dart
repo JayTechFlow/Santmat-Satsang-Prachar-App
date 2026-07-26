@@ -10,8 +10,10 @@ class FirestoreProfileDataSource implements ProfileDataSource {
   final FirestoreService _firestoreService;
   final FirebaseAuth _firebaseAuth;
 
-  FirestoreProfileDataSource(this._firestoreService, {FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  FirestoreProfileDataSource(
+    this._firestoreService, {
+    FirebaseAuth? firebaseAuth,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   String get _userId => _firebaseAuth.currentUser?.uid ?? 'user_123';
 
@@ -38,10 +40,7 @@ class FirestoreProfileDataSource implements ProfileDataSource {
     await _firestoreService.updateDocument(
       FirestoreCollections.users,
       _userId,
-      {
-        'name': name,
-        'phone': phone,
-      },
+      {'name': name, 'phone': phone},
     );
   }
 
@@ -50,22 +49,17 @@ class FirestoreProfileDataSource implements ProfileDataSource {
     await _firestoreService.updateDocument(
       FirestoreCollections.users,
       _userId,
-      {
-        'photoUrl': photoPath,
-      },
+      {'photoUrl': photoPath},
     );
   }
 
   @override
   Future<void> updatePreferences(UserPreferenceEntity preferences) async {
-    await _firestoreService.updateDocument(
-      FirestoreCollections.users,
-      _userId,
-      {
-        'languageCode': preferences.languageCode,
-        'themeMode': preferences.themeMode,
-        'notificationsEnabled': preferences.notificationsEnabled,
-      },
-    );
+    await _firestoreService
+        .updateDocument(FirestoreCollections.users, _userId, {
+          'languageCode': preferences.languageCode,
+          'themeMode': preferences.themeMode,
+          'notificationsEnabled': preferences.notificationsEnabled,
+        });
   }
 }

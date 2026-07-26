@@ -64,8 +64,9 @@ class AuthRepositoryImpl implements AuthRepository {
         return Result.success(user.toEntity());
       }
       return Result.failure(Exception('Google sign in failed'));
-    } on Exception catch (e) {
-      return Result.failure(e);
+    } catch (e) {
+      developer.log('FLOW_TRACE: AuthRepositoryImpl.signInWithGoogle error: $e');
+      return Result.failure(Exception(e.toString()));
     }
   }
 

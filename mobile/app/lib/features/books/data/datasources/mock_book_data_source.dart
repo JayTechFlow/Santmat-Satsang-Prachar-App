@@ -78,26 +78,31 @@ class MockBookDataSource implements BookDataSource {
     });
   }
 
+  @override
   Future<List<BookEntity>> getLatestBooks() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _books.where((b) => b.isRecentlyAdded).toList();
   }
 
+  @override
   Future<List<BookEntity>> getFeaturedBooks() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _books.where((b) => b.isFeatured).toList();
   }
 
+  @override
   Future<List<BookEntity>> getPopularBooks() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _books.where((b) => b.isPopular).toList();
   }
 
+  @override
   Future<BookEntity> getBookDetails(String id) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return _books.firstWhere((b) => b.id == id);
   }
 
+  @override
   Future<List<BookEntity>> searchBooks(String query) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final q = query.toLowerCase();
@@ -107,6 +112,7 @@ class MockBookDataSource implements BookDataSource {
     }).toList();
   }
 
+  @override
   Future<List<BookEntity>> filterBooks(BookFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _books.where((b) {
@@ -133,6 +139,7 @@ class MockBookDataSource implements BookDataSource {
     }).toList();
   }
 
+  @override
   Future<List<BookCategoryEntity>> getCategories() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _categories;
@@ -141,6 +148,7 @@ class MockBookDataSource implements BookDataSource {
   final List<BookBookmarkEntity> _bookmarks = [];
   final Map<String, ReadingProgressEntity> _readingHistory = {};
 
+  @override
   Future<List<BookBookmarkEntity>> getBookmarks() async {
     await Future.delayed(const Duration(milliseconds: 400));
     if (_bookmarks.isEmpty && _books.isNotEmpty) {
@@ -156,6 +164,7 @@ class MockBookDataSource implements BookDataSource {
     return _bookmarks;
   }
 
+  @override
   Future<bool> toggleBookmark(String bookId, int pageNumber) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final existingIndex = _bookmarks.indexWhere(
@@ -177,6 +186,7 @@ class MockBookDataSource implements BookDataSource {
     }
   }
 
+  @override
   Future<List<ReadingProgressEntity>> getReadingHistory() async {
     await Future.delayed(const Duration(milliseconds: 400));
     if (_readingHistory.isEmpty && _books.isNotEmpty) {
@@ -192,6 +202,7 @@ class MockBookDataSource implements BookDataSource {
     return list;
   }
 
+  @override
   Future<void> updateReadingProgress(
     String bookId,
     int pageNumber,

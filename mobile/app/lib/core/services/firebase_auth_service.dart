@@ -7,10 +7,10 @@ import '../utils/result.dart';
 class FirebaseAuthService implements AuthRepository {
   final fb_auth.FirebaseAuth? _authOverride;
 
-  FirebaseAuthService({fb_auth.FirebaseAuth? auth}) 
-      : _authOverride = auth;
+  FirebaseAuthService({fb_auth.FirebaseAuth? auth}) : _authOverride = auth;
 
-  fb_auth.FirebaseAuth get _auth => _authOverride ?? fb_auth.FirebaseAuth.instance;
+  fb_auth.FirebaseAuth get _auth =>
+      _authOverride ?? fb_auth.FirebaseAuth.instance;
 
   @override
   Stream<UserEntity?> get authStateChanges {
@@ -39,10 +39,12 @@ class FirebaseAuthService implements AuthRepository {
         phoneNumber: user.phoneNumber,
         isAnonymous: user.isAnonymous,
       );
-      return Result.success(SessionModel(
-        user: userEntity,
-        isFirstLaunch: false, // abstracted for infrastructure
-      ));
+      return Result.success(
+        SessionModel(
+          user: userEntity,
+          isFirstLaunch: false, // abstracted for infrastructure
+        ),
+      );
     }
     return const Result.success(SessionModel(isFirstLaunch: false));
   }
@@ -63,21 +65,26 @@ class FirebaseAuthService implements AuthRepository {
     try {
       final credential = await _auth.signInAnonymously();
       final user = credential.user!;
-      return Result.success(UserEntity(
-        id: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoUrl: user.photoURL,
-        phoneNumber: user.phoneNumber,
-        isAnonymous: user.isAnonymous,
-      ));
+      return Result.success(
+        UserEntity(
+          id: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoUrl: user.photoURL,
+          phoneNumber: user.phoneNumber,
+          isAnonymous: user.isAnonymous,
+        ),
+      );
     } catch (e) {
       return Result.failure(Exception(e.toString()));
     }
   }
 
   @override
-  Future<Result<UserEntity>> signInWithPhone(String verificationId, String smsCode) async {
+  Future<Result<UserEntity>> signInWithPhone(
+    String verificationId,
+    String smsCode,
+  ) async {
     return Result.failure(Exception('Not implemented'));
   }
 
@@ -100,4 +107,3 @@ class FirebaseAuthService implements AuthRepository {
     }
   }
 }
-

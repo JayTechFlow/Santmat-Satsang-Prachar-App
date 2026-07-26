@@ -50,17 +50,22 @@ class FirestoreDailyQuoteDataSource implements DailyQuoteDataSource {
       FirestoreCollections.dailyQuotes,
       (q) => q.where('isFeatured', isEqualTo: true),
     );
-    return snapshot.docs.map((doc) => QuoteDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => QuoteDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
   Future<List<DailyQuoteEntity>> searchQuotes(String query) async {
     final snapshot = await _firestoreService.queryCollection(
       FirestoreCollections.dailyQuotes,
-      (q) => q.where('quoteText', isGreaterThanOrEqualTo: query)
-              .where('quoteText', isLessThanOrEqualTo: '$query\uf8ff'),
+      (q) => q
+          .where('quoteText', isGreaterThanOrEqualTo: query)
+          .where('quoteText', isLessThanOrEqualTo: '$query\uf8ff'),
     );
-    return snapshot.docs.map((doc) => QuoteDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => QuoteDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
@@ -69,15 +74,27 @@ class FirestoreDailyQuoteDataSource implements DailyQuoteDataSource {
       FirestoreCollections.dailyQuotes,
       (q) {
         var query = q as Query<Map<String, dynamic>>;
-        if (filter.categoryId != null) query = query.where('category.id', isEqualTo: filter.categoryId);
-        if (filter.authorId != null) query = query.where('author.id', isEqualTo: filter.authorId);
-        if (filter.language != null) query = query.where('language', isEqualTo: filter.language);
-        if (filter.isFeatured != null) query = query.where('isFeatured', isEqualTo: filter.isFeatured);
-        if (filter.isDaily != null) query = query.where('isDaily', isEqualTo: filter.isDaily);
+        if (filter.categoryId != null) {
+          query = query.where('category.id', isEqualTo: filter.categoryId);
+        }
+        if (filter.authorId != null) {
+          query = query.where('author.id', isEqualTo: filter.authorId);
+        }
+        if (filter.language != null) {
+          query = query.where('language', isEqualTo: filter.language);
+        }
+        if (filter.isFeatured != null) {
+          query = query.where('isFeatured', isEqualTo: filter.isFeatured);
+        }
+        if (filter.isDaily != null) {
+          query = query.where('isDaily', isEqualTo: filter.isDaily);
+        }
         return query;
       },
     );
-    return snapshot.docs.map((doc) => QuoteDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => QuoteDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
@@ -107,6 +124,5 @@ class FirestoreDailyQuoteDataSource implements DailyQuoteDataSource {
   }
 
   @override
-  Future<void> addToHistory(String quoteId) async {
-  }
+  Future<void> addToHistory(String quoteId) async {}
 }

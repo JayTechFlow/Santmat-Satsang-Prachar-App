@@ -7,9 +7,7 @@ void main() {
   test('LibraryNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockLibraryDataSourceProvider.overrideWithValue(
-          MockLibraryDataSource(),
-        ),
+        libraryDataSourceProvider.overrideWithValue(MockLibraryDataSource()),
       ],
     );
     addTearDown(container.dispose);

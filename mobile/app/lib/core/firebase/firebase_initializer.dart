@@ -7,11 +7,14 @@ class FirebaseInitializer {
     await Firebase.initializeApp(
       options: FirebaseOptionsProvider.currentPlatform,
     );
-    
+
     await FirebaseAppCheck.instance.activate(
-      providerAndroid: AndroidAppCheckProvider.debug,
-      providerApple: AppleAppCheckProvider.debug,
-      providerWeb: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+      // ignore: deprecated_member_use
+      androidProvider: AndroidProvider.debug,
+      // ignore: deprecated_member_use
+      appleProvider: AppleProvider.debug,
+      // ignore: deprecated_member_use
+      webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
     );
   }
 }

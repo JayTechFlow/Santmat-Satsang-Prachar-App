@@ -7,9 +7,7 @@ void main() {
   test('DonationsNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockDonationDataSourceProvider.overrideWithValue(
-          MockDonationDataSource(),
-        ),
+        donationDataSourceProvider.overrideWithValue(MockDonationDataSource()),
       ],
     );
     addTearDown(container.dispose);

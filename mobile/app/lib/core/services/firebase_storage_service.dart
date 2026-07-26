@@ -4,8 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseStorageService {
   final FirebaseStorage? _storageOverride;
 
-  FirebaseStorageService({FirebaseStorage? storage}) 
-      : _storageOverride = storage;
+  FirebaseStorageService({FirebaseStorage? storage})
+    : _storageOverride = storage;
 
   FirebaseStorage get _storage => _storageOverride ?? FirebaseStorage.instance;
 

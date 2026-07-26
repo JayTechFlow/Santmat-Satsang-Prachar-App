@@ -15,7 +15,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
   final FirebaseAuth _firebaseAuth;
 
   FirestoreAudioDataSource(this._firestoreService, {FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   String get _userId => _firebaseAuth.currentUser?.uid ?? 'user_123';
 
@@ -25,7 +25,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .collection(FirestoreCollections.audio)
         .where('isRecentlyAdded', isEqualTo: true)
         .get();
-        
+
     return snapshot.docs
         .map((doc) => AudioDto.fromFirestore(doc).toEntity())
         .toList();
@@ -37,7 +37,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .collection(FirestoreCollections.audio)
         .where('isFeatured', isEqualTo: true)
         .get();
-        
+
     return snapshot.docs
         .map((doc) => AudioDto.fromFirestore(doc).toEntity())
         .toList();
@@ -49,7 +49,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .collection(FirestoreCollections.audio)
         .where('isPopular', isEqualTo: true)
         .get();
-        
+
     return snapshot.docs
         .map((doc) => AudioDto.fromFirestore(doc).toEntity())
         .toList();
@@ -69,21 +69,27 @@ class FirestoreAudioDataSource implements AudioDataSource {
 
   @override
   Future<List<AudioEntity>> searchAudio(String query) async {
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.audio);
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.audio,
+    );
     final q = query.toLowerCase();
-    
+
     return snapshot.docs
         .map((doc) => AudioDto.fromFirestore(doc).toEntity())
-        .where((a) => 
-          a.title.toLowerCase().contains(q) || 
-          a.speaker.toLowerCase().contains(q)
-        ).toList();
+        .where(
+          (a) =>
+              a.title.toLowerCase().contains(q) ||
+              a.speaker.toLowerCase().contains(q),
+        )
+        .toList();
   }
 
   @override
   Future<List<AudioEntity>> filterAudio(AudioFilterEntity filter) async {
-    Query query = FirebaseFirestore.instance.collection(FirestoreCollections.audio);
-    
+    Query query = FirebaseFirestore.instance.collection(
+      FirestoreCollections.audio,
+    );
+
     if (filter.categoryId != null) {
       query = query.where('categoryId', isEqualTo: filter.categoryId);
     }
@@ -102,18 +108,25 @@ class FirestoreAudioDataSource implements AudioDataSource {
     if (filter.isRecentlyAdded != null) {
       query = query.where('isRecentlyAdded', isEqualTo: filter.isRecentlyAdded);
     }
-    
+
     final snapshot = await query.get();
-    var results = snapshot.docs.map((doc) => AudioDto.fromFirestore(doc as DocumentSnapshot).toEntity()).toList();
-    
+    var results = snapshot.docs
+        .map(
+          (doc) => AudioDto.fromFirestore(doc as DocumentSnapshot).toEntity(),
+        )
+        .toList();
+
     if (filter.searchQuery != null) {
       final q = filter.searchQuery!.toLowerCase();
-      results = results.where((a) => 
-        a.title.toLowerCase().contains(q) || 
-        a.speaker.toLowerCase().contains(q)
-      ).toList();
+      results = results
+          .where(
+            (a) =>
+                a.title.toLowerCase().contains(q) ||
+                a.speaker.toLowerCase().contains(q),
+          )
+          .toList();
     }
-    
+
     return results;
   }
 
@@ -121,9 +134,21 @@ class FirestoreAudioDataSource implements AudioDataSource {
   Future<List<AudioCategoryEntity>> getCategories() async {
     // Return hardcoded or fetch from a categories collection if it existed.
     return const [
-      AudioCategoryEntity(id: 'c1', name: 'Bhajan', description: 'Devotional songs'),
-      AudioCategoryEntity(id: 'c2', name: 'Pravachan', description: 'Spiritual discourses'),
-      AudioCategoryEntity(id: 'c3', name: 'Meditation', description: 'Guided meditation'),
+      AudioCategoryEntity(
+        id: 'c1',
+        name: 'Bhajan',
+        description: 'Devotional songs',
+      ),
+      AudioCategoryEntity(
+        id: 'c2',
+        name: 'Pravachan',
+        description: 'Spiritual discourses',
+      ),
+      AudioCategoryEntity(
+        id: 'c3',
+        name: 'Meditation',
+        description: 'Guided meditation',
+      ),
     ];
   }
 
@@ -135,21 +160,28 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .doc(_userId)
         .collection('favorite_audios')
         .get();
-    
+
     List<FavoriteAudioEntity> favorites = [];
     for (var doc in snapshot.docs) {
       try {
-        final audioDoc = await _firestoreService.getDocument(FirestoreCollections.audio, doc.id);
+        final audioDoc = await _firestoreService.getDocument(
+          FirestoreCollections.audio,
+          doc.id,
+        );
         if (audioDoc.exists) {
           final audio = AudioDto.fromFirestore(audioDoc).toEntity();
-          final favoritedAt = (doc.data()['favoritedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
-          favorites.add(FavoriteAudioEntity(audio: audio, favoritedAt: favoritedAt));
+          final favoritedAt =
+              (doc.data()['favoritedAt'] as Timestamp?)?.toDate() ??
+              DateTime.now();
+          favorites.add(
+            FavoriteAudioEntity(audio: audio, favoritedAt: favoritedAt),
+          );
         }
       } catch (e) {
         // Skip missing docs
       }
     }
-    
+
     return favorites;
   }
 
@@ -160,15 +192,13 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .doc(_userId)
         .collection('favorite_audios')
         .doc(id);
-        
+
     final doc = await docRef.get();
     if (doc.exists) {
       await docRef.delete();
       return false;
     } else {
-      await docRef.set({
-        'favoritedAt': FieldValue.serverTimestamp(),
-      });
+      await docRef.set({'favoritedAt': FieldValue.serverTimestamp()});
       return true;
     }
   }
@@ -182,14 +212,19 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .orderBy('playedAt', descending: true)
         .limit(10)
         .get();
-        
+
     List<RecentlyPlayedEntity> recents = [];
     for (var doc in snapshot.docs) {
       try {
-        final audioDoc = await _firestoreService.getDocument(FirestoreCollections.audio, doc.data()['audioId']);
+        final audioDoc = await _firestoreService.getDocument(
+          FirestoreCollections.audio,
+          doc.data()['audioId'],
+        );
         if (audioDoc.exists) {
           final audio = AudioDto.fromFirestore(audioDoc).toEntity();
-          final playedAt = (doc.data()['playedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+          final playedAt =
+              (doc.data()['playedAt'] as Timestamp?)?.toDate() ??
+              DateTime.now();
           recents.add(RecentlyPlayedEntity(audio: audio, playedAt: playedAt));
         }
       } catch (e) {

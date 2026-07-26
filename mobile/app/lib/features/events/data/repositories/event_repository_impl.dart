@@ -5,10 +5,10 @@ import '../../domain/entities/event_registration_entity.dart';
 import '../../domain/entities/event_category_entity.dart';
 import '../../domain/entities/event_speaker_entity.dart';
 import '../../domain/repositories/event_repository.dart';
-import '../datasources/mock_event_data_source.dart';
+import '../datasources/event_data_source.dart';
 
 class EventRepositoryImpl implements EventRepository {
-  final MockEventDataSource dataSource;
+  final EventDataSource dataSource;
 
   EventRepositoryImpl(this.dataSource);
 

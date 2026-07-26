@@ -4,10 +4,11 @@ import 'package:flutter/foundation.dart';
 class CrashlyticsService {
   final FirebaseCrashlytics? _crashlyticsOverride;
 
-  CrashlyticsService({FirebaseCrashlytics? crashlytics}) 
-      : _crashlyticsOverride = crashlytics;
+  CrashlyticsService({FirebaseCrashlytics? crashlytics})
+    : _crashlyticsOverride = crashlytics;
 
-  FirebaseCrashlytics get _crashlytics => _crashlyticsOverride ?? FirebaseCrashlytics.instance;
+  FirebaseCrashlytics get _crashlytics =>
+      _crashlyticsOverride ?? FirebaseCrashlytics.instance;
 
   Future<void> initialize() async {
     FlutterError.onError = _crashlytics.recordFlutterFatalError;
@@ -17,7 +18,11 @@ class CrashlyticsService {
     };
   }
 
-  Future<void> recordError(dynamic exception, StackTrace? stack, {bool fatal = false}) async {
+  Future<void> recordError(
+    dynamic exception,
+    StackTrace? stack, {
+    bool fatal = false,
+  }) async {
     await _crashlytics.recordError(exception, stack, fatal: fatal);
   }
 

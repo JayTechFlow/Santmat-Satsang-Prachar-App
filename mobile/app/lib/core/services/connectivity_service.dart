@@ -3,8 +3,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 class ConnectivityService {
   final Connectivity? _connectivityOverride;
 
-  ConnectivityService({Connectivity? connectivity}) 
-      : _connectivityOverride = connectivity;
+  ConnectivityService({Connectivity? connectivity})
+    : _connectivityOverride = connectivity;
 
   Connectivity get _connectivity => _connectivityOverride ?? Connectivity();
 

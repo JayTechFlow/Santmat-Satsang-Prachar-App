@@ -12,7 +12,9 @@ class NetworkMonitorService {
 
   Future<void> _init() async {
     _isOnline = await _connectivityService.isConnected;
-    _subscription = _connectivityService.onConnectivityChanged.listen((isOnline) {
+    _subscription = _connectivityService.onConnectivityChanged.listen((
+      isOnline,
+    ) {
       _isOnline = isOnline;
     });
   }

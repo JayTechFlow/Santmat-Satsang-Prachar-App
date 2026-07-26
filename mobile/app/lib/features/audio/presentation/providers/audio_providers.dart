@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/di/service_locator_registrations.dart';
+import '../../data/datasources/audio_data_source.dart';
 import '../../data/datasources/mock_audio_data_source.dart';
+import '../../data/datasources/firestore_audio_data_source.dart';
 import '../../data/repositories/audio_repository_impl.dart';
 import '../../domain/repositories/audio_repository.dart';
 import '../../domain/usecases/audio_usecases.dart';
@@ -10,10 +13,16 @@ import '../../domain/entities/audio_category_entity.dart';
 import '../../domain/entities/recently_played_entity.dart';
 import 'audio_state.dart';
 
-final mockAudioDataSourceProvider = Provider((ref) => MockAudioDataSource());
+final audioDataSourceProvider = Provider<AudioDataSource>((ref) {
+  final isDev = ref.watch(environmentConfigurationProvider).isDev;
+  if (isDev) {
+    return MockAudioDataSource();
+  }
+  return FirestoreAudioDataSource(ref.watch(firestoreServiceProvider));
+});
 
 final audioRepositoryProvider = Provider<AudioRepository>((ref) {
-  return AudioRepositoryImpl(ref.watch(mockAudioDataSourceProvider));
+  return AudioRepositoryImpl(ref.watch(audioDataSourceProvider));
 });
 
 final getLatestAudioUseCaseProvider = Provider(

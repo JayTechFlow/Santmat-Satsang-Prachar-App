@@ -30,11 +30,13 @@ class MockProfileDataSource implements ProfileDataSource {
     ),
   );
 
+  @override
   Future<UserProfileEntity> getProfile() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _mockProfile;
   }
 
+  @override
   Future<void> updateProfile({
     required String name,
     required String phone,
@@ -43,6 +45,7 @@ class MockProfileDataSource implements ProfileDataSource {
     _mockProfile = _mockProfile.copyWith(name: name, phone: phone);
   }
 
+  @override
   Future<void> updateProfilePhoto(String photoPath) async {
     await Future.delayed(const Duration(milliseconds: 800));
     _mockProfile = _mockProfile.copyWith(
@@ -50,6 +53,7 @@ class MockProfileDataSource implements ProfileDataSource {
     ); // Mock local change
   }
 
+  @override
   Future<void> updatePreferences(UserPreferenceEntity preferences) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _mockProfile = _mockProfile.copyWith(preferences: preferences);

@@ -13,17 +13,25 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
   FirestoreNotificationDataSource(this._firestoreService);
 
   @override
-  Future<List<NotificationEntity>> getNotifications(NotificationFilterEntity filter) async {
+  Future<List<NotificationEntity>> getNotifications(
+    NotificationFilterEntity filter,
+  ) async {
     // Basic implementation that fetches all and filters locally for simplicity,
     // or we can use queries. For now, matching mock logic.
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.notifications);
-    var results = snapshot.docs.map((doc) => NotificationDto.fromFirestore(doc)).toList();
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.notifications,
+    );
+    var results = snapshot.docs
+        .map((doc) => NotificationDto.fromFirestore(doc))
+        .toList();
 
     if (filter.isRead != null) {
       results = results.where((n) => n.isRead == filter.isRead).toList();
     }
     if (filter.categoryId != null) {
-      results = results.where((n) => n.category.id == filter.categoryId).toList();
+      results = results
+          .where((n) => n.category.id == filter.categoryId)
+          .toList();
     }
     if (filter.priority != null) {
       results = results.where((n) => n.priority == filter.priority).toList();
@@ -40,7 +48,9 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
 
   @override
   Future<int> getUnreadNotificationsCount() async {
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.notifications);
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.notifications,
+    );
     return snapshot.docs
         .map((doc) => NotificationDto.fromFirestore(doc))
         .where((n) => !n.isRead)
@@ -49,12 +59,18 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
 
   @override
   Future<void> markNotificationAsRead(String id) async {
-    await _firestoreService.updateDocument(FirestoreCollections.notifications, id, {'isRead': true});
+    await _firestoreService.updateDocument(
+      FirestoreCollections.notifications,
+      id,
+      {'isRead': true},
+    );
   }
 
   @override
   Future<void> markAllNotificationsAsRead() async {
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.notifications);
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.notifications,
+    );
     final batch = FirebaseFirestore.instance.batch();
     for (var doc in snapshot.docs) {
       batch.update(doc.reference, {'isRead': true});
@@ -64,12 +80,17 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
 
   @override
   Future<void> deleteNotification(String id) async {
-    await _firestoreService.deleteDocument(FirestoreCollections.notifications, id);
+    await _firestoreService.deleteDocument(
+      FirestoreCollections.notifications,
+      id,
+    );
   }
 
   @override
   Future<void> clearNotifications() async {
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.notifications);
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.notifications,
+    );
     final batch = FirebaseFirestore.instance.batch();
     for (var doc in snapshot.docs) {
       batch.delete(doc.reference);
@@ -80,7 +101,10 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
   @override
   Future<NotificationPreferenceEntity> getNotificationPreferences() async {
     try {
-      final doc = await _firestoreService.getDocument(FirestoreCollections.preferences, 'notifications');
+      final doc = await _firestoreService.getDocument(
+        FirestoreCollections.preferences,
+        'notifications',
+      );
       if (!doc.exists) {
         return const NotificationPreferenceEntity(
           generalNotifications: true,
@@ -134,7 +158,9 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
   }
 
   @override
-  Future<void> updateNotificationPreferences(NotificationPreferenceEntity preferences) async {
+  Future<void> updateNotificationPreferences(
+    NotificationPreferenceEntity preferences,
+  ) async {
     final data = {
       'generalNotifications': preferences.generalNotifications,
       'satsangNotifications': preferences.satsangNotifications,
@@ -150,17 +176,30 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
       'quietHoursStart': preferences.quietHoursStart,
       'quietHoursEnd': preferences.quietHoursEnd,
     };
-    
+
     // Check if it exists first
     try {
-      final doc = await _firestoreService.getDocument(FirestoreCollections.preferences, 'notifications');
+      final doc = await _firestoreService.getDocument(
+        FirestoreCollections.preferences,
+        'notifications',
+      );
       if (doc.exists) {
-        await _firestoreService.updateDocument(FirestoreCollections.preferences, 'notifications', data);
+        await _firestoreService.updateDocument(
+          FirestoreCollections.preferences,
+          'notifications',
+          data,
+        );
       } else {
-        await FirebaseFirestore.instance.collection(FirestoreCollections.preferences).doc('notifications').set(data);
+        await FirebaseFirestore.instance
+            .collection(FirestoreCollections.preferences)
+            .doc('notifications')
+            .set(data);
       }
     } catch (_) {
-      await FirebaseFirestore.instance.collection(FirestoreCollections.preferences).doc('notifications').set(data);
+      await FirebaseFirestore.instance
+          .collection(FirestoreCollections.preferences)
+          .doc('notifications')
+          .set(data);
     }
   }
 }

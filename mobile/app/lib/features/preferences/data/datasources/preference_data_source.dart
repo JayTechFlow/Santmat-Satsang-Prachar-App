@@ -12,7 +12,9 @@ abstract class PreferenceDataSource {
   Future<UserPreferenceEntity> getPreferences();
   Future<void> updateAppearancePreference(AppearancePreferenceEntity pref);
   Future<void> updateLanguagePreference(LanguagePreferenceEntity pref);
-  Future<void> updateAccessibilityPreference(AccessibilityPreferenceEntity pref);
+  Future<void> updateAccessibilityPreference(
+    AccessibilityPreferenceEntity pref,
+  );
   Future<void> updateNotificationPreference(NotificationPreferenceEntity pref);
   Future<void> updatePrivacyPreference(PrivacyPreferenceEntity pref);
   Future<void> updatePlaybackPreference(PlaybackPreferenceEntity pref);

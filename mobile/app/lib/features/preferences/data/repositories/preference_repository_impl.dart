@@ -9,10 +9,10 @@ import '../../domain/entities/playback_preference_entity.dart';
 import '../../domain/entities/reading_preference_entity.dart';
 import '../../domain/entities/download_preference_entity.dart';
 import '../../domain/repositories/preference_repository.dart';
-import '../datasources/mock_preference_data_source.dart';
+import '../datasources/preference_data_source.dart';
 
 class PreferenceRepositoryImpl implements PreferenceRepository {
-  final MockPreferenceDataSource dataSource;
+  final PreferenceDataSource dataSource;
 
   PreferenceRepositoryImpl(this.dataSource);
 

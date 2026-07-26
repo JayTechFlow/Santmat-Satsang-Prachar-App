@@ -54,26 +54,31 @@ class MockAudioDataSource implements AudioDataSource {
     );
   }
 
+  @override
   Future<List<AudioEntity>> getLatestAudio() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _audios.where((a) => a.isRecentlyAdded).toList();
   }
 
+  @override
   Future<List<AudioEntity>> getFeaturedAudio() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _audios.where((a) => a.isFeatured).toList();
   }
 
+  @override
   Future<List<AudioEntity>> getPopularAudio() async {
     await Future.delayed(const Duration(milliseconds: 600));
     return _audios.where((a) => a.isPopular).toList();
   }
 
+  @override
   Future<AudioEntity> getAudioDetails(String id) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return _audios.firstWhere((a) => a.id == id);
   }
 
+  @override
   Future<List<AudioEntity>> searchAudio(String query) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final q = query.toLowerCase();
@@ -83,6 +88,7 @@ class MockAudioDataSource implements AudioDataSource {
     }).toList();
   }
 
+  @override
   Future<List<AudioEntity>> filterAudio(AudioFilterEntity filter) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _audios.where((a) {
@@ -116,6 +122,7 @@ class MockAudioDataSource implements AudioDataSource {
     }).toList();
   }
 
+  @override
   Future<List<AudioCategoryEntity>> getCategories() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _categories;
@@ -125,6 +132,7 @@ class MockAudioDataSource implements AudioDataSource {
   final Set<String> _favoriteIds = {'audio_0', 'audio_2'};
   final List<RecentlyPlayedEntity> _recentlyPlayed = [];
 
+  @override
   Future<List<FavoriteAudioEntity>> getFavorites() async {
     await Future.delayed(const Duration(milliseconds: 400));
     return _audios
@@ -133,6 +141,7 @@ class MockAudioDataSource implements AudioDataSource {
         .toList();
   }
 
+  @override
   Future<bool> toggleFavoriteAudio(String id) async {
     await Future.delayed(const Duration(milliseconds: 300));
     if (_favoriteIds.contains(id)) {
@@ -144,6 +153,7 @@ class MockAudioDataSource implements AudioDataSource {
     }
   }
 
+  @override
   Future<List<RecentlyPlayedEntity>> getRecentlyPlayed() async {
     await Future.delayed(const Duration(milliseconds: 400));
     if (_recentlyPlayed.isEmpty) {

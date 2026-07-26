@@ -53,6 +53,7 @@ class MockDonationDataSource implements DonationDataSource {
     );
   }
 
+  @override
   Future<List<DonationCampaignEntity>> getDonationCampaigns(
     DonationFilterEntity filter,
   ) async {
@@ -73,16 +74,19 @@ class MockDonationDataSource implements DonationDataSource {
     return results;
   }
 
+  @override
   Future<DonationCampaignEntity> getCampaignDetails(String id) async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _campaigns.firstWhere((c) => c.id == id);
   }
 
+  @override
   Future<List<DonationHistoryEntity>> getDonationHistory() async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _history;
   }
 
+  @override
   Future<DonationEntity> createDonationIntent(
     String campaignId,
     double amount,
@@ -126,11 +130,13 @@ class MockDonationDataSource implements DonationDataSource {
     return intent;
   }
 
+  @override
   Future<void> cancelDonationIntent(String donationId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _intents.removeWhere((i) => i.id == donationId);
   }
 
+  @override
   Future<DonationReceiptEntity> getDonationReceipt(String receiptId) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final historyItem = _history.firstWhere(
@@ -147,16 +153,19 @@ class MockDonationDataSource implements DonationDataSource {
     );
   }
 
+  @override
   Future<String> downloadDonationReceipt(String receiptId) async {
     await Future.delayed(const Duration(seconds: 1));
     return '/storage/emulated/0/Download/receipt_$receiptId.pdf';
   }
 
+  @override
   Future<DonationPreferenceEntity> getDonationPreferences() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _preferences;
   }
 
+  @override
   Future<void> updateDonationPreference(
     DonationPreferenceEntity preference,
   ) async {

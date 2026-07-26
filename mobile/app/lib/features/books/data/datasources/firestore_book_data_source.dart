@@ -18,9 +18,14 @@ class FirestoreBookDataSource implements BookDataSource {
   Future<List<BookEntity>> getLatestBooks() async {
     final snapshot = await _firestoreService.queryCollection(
       FirestoreCollections.books,
-      (q) => q.where('isRecentlyAdded', isEqualTo: true).orderBy('publicationDate', descending: true).limit(20),
+      (q) => q
+          .where('isRecentlyAdded', isEqualTo: true)
+          .orderBy('publicationDate', descending: true)
+          .limit(20),
     );
-    return snapshot.docs.map((doc) => BookDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => BookDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
@@ -29,7 +34,9 @@ class FirestoreBookDataSource implements BookDataSource {
       FirestoreCollections.books,
       (q) => q.where('isFeatured', isEqualTo: true),
     );
-    return snapshot.docs.map((doc) => BookDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => BookDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
@@ -38,12 +45,17 @@ class FirestoreBookDataSource implements BookDataSource {
       FirestoreCollections.books,
       (q) => q.where('isPopular', isEqualTo: true),
     );
-    return snapshot.docs.map((doc) => BookDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => BookDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
   Future<BookEntity> getBookDetails(String id) async {
-    final doc = await _firestoreService.getDocument(FirestoreCollections.books, id);
+    final doc = await _firestoreService.getDocument(
+      FirestoreCollections.books,
+      id,
+    );
     if (!doc.exists) throw Exception('Book not found');
     return BookDto.fromFirestore(doc).toEntity();
   }
@@ -52,10 +64,13 @@ class FirestoreBookDataSource implements BookDataSource {
   Future<List<BookEntity>> searchBooks(String query) async {
     final snapshot = await _firestoreService.queryCollection(
       FirestoreCollections.books,
-      (q) => q.where('title', isGreaterThanOrEqualTo: query)
-              .where('title', isLessThanOrEqualTo: '$query\uf8ff'),
+      (q) => q
+          .where('title', isGreaterThanOrEqualTo: query)
+          .where('title', isLessThanOrEqualTo: '$query\uf8ff'),
     );
-    return snapshot.docs.map((doc) => BookDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => BookDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
@@ -64,21 +79,40 @@ class FirestoreBookDataSource implements BookDataSource {
       FirestoreCollections.books,
       (q) {
         var query = q as Query<Map<String, dynamic>>;
-        if (filter.categoryId != null) query = query.where('category.id', isEqualTo: filter.categoryId);
-        if (filter.authorId != null) query = query.where('author.id', isEqualTo: filter.authorId);
-        if (filter.language != null) query = query.where('language', isEqualTo: filter.language);
-        if (filter.isFeatured != null) query = query.where('isFeatured', isEqualTo: filter.isFeatured);
-        if (filter.isPopular != null) query = query.where('isPopular', isEqualTo: filter.isPopular);
-        if (filter.isRecentlyAdded != null) query = query.where('isRecentlyAdded', isEqualTo: filter.isRecentlyAdded);
+        if (filter.categoryId != null) {
+          query = query.where('category.id', isEqualTo: filter.categoryId);
+        }
+        if (filter.authorId != null) {
+          query = query.where('author.id', isEqualTo: filter.authorId);
+        }
+        if (filter.language != null) {
+          query = query.where('language', isEqualTo: filter.language);
+        }
+        if (filter.isFeatured != null) {
+          query = query.where('isFeatured', isEqualTo: filter.isFeatured);
+        }
+        if (filter.isPopular != null) {
+          query = query.where('isPopular', isEqualTo: filter.isPopular);
+        }
+        if (filter.isRecentlyAdded != null) {
+          query = query.where(
+            'isRecentlyAdded',
+            isEqualTo: filter.isRecentlyAdded,
+          );
+        }
         return query;
       },
     );
-    return snapshot.docs.map((doc) => BookDto.fromFirestore(doc).toEntity()).toList();
+    return snapshot.docs
+        .map((doc) => BookDto.fromFirestore(doc).toEntity())
+        .toList();
   }
 
   @override
   Future<List<BookCategoryEntity>> getCategories() async {
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.bookCategories);
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.bookCategories,
+    );
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>? ?? {};
       return BookCategoryEntity(
@@ -106,6 +140,9 @@ class FirestoreBookDataSource implements BookDataSource {
   }
 
   @override
-  Future<void> updateReadingProgress(String bookId, int pageNumber, double percentage) async {
-  }
+  Future<void> updateReadingProgress(
+    String bookId,
+    int pageNumber,
+    double percentage,
+  ) async {}
 }

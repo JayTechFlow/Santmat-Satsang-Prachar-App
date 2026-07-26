@@ -2,10 +2,8 @@ import 'environment_configuration.dart';
 
 class BackendConfiguration {
   final EnvironmentConfiguration environment;
-  
-  const BackendConfiguration({
-    required this.environment,
-  });
+
+  const BackendConfiguration({required this.environment});
 
   String get apiBaseUrl {
     switch (environment.currentEnvironment) {

@@ -7,7 +7,7 @@ void main() {
   test('PreferencesNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockPreferenceDataSourceProvider.overrideWithValue(
+        preferenceDataSourceProvider.overrideWithValue(
           MockPreferenceDataSource(),
         ),
       ],

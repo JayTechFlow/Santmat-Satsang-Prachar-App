@@ -57,7 +57,8 @@ class AudioDto {
       language: data['language'] as String? ?? '',
       thumbnailUrl: data['thumbnailUrl'] as String? ?? '',
       artworkUrl: data['artworkUrl'] as String? ?? '',
-      releaseDate: (data['releaseDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      releaseDate:
+          (data['releaseDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       playCount: data['playCount'] as int? ?? 0,
       favoriteCount: data['favoriteCount'] as int? ?? 0,
       isFeatured: data['isFeatured'] as bool? ?? false,
@@ -96,10 +97,7 @@ class AudioDto {
       subtitle: subtitle,
       description: description,
       speaker: speaker,
-      category: AudioCategoryEntity(
-        id: categoryId,
-        name: categoryName,
-      ),
+      category: AudioCategoryEntity(id: categoryId, name: categoryName),
       duration: Duration(minutes: durationMinutes),
       language: language,
       thumbnailUrl: thumbnailUrl,

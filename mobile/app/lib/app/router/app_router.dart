@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:developer' as developer;
 
 import '../../features/authentication/presentation/pages/login_page.dart';
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
@@ -41,37 +42,70 @@ import '../../features/preferences/presentation/pages/preferences_secondary_page
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
+class GoRouterRefreshNotifier extends ChangeNotifier {
+  GoRouterRefreshNotifier(Ref ref) {
+    ref.listen(authStateProvider, (_, __) {
+      notifyListeners();
+    });
+  }
+}
+
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
+  final refreshNotifier = GoRouterRefreshNotifier(ref);
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/splash',
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
+      final authState = ref.read(authStateProvider);
+      
+      developer.log('ROUTER_TRACE: redirect triggered. path=${state.uri.path}, isLoading=${authState.isLoading}, hasValue=${authState.hasValue}');
+
+      final isSplash = state.uri.path == '/splash';
+      final isOnboarding = state.uri.path == '/onboarding';
+      final isLogin = state.uri.path == '/login';
+
       if (authState.isLoading) {
+        developer.log('ROUTER_TRACE: authState is loading');
+        if (isLogin || isOnboarding) {
+          developer.log('ROUTER_TRACE: staying on ${state.uri.path}');
+          return null;
+        }
+        developer.log('ROUTER_TRACE: returning /splash');
         return '/splash';
       }
 
       final session = authState.value;
 
       if (session == null) {
+        developer.log('ROUTER_TRACE: session is null, returning /splash');
         return '/splash';
       }
 
       final isFirstLaunch = session.isFirstLaunch;
       final isAuthenticated = session.isAuthenticated;
-      final isSplash = state.uri.path == '/splash';
-      final isOnboarding = state.uri.path == '/onboarding';
-      final isLogin = state.uri.path == '/login';
+
+      developer.log('ROUTER_TRACE: session data: isFirstLaunch=$isFirstLaunch, isAuthenticated=$isAuthenticated');
 
       if (isFirstLaunch) {
-        if (!isOnboarding) return '/onboarding';
+        if (!isOnboarding) {
+          developer.log('ROUTER_TRACE: redirecting to /onboarding');
+          return '/onboarding';
+        }
       } else if (!isAuthenticated) {
-        if (!isLogin) return '/login';
+        if (!isLogin) {
+          developer.log('ROUTER_TRACE: redirecting to /login');
+          return '/login';
+        }
       } else {
-        if (isSplash || isOnboarding || isLogin) return '/';
+        if (isSplash || isOnboarding || isLogin) {
+          developer.log('ROUTER_TRACE: redirecting to / (dashboard)');
+          return '/';
+        }
       }
 
+      developer.log('ROUTER_TRACE: no redirect needed, returning null');
       return null;
     },
     routes: [

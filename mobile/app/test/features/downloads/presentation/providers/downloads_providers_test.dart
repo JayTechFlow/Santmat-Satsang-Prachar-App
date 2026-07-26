@@ -7,9 +7,7 @@ void main() {
   test('DownloadsNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockDownloadDataSourceProvider.overrideWithValue(
-          MockDownloadDataSource(),
-        ),
+        downloadDataSourceProvider.overrideWithValue(MockDownloadDataSource()),
       ],
     );
     addTearDown(container.dispose);

@@ -51,11 +51,13 @@ class ProfileDto {
       favoriteCount: data['favoriteCount'] as int? ?? 0,
       bookmarkCount: data['bookmarkCount'] as int? ?? 0,
       totalListeningTimeMinutes: data['totalListeningTimeMinutes'] as int? ?? 0,
-      readingProgressPercentage: (data['readingProgressPercentage'] as num?)?.toDouble() ?? 0.0,
+      readingProgressPercentage:
+          (data['readingProgressPercentage'] as num?)?.toDouble() ?? 0.0,
       languageCode: data['languageCode'] as String? ?? 'en',
       themeMode: data['themeMode'] as String? ?? 'system',
       notificationsEnabled: data['notificationsEnabled'] as bool? ?? true,
-      memberSince: (data['memberSince'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      memberSince:
+          (data['memberSince'] as Timestamp?)?.toDate() ?? DateTime.now(),
       applicationVersion: data['applicationVersion'] as String? ?? '1.0.0',
     );
   }

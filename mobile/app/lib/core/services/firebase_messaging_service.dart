@@ -3,10 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 class FirebaseMessagingService {
   final FirebaseMessaging? _messagingOverride;
 
-  FirebaseMessagingService({FirebaseMessaging? messaging}) 
-      : _messagingOverride = messaging;
+  FirebaseMessagingService({FirebaseMessaging? messaging})
+    : _messagingOverride = messaging;
 
-  FirebaseMessaging get _messaging => _messagingOverride ?? FirebaseMessaging.instance;
+  FirebaseMessaging get _messaging =>
+      _messagingOverride ?? FirebaseMessaging.instance;
 
   Future<void> requestPermission() async {
     await _messaging.requestPermission();
@@ -25,5 +26,6 @@ class FirebaseMessagingService {
   }
 
   Stream<RemoteMessage> get onMessage => FirebaseMessaging.onMessage;
-  Stream<RemoteMessage> get onMessageOpenedApp => FirebaseMessaging.onMessageOpenedApp;
+  Stream<RemoteMessage> get onMessageOpenedApp =>
+      FirebaseMessaging.onMessageOpenedApp;
 }

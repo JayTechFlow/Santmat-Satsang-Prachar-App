@@ -1,0 +1,82 @@
+name: Production Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Code Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+        working-directory: mobile/app
+      - run: dart format --output=none --set-exit-if-changed .
+        working-directory: mobile/app
+      - run: flutter analyze
+        working-directory: mobile/app
+      - run: flutter test
+        working-directory: mobile/app
+
+  build_android:
+    name: Build Android
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+        working-directory: mobile/app
+      - run: flutter build apk --release
+        working-directory: mobile/app
+      - run: flutter build appbundle --release
+        working-directory: mobile/app
+      - uses: actions/upload-artifact@v3
+        with:
+          name: android-release
+          path: |
+            mobile/app/build/app/outputs/flutter-apk/app-release.apk
+            mobile/app/build/app/outputs/bundle/release/app-release.aab
+
+  build_ios:
+    name: Build iOS (Preparation)
+    needs: validate
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+        working-directory: mobile/app
+      - run: flutter build ios --release --no-codesign
+        working-directory: mobile/app
+
+  build_functions:
+    name: Build Cloud Functions
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm ci
+        working-directory: backend/firebase/functions
+      - run: npm run build
+        working-directory: backend/firebase/functions

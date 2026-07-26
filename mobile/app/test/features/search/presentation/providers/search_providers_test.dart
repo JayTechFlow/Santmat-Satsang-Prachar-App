@@ -7,7 +7,7 @@ void main() {
   test('SearchNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockSearchDataSourceProvider.overrideWithValue(MockSearchDataSource()),
+        searchDataSourceProvider.overrideWithValue(MockSearchDataSource()),
       ],
     );
     addTearDown(container.dispose);

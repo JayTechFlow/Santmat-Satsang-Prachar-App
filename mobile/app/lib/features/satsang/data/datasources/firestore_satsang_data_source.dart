@@ -9,7 +9,7 @@ import 'satsang_data_source.dart';
 
 class FirestoreSatsangDataSource implements SatsangDataSource {
   final FirestoreService _firestoreService;
-  
+
   FirestoreSatsangDataSource(this._firestoreService);
 
   @override
@@ -18,7 +18,7 @@ class FirestoreSatsangDataSource implements SatsangDataSource {
         .collection(FirestoreCollections.satsangs)
         .where('isRecentlyAdded', isEqualTo: true)
         .get();
-        
+
     return snapshot.docs
         .map((doc) => SatsangDto.fromFirestore(doc).toEntity())
         .toList();
@@ -30,7 +30,7 @@ class FirestoreSatsangDataSource implements SatsangDataSource {
         .collection(FirestoreCollections.satsangs)
         .where('isFeatured', isEqualTo: true)
         .get();
-        
+
     return snapshot.docs
         .map((doc) => SatsangDto.fromFirestore(doc).toEntity())
         .toList();
@@ -42,7 +42,7 @@ class FirestoreSatsangDataSource implements SatsangDataSource {
         .collection(FirestoreCollections.satsangs)
         .where('isPopular', isEqualTo: true)
         .get();
-        
+
     return snapshot.docs
         .map((doc) => SatsangDto.fromFirestore(doc).toEntity())
         .toList();
@@ -64,22 +64,28 @@ class FirestoreSatsangDataSource implements SatsangDataSource {
   Future<List<SatsangEntity>> searchSatsangs(String query) async {
     // For a real search we might use algolia or meilisearch.
     // For firestore we'll just get all and filter locally for simple search, or use a field array.
-    final snapshot = await _firestoreService.getCollection(FirestoreCollections.satsangs);
+    final snapshot = await _firestoreService.getCollection(
+      FirestoreCollections.satsangs,
+    );
     final q = query.toLowerCase();
-    
+
     return snapshot.docs
         .map((doc) => SatsangDto.fromFirestore(doc).toEntity())
-        .where((s) => 
-          s.title.toLowerCase().contains(q) || 
-          s.speaker.name.toLowerCase().contains(q) || 
-          s.category.name.toLowerCase().contains(q)
-        ).toList();
+        .where(
+          (s) =>
+              s.title.toLowerCase().contains(q) ||
+              s.speaker.name.toLowerCase().contains(q) ||
+              s.category.name.toLowerCase().contains(q),
+        )
+        .toList();
   }
 
   @override
   Future<List<SatsangEntity>> filterSatsangs(SatsangFilterEntity filter) async {
-    Query query = FirebaseFirestore.instance.collection(FirestoreCollections.satsangs);
-    
+    Query query = FirebaseFirestore.instance.collection(
+      FirestoreCollections.satsangs,
+    );
+
     if (filter.categoryId != null) {
       query = query.where('categoryId', isEqualTo: filter.categoryId);
     }
@@ -95,18 +101,25 @@ class FirestoreSatsangDataSource implements SatsangDataSource {
     if (filter.isPopular != null) {
       query = query.where('isPopular', isEqualTo: filter.isPopular);
     }
-    
+
     final snapshot = await query.get();
-    var results = snapshot.docs.map((doc) => SatsangDto.fromFirestore(doc as DocumentSnapshot).toEntity()).toList();
-    
+    var results = snapshot.docs
+        .map(
+          (doc) => SatsangDto.fromFirestore(doc as DocumentSnapshot).toEntity(),
+        )
+        .toList();
+
     if (filter.searchQuery != null) {
       final q = filter.searchQuery!.toLowerCase();
-      results = results.where((s) => 
-        s.title.toLowerCase().contains(q) || 
-        s.speaker.name.toLowerCase().contains(q)
-      ).toList();
+      results = results
+          .where(
+            (s) =>
+                s.title.toLowerCase().contains(q) ||
+                s.speaker.name.toLowerCase().contains(q),
+          )
+          .toList();
     }
-    
+
     return results;
   }
 

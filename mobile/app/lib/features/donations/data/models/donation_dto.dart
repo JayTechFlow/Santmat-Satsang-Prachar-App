@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/donation_entity.dart';
 import '../../domain/entities/donation_campaign_entity.dart';
 import '../../domain/entities/donation_category_entity.dart';
-import '../../domain/entities/donation_history_entity.dart';
-import '../../domain/entities/donation_receipt_entity.dart';
 
 class DonationDto {
   static DonationEntity fromFirestore(DocumentSnapshot doc) {
@@ -37,7 +35,7 @@ class DonationCampaignDto {
   static DonationCampaignEntity fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final categoryData = data['category'] as Map<String, dynamic>? ?? {};
-    
+
     return DonationCampaignEntity(
       id: doc.id,
       title: data['title'] as String? ?? '',
@@ -51,7 +49,11 @@ class DonationCampaignDto {
       collectedAmount: (data['collectedAmount'] as num?)?.toDouble() ?? 0.0,
       currency: data['currency'] as String? ?? '',
       minimumDonation: (data['minimumDonation'] as num?)?.toDouble() ?? 0.0,
-      suggestedAmounts: (data['suggestedAmounts'] as List<dynamic>?)?.map((e) => (e as num).toDouble()).toList() ?? [],
+      suggestedAmounts:
+          (data['suggestedAmounts'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList() ??
+          [],
       bannerImage: data['bannerImage'] as String? ?? '',
       thumbnail: data['thumbnail'] as String? ?? '',
       startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -67,10 +69,7 @@ class DonationCampaignDto {
       'title': entity.title,
       'subtitle': entity.subtitle,
       'description': entity.description,
-      'category': {
-        'id': entity.category.id,
-        'name': entity.category.name,
-      },
+      'category': {'id': entity.category.id, 'name': entity.category.name},
       'goalAmount': entity.goalAmount,
       'collectedAmount': entity.collectedAmount,
       'currency': entity.currency,
@@ -79,7 +78,9 @@ class DonationCampaignDto {
       'bannerImage': entity.bannerImage,
       'thumbnail': entity.thumbnail,
       'startDate': Timestamp.fromDate(entity.startDate),
-      'endDate': entity.endDate != null ? Timestamp.fromDate(entity.endDate!) : null,
+      'endDate': entity.endDate != null
+          ? Timestamp.fromDate(entity.endDate!)
+          : null,
       'isFeatured': entity.isFeatured,
       'isActive': entity.isActive,
       'taxBenefit': entity.taxBenefit,

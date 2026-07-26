@@ -20,7 +20,8 @@ class DownloadDto {
       progress: (data['progress'] as num?)?.toDouble() ?? 0.0,
       status: data['status'] as String? ?? 'pending',
       priority: data['priority'] as int? ?? 1,
-      createdDate: (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdDate:
+          (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       completedDate: (data['completedDate'] as Timestamp?)?.toDate(),
       localPathPlaceholder: data['localPathPlaceholder'] as String?,
       remoteUrlPlaceholder: data['remoteUrlPlaceholder'] as String? ?? '',
@@ -32,17 +33,16 @@ class DownloadDto {
     return {
       'title': entity.title,
       'contentType': entity.contentType,
-      'category': {
-        'id': entity.category.id,
-        'name': entity.category.name,
-      },
+      'category': {'id': entity.category.id, 'name': entity.category.name},
       'totalSize': entity.totalSize,
       'downloadedSize': entity.downloadedSize,
       'progress': entity.progress,
       'status': entity.status,
       'priority': entity.priority,
       'createdDate': Timestamp.fromDate(entity.createdDate),
-      'completedDate': entity.completedDate != null ? Timestamp.fromDate(entity.completedDate!) : null,
+      'completedDate': entity.completedDate != null
+          ? Timestamp.fromDate(entity.completedDate!)
+          : null,
       'localPathPlaceholder': entity.localPathPlaceholder,
       'remoteUrlPlaceholder': entity.remoteUrlPlaceholder,
       'thumbnail': entity.thumbnail,

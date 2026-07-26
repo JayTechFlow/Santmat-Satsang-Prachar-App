@@ -7,7 +7,7 @@ void main() {
   test('EventsNotifier loads data correctly', () async {
     final container = ProviderContainer(
       overrides: [
-        mockEventDataSourceProvider.overrideWithValue(MockEventDataSource()),
+        eventDataSourceProvider.overrideWithValue(MockEventDataSource()),
       ],
     );
     addTearDown(container.dispose);

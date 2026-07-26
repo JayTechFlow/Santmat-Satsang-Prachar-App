@@ -38,10 +38,7 @@ class NotificationDto {
     return {
       'title': entity.title,
       'body': entity.body,
-      'category': {
-        'id': entity.category.id,
-        'name': entity.category.name,
-      },
+      'category': {'id': entity.category.id, 'name': entity.category.name},
       'priority': entity.priority,
       'timestamp': Timestamp.fromDate(entity.timestamp),
       'isRead': entity.isRead,

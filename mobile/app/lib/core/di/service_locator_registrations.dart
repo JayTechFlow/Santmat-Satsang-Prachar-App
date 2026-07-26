@@ -12,12 +12,30 @@ import '../services/cloud_functions_service.dart';
 import '../services/connectivity_service.dart';
 import '../services/network_monitor_service.dart';
 
-final environmentConfigurationProvider = Provider<EnvironmentConfiguration>((ref) {
+// --- Function Imports ---
+import '../functions/config/backend_api_configuration.dart';
+import '../functions/client/cloud_function_client.dart';
+import '../functions/services/callable_function_service.dart';
+import '../functions/services/https_function_service.dart';
+
+// --- Storage Imports ---
+import '../storage/providers/storage_provider.dart';
+import '../storage/providers/firebase_storage_provider.dart';
+import '../storage/resolvers/media_url_resolver.dart';
+import '../storage/resolvers/signed_url_resolver.dart';
+import '../storage/cache/media_cache_manager.dart';
+import '../storage/validators/media_integrity_validator.dart';
+
+final environmentConfigurationProvider = Provider<EnvironmentConfiguration>((
+  ref,
+) {
   return const EnvironmentConfiguration(currentEnvironment: Environment.dev);
 });
 
 final backendConfigurationProvider = Provider<BackendConfiguration>((ref) {
-  return BackendConfiguration(environment: ref.watch(environmentConfigurationProvider));
+  return BackendConfiguration(
+    environment: ref.watch(environmentConfigurationProvider),
+  );
 });
 
 final firestoreServiceProvider = Provider<FirestoreService>((ref) {
@@ -32,11 +50,15 @@ final firebaseAuthServiceProvider = Provider<FirebaseAuthService>((ref) {
   return FirebaseAuthService();
 });
 
-final firebaseMessagingServiceProvider = Provider<FirebaseMessagingService>((ref) {
+final firebaseMessagingServiceProvider = Provider<FirebaseMessagingService>((
+  ref,
+) {
   return FirebaseMessagingService();
 });
 
-final firebaseAnalyticsServiceProvider = Provider<FirebaseAnalyticsService>((ref) {
+final firebaseAnalyticsServiceProvider = Provider<FirebaseAnalyticsService>((
+  ref,
+) {
   return FirebaseAnalyticsService();
 });
 
@@ -65,4 +87,54 @@ final networkMonitorServiceProvider = Provider<NetworkMonitorService>((ref) {
 final isOnlineProvider = StreamProvider<bool>((ref) {
   final connectivity = ref.watch(connectivityServiceProvider);
   return connectivity.onConnectivityChanged;
+});
+
+// --- Function Providers ---
+final backendApiConfigurationProvider = Provider<BackendApiConfiguration>((
+  ref,
+) {
+  return const BackendApiConfiguration();
+});
+
+final cloudFunctionClientProvider = Provider<CloudFunctionClient>((ref) {
+  return CloudFunctionClient(
+    ref.watch(cloudFunctionsServiceProvider).functions,
+    ref.watch(backendApiConfigurationProvider),
+  );
+});
+
+final callableFunctionServiceProvider = Provider<CallableFunctionService>((
+  ref,
+) {
+  return CallableFunctionService(ref.watch(cloudFunctionClientProvider));
+});
+
+final httpsFunctionServiceProvider = Provider<HttpsFunctionService>((ref) {
+  return HttpsFunctionService(ref.watch(cloudFunctionClientProvider));
+});
+
+// --- Storage Providers ---
+
+final storageProvider = Provider<StorageProvider>((ref) {
+  // Can switch based on environmentConfigurationProvider if needed
+  // For now we default to FirebaseStorageProvider
+  return FirebaseStorageProvider();
+});
+
+final mediaUrlResolverProvider = Provider<MediaUrlResolver>((ref) {
+  return MediaUrlResolver(ref.watch(storageProvider));
+});
+
+final signedUrlResolverProvider = Provider<SignedUrlResolver>((ref) {
+  return SignedUrlResolver(ref.watch(storageProvider));
+});
+
+final mediaCacheManagerProvider = Provider<MediaCacheManager>((ref) {
+  return MediaCacheManager(ref.watch(storageProvider));
+});
+
+final mediaIntegrityValidatorProvider = Provider<MediaIntegrityValidator>((
+  ref,
+) {
+  return MediaIntegrityValidator();
 });
