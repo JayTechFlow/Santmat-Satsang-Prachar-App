@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/audio_providers.dart';
 import '../widgets/audio_state_widgets.dart';
 import '../../domain/entities/playback_state_entity.dart';
+import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
-import '../../../../l10n/gen/app_localizations.dart';
+import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/widgets/ssp_app_bar.dart';
 
 class AudioDetailsPage extends ConsumerWidget {
   final String audioId;
@@ -15,14 +17,23 @@ class AudioDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audioAsync = ref.watch(audioDetailsProvider(audioId));
-    final l10n = AppLocalizations.of(context)!;
     final playbackState = ref.watch(playbackStateProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: SSPAppBar(
+        title: '', // Transparent AppBar
+        leading: IconButton(
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 32),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.favorite_border), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.share_rounded), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.favorite_border_rounded),
+            onPressed: () {},
+          ),
+          AppSpacing.horizontalSpaceSm,
         ],
       ),
       body: audioAsync.when(
@@ -36,141 +47,217 @@ class AudioDetailsPage extends ConsumerWidget {
               playbackState.currentAudio?.id == audio.id &&
               playbackState.status == PlaybackStatus.playing;
 
-          return SingleChildScrollView(
-            padding: AppSpacing.paddingAllLg,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Hero(
-                  tag: 'audio_art_${audio.id}',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                    child: Image.network(
-                      audio.artworkUrl,
-                      width: 250,
-                      height: 250,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 250,
-                        height: 250,
-                        color: Colors.grey.shade300,
-                        child: const Icon(Icons.music_note, size: 80),
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.deepSaffron.withValues(alpha: 0.15),
+                  Theme.of(context).scaffoldBackgroundColor,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: AppSpacing.paddingAllLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    AppSpacing.verticalSpaceLg,
+                    // Large Artwork
+                    Hero(
+                      tag: 'audio_art_${audio.id}',
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: AppRadius.borderRadiusXl,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.deepSaffron.withValues(
+                                alpha: 0.2,
+                              ),
+                              blurRadius: 30,
+                              offset: const Offset(0, 15),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: AppRadius.borderRadiusXl,
+                          child: Image.network(
+                            audio.artworkUrl,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            height: MediaQuery.of(context).size.width * 0.8,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              height: MediaQuery.of(context).size.width * 0.8,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.music_note_rounded,
+                                size: 80,
+                                color: AppColors.deepSaffron.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  audio.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  audio.speaker,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                // Playback Controls
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.shuffle),
-                      onPressed: () => ref
-                          .read(playbackStateProvider.notifier)
-                          .toggleShuffle(),
-                      color: playbackState.isShuffleEnabled
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.skip_previous),
-                      iconSize: 40,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        isPlaying
-                            ? Icons.pause_circle_filled
-                            : Icons.play_circle_filled,
-                      ),
-                      iconSize: 64,
-                      color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {
-                        if (isPlaying) {
-                          ref.read(playbackStateProvider.notifier).pause();
-                        } else {
-                          ref.read(playbackStateProvider.notifier).play(audio);
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      iconSize: 40,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.repeat),
-                      onPressed: () => ref
-                          .read(playbackStateProvider.notifier)
-                          .toggleRepeat(),
-                      color: playbackState.isRepeatEnabled
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                // Progress Bar Placeholder
-                LinearProgressIndicator(value: 0.3),
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('01:30', style: Theme.of(context).textTheme.bodySmall),
+                    const Spacer(),
+                    // Title & Speaker
                     Text(
-                      '${audio.duration.inMinutes}:00',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                // Details
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.description,
-                        style: Theme.of(context).textTheme.titleMedium,
+                      audio.title,
+                      style: AppTypography.headlineMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary(context),
                       ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(audio.description),
-                      const SizedBox(height: AppSpacing.lg),
-                      Row(
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    AppSpacing.verticalSpaceSm,
+                    Text(
+                      audio.speaker,
+                      style: AppTypography.titleMedium.copyWith(
+                        color: AppColors.textSecondary(context),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    AppSpacing.verticalSpaceLg,
+
+                    // Progress Bar
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: AppColors.deepSaffron,
+                        inactiveTrackColor: AppColors.deepSaffron.withValues(
+                          alpha: 0.2,
+                        ),
+                        thumbColor: AppColors.deepSaffron,
+                        trackHeight: 6.0,
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 8.0,
+                        ),
+                        overlayShape: const RoundSliderOverlayShape(
+                          overlayRadius: 16.0,
+                        ),
+                      ),
+                      child: Slider(
+                        value: 0.3, // Mock progress
+                        onChanged: (val) {},
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(Icons.category, size: 16),
-                          const SizedBox(width: AppSpacing.xs),
-                          Text(audio.category.name),
-                          const SizedBox(width: AppSpacing.lg),
-                          const Icon(Icons.language, size: 16),
-                          const SizedBox(width: AppSpacing.xs),
-                          Text(audio.language),
+                          Text(
+                            '01:30',
+                            style: AppTypography.labelLarge.copyWith(
+                              color: AppColors.textSecondary(context),
+                            ),
+                          ),
+                          Text(
+                            _formatDuration(audio.duration),
+                            style: AppTypography.labelLarge.copyWith(
+                              color: AppColors.textSecondary(context),
+                            ),
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    AppSpacing.verticalSpaceLg,
+
+                    // Playback Controls
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.shuffle_rounded),
+                          color: playbackState.isShuffleEnabled
+                              ? AppColors.deepSaffron
+                              : AppColors.textSecondary(context),
+                          onPressed: () => ref
+                              .read(playbackStateProvider.notifier)
+                              .toggleShuffle(),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.skip_previous_rounded),
+                          iconSize: 48,
+                          color: AppColors.textPrimary(context),
+                          onPressed: () {},
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (isPlaying) {
+                              ref.read(playbackStateProvider.notifier).pause();
+                            } else {
+                              ref
+                                  .read(playbackStateProvider.notifier)
+                                  .play(audio);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: const BoxDecoration(
+                              color: AppColors.deepSaffron,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.deepSaffron,
+                                  blurRadius: 20,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              isPlaying
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                              size: 48,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.skip_next_rounded),
+                          iconSize: 48,
+                          color: AppColors.textPrimary(context),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.repeat_rounded),
+                          color: playbackState.isRepeatEnabled
+                              ? AppColors.deepSaffron
+                              : AppColors.textSecondary(context),
+                          onPressed: () => ref
+                              .read(playbackStateProvider.notifier)
+                              .toggleRepeat(),
+                        ),
+                      ],
+                    ),
+                    AppSpacing.verticalSpaceLg,
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },
       ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return duration.inHours > 0
+        ? "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds"
+        : "$twoDigitMinutes:$twoDigitSeconds";
   }
 }

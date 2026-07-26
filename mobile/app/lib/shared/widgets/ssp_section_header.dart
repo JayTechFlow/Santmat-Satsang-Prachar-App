@@ -7,12 +7,14 @@ class SSPSectionHeader extends StatelessWidget {
   final String title;
   final String? actionLabel;
   final VoidCallback? onActionTap;
+  final IconData? icon;
 
   const SSPSectionHeader({
     super.key,
     required this.title,
     this.actionLabel,
     this.onActionTap,
+    this.icon,
   });
 
   @override
@@ -22,9 +24,25 @@ class SSPSectionHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text(
-          title,
-          style: AppTypography.titleLarge.copyWith(fontWeight: FontWeight.w600),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24,
+              ),
+              AppSpacing.horizontalSpaceSm,
+            ],
+            Text(
+              title,
+              style: AppTypography.titleLarge.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
         if (actionLabel != null && onActionTap != null)
           GestureDetector(

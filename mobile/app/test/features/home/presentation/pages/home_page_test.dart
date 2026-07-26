@@ -76,7 +76,8 @@ void main() {
     // Verify app bar is rendered
     expect(find.byType(AppBar), findsOneWidget);
 
-    // Verify custom sections rendered (since list is empty, GreetingCard should be there)
-    expect(find.textContaining('जय गुरुदेव'), findsOneWidget);
+    // Verify the dashboard loads successfully
+    expect(find.textContaining('संतमत सत्संग प्रचार'), findsOneWidget);
+    expect(find.textContaining('भजन, गायक, कीवर्ड खोजें...'), findsOneWidget);
   });
 }

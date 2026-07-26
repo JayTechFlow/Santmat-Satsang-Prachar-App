@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../authentication/presentation/providers/auth_state_provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/theme/app_icons.dart';
 import '../../../../shared/theme/app_spacing.dart';
-import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/widgets/ssp_app_bar.dart';
 import '../../../../shared/widgets/ssp_hero_banner.dart';
 import '../../../../shared/widgets/ssp_search_bar.dart';
-import '../../../../shared/widgets/ssp_quick_action_card.dart';
 import '../../../../shared/widgets/ssp_section_header.dart';
 import '../../../../shared/widgets/ssp_audio_tile.dart';
+import '../../../../shared/widgets/ssp_action_card.dart';
+import '../../../../shared/widgets/ssp_quote_card.dart';
 import '../../../../shared/widgets/ssp_loading.dart';
 import '../../../../shared/widgets/ssp_error_state.dart';
-import '../../../../shared/utils/app_responsive.dart';
 import '../providers/home_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -22,22 +20,21 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeStateProvider);
-    final authState = ref.watch(authStateProvider);
-    final user = authState.value?.user;
-    final displayName = user?.displayName ?? 'Devotee';
 
     return homeState.when(
       data: (data) {
         final banner = data.banners.isNotEmpty ? data.banners.first : null;
-        final suvichar = data.dailyQuote;
 
         return Scaffold(
           appBar: SSPAppBar(
-            title: 'सत्संग प्रचार',
-            centerTitle: false,
+            title: 'संतमत सत्संग प्रचार',
+            subtitle: '|| सत्य ही हमारा धर्म है ||',
+            centerTitle: true,
             actions: [
-              IconButton(icon: const Icon(AppIcons.info), onPressed: () {}),
-              IconButton(icon: const Icon(AppIcons.profile), onPressed: () {}),
+              IconButton(
+                icon: const Icon(Icons.notifications_none_rounded),
+                onPressed: () {},
+              ),
               AppSpacing.horizontalSpaceSm,
             ],
           ),
@@ -51,86 +48,66 @@ class HomePage extends ConsumerWidget {
                   padding: AppSpacing.paddingAllLg,
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      Text(
-                        'जय गुरुदेव, $displayName',
-                        style: AppTypography.headlineMedium.copyWith(
-                          color: AppColors.textPrimary(context),
-                        ),
-                      ),
-                      AppSpacing.verticalSpaceSm,
-                      Text(
-                        'Welcome to your daily spiritual journey.',
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
-                      AppSpacing.verticalSpaceLg,
-
                       // Search Bar
-                      SSPSearchBar(onTap: () {}, onVoiceTap: () {}),
+                      SSPSearchBar(
+                        hintText: 'भजन, गायक, कीवर्ड खोजें...',
+                        onTap: () {},
+                        onVoiceTap: () {},
+                      ),
                       AppSpacing.verticalSpaceLg,
 
-                      // Hero Banner with Daily Quote
-                      if (banner != null)
-                        SSPHeroBanner(
-                          title: banner.title,
-                          imageUrl: banner.imageUrl,
-                          suvicharText: suvichar?.quoteText,
-                          onShareTap: () {},
-                          onSaveTap: () {},
-                        ),
+                      // Hero Banner
+                      SSPHeroBanner(
+                        imageUrl:
+                            banner?.imageUrl ?? 'https://picsum.photos/800/400',
+                        quoteText:
+                            'सत्संग से ही जीवन का उद्धार है।\nसत्संग सुनें, जीवन संवारें।',
+                        onShareTap: () {},
+                      ),
                       AppSpacing.verticalSpaceLg,
 
-                      // Quick Actions Grid Header
-                      const SSPSectionHeader(title: 'Quick Actions'),
-                      AppSpacing.verticalSpaceMd,
+                      // Action Cards Row
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SSPActionCard(
+                              title: 'ऑडियो',
+                              subtitle: 'सभी भजन सुनें',
+                              buttonText: 'सुनें',
+                              icon: Icons.music_note_rounded,
+                              themeColor: AppColors.deepSaffron,
+                              onTap: () => context.push('/audio'),
+                            ),
+                          ),
+                          AppSpacing.horizontalSpaceLg,
+                          Expanded(
+                            child: SSPActionCard(
+                              title: 'स्तुति-विनती',
+                              subtitle: 'प्रातः एवं संध्या स्तुति',
+                              buttonText: 'देखें',
+                              icon: Icons.sign_language_rounded,
+                              themeColor: AppColors.maroon,
+                              onTap: () => context.push('/satsang'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      AppSpacing.verticalSpaceLg,
+
+                      // Quote Card
+                      const SSPQuoteCard(
+                        text:
+                            'सत्संग सुनने से मन शुद्ध होता है और\nजीवन में शांति का प्रकाश फैलता है।',
+                      ),
+                      AppSpacing.verticalSpaceLg,
                     ]),
                   ),
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  sliver: SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: AppResponsive.getCrossAxisCount(
-                        context,
-                        mobile: 3,
-                        tablet: 4,
-                        desktop: 6,
-                      ),
-                      mainAxisSpacing: AppSpacing.sm,
-                      crossAxisSpacing: AppSpacing.sm,
-                      childAspectRatio: 1.0,
-                    ),
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final action = data.quickActions[index];
-                      IconData iconData = AppIcons.info;
-                      if (action.iconName == 'library_music') {
-                        iconData = AppIcons.library;
-                      }
-                      if (action.iconName == 'book') {
-                        iconData = Icons.book_rounded;
-                      }
-                      if (action.iconName == 'event') {
-                        iconData = Icons.event_rounded;
-                      }
-                      if (action.iconName == 'video_library') {
-                        iconData = Icons.video_library_rounded;
-                      }
 
-                      return SSPQuickActionCard(
-                        title: action.title,
-                        icon: iconData,
-                        onTap: () {},
-                      );
-                    }, childCount: data.quickActions.length),
-                  ),
-                ),
+                // Latest Bhajans
                 if (data.latestAudios.isNotEmpty)
                   SliverPadding(
                     padding: const EdgeInsets.only(
-                      top: AppSpacing.xxlg,
                       left: AppSpacing.lg,
                       right: AppSpacing.lg,
                     ),
@@ -139,8 +116,9 @@ class HomePage extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SSPSectionHeader(
-                            title: 'Latest Bhajans',
-                            actionLabel: 'See All',
+                            title: 'नवीनतम भजन',
+                            actionLabel: 'सभी देखें',
+                            icon: Icons.music_note_rounded,
                             onActionTap: () {},
                           ),
                           AppSpacing.verticalSpaceMd,
@@ -148,6 +126,7 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                   ),
+
                 if (data.latestAudios.isNotEmpty)
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(
@@ -170,10 +149,12 @@ class HomePage extends ConsumerWidget {
                             ),
                             child: SSPAudioTile(
                               title: audio.title,
-                              subtitle: audio.speaker,
+                              subtitle:
+                                  'स्वर: पूज्य श्री', // Hardcoded to match design mock
                               imageUrl: audio.audioUrl,
                               duration: formattedDuration,
-                              onTap: () {},
+                              onTap: () =>
+                                  context.push('/audio/details/${audio.id}'),
                               onPlayTap: () {},
                               onMoreTap: () {},
                             ),
@@ -202,7 +183,7 @@ class HomePage extends ConsumerWidget {
       ),
       loading: () => const Scaffold(
         appBar: SSPAppBar(title: ''),
-        body: SSPLoading(message: 'Loading your spiritual dashboard...'),
+        body: SSPLoading(message: 'Loading...'),
       ),
     );
   }

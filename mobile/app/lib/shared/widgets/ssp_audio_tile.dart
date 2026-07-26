@@ -37,12 +37,12 @@ class SSPAudioTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Thumbnail with Play Overlay
+            // Thumbnail with Play Overlay & Duration
             ClipRRect(
               borderRadius: AppRadius.borderRadiusMd,
               child: SizedBox(
-                width: 64,
-                height: 64,
+                width: 100,
+                height: 56,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -57,17 +57,34 @@ class SSPAudioTile extends StatelessWidget {
                       ),
                     ),
                     Container(color: Colors.black.withValues(alpha: 0.2)),
-                    if (onPlayTap != null)
-                      Center(
-                        child: GestureDetector(
-                          onTap: onPlayTap,
-                          child: const Icon(
-                            AppIcons.play,
+                    const Center(
+                      child: Icon(
+                        Icons.play_circle_fill_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          duration,
+                          style: AppTypography.labelSmall.copyWith(
                             color: Colors.white,
-                            size: 28,
+                            fontSize: 10,
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -82,49 +99,44 @@ class SSPAudioTile extends StatelessWidget {
                   Text(
                     title,
                     style: AppTypography.titleMedium.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary(context),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   AppSpacing.verticalSpaceXs,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          subtitle,
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary(context),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      AppSpacing.horizontalSpaceSm,
-                      // Duration Chip
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          duration,
-                          style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.textSecondary(context),
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    subtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary(context),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
+
+            AppSpacing.horizontalSpaceSm,
+
+            // Play Button Action
+            if (onPlayTap != null)
+              GestureDetector(
+                onTap: onPlayTap,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: AppColors.deepSaffron,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
 
             // More Menu
             if (onMoreTap != null)
@@ -132,6 +144,7 @@ class SSPAudioTile extends StatelessWidget {
                 icon: const Icon(AppIcons.more),
                 color: AppColors.textSecondary(context),
                 onPressed: onMoreTap,
+                visualDensity: VisualDensity.compact,
               ),
           ],
         ),

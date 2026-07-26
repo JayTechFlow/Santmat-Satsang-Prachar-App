@@ -3,13 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/audio_providers.dart';
 import '../widgets/audio_state_widgets.dart';
-import '../widgets/featured_audio_card.dart';
-import '../widgets/audio_category_section.dart';
-import '../widgets/recently_played_section.dart';
-import '../widgets/audio_card.dart';
-import '../widgets/mini_player.dart';
+import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_spacing.dart';
-import '../../../../l10n/gen/app_localizations.dart';
+import '../../../../shared/widgets/ssp_app_bar.dart';
+import '../../../../shared/widgets/ssp_audio_tile.dart';
+import '../../../../shared/widgets/ssp_section_header.dart';
+import '../../../../shared/widgets/ssp_mini_player.dart';
 
 class AudioHomePage extends ConsumerWidget {
   const AudioHomePage({super.key});
@@ -17,20 +16,18 @@ class AudioHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(audioHomeStateProvider);
-    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.audio),
+      appBar: SSPAppBar(
+        title: 'ऑडियो',
+        subtitle: '|| सभी भजन सुनें ||',
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded),
             onPressed: () => context.push('/search'),
           ),
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () => context.push('/audio/history'),
-          ),
+          AppSpacing.horizontalSpaceSm,
         ],
       ),
       body: state.isLoading
@@ -42,6 +39,7 @@ class AudioHomePage extends ConsumerWidget {
                   ref.read(audioHomeStateProvider.notifier).loadHomeData(),
             )
           : RefreshIndicator(
+              color: AppColors.deepSaffron,
               onRefresh: () =>
                   ref.read(audioHomeStateProvider.notifier).loadHomeData(),
               child: Stack(
@@ -49,99 +47,121 @@ class AudioHomePage extends ConsumerWidget {
                   CustomScrollView(
                     slivers: [
                       if (state.featuredAudio.isNotEmpty)
-                        SliverToBoxAdapter(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.md,
-                                  vertical: AppSpacing.sm,
-                                ),
-                                child: Text(
-                                  l10n.featuredAudio,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 220,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: state.featuredAudio.length,
-                                  itemBuilder: (context, index) {
-                                    return FeaturedAudioCard(
-                                      audio: state.featuredAudio[index],
-                                      onTap: () => context.push(
-                                        '/audio/details/${state.featuredAudio[index].id}',
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                            ],
-                          ),
-                        ),
-                      SliverToBoxAdapter(
-                        child: AudioCategorySection(
-                          title: l10n.categories,
-                          categories: state.categories,
-                          onCategoryTap: (category) =>
-                              context.push('/audio/category/${category.id}'),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: const SizedBox(height: AppSpacing.md),
-                      ),
-                      SliverToBoxAdapter(
-                        child: RecentlyPlayedSection(
-                          title: l10n.recentlyPlayed,
-                          recentlyPlayed: state.recentlyPlayed,
-                          onTap: (played) =>
-                              context.push('/audio/details/${played.audio.id}'),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
+                        SliverPadding(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
+                            horizontal: AppSpacing.lg,
+                            vertical: AppSpacing.md,
                           ),
-                          child: Text(
-                            l10n.popularAudio,
-                            style: Theme.of(context).textTheme.titleLarge,
+                          sliver: SliverToBoxAdapter(
+                            child: SSPSectionHeader(
+                              title: 'विशेष भजन',
+                              icon: Icons.star_rounded,
+                            ),
+                          ),
+                        ),
+                      if (state.featuredAudio.isNotEmpty)
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                          ),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final audio = state.featuredAudio[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.md,
+                                ),
+                                child: SSPAudioTile(
+                                  title: audio.title,
+                                  subtitle: audio.speaker,
+                                  imageUrl: audio.audioUrl,
+                                  duration: _formatDuration(audio.duration),
+                                  onTap: () => context.push(
+                                    '/audio/details/${audio.id}',
+                                  ),
+                                  onPlayTap: () {},
+                                  onMoreTap: () {},
+                                ),
+                              );
+                            }, childCount: state.featuredAudio.length),
+                          ),
+                        ),
+
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
+                        sliver: SliverToBoxAdapter(
+                          child: SSPSectionHeader(
+                            title: 'लोकप्रिय ऑडियो',
+                            icon: Icons.trending_up_rounded,
                           ),
                         ),
                       ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                            ),
-                            child: AudioCard(
-                              audio: state.popularAudio[index],
-                              onTap: () => context.push(
-                                '/audio/details/${state.popularAudio[index].id}',
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final audio = state.popularAudio[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.md,
                               ),
-                            ),
-                          );
-                        }, childCount: state.popularAudio.length),
+                              child: SSPAudioTile(
+                                title: audio.title,
+                                subtitle: audio.speaker,
+                                imageUrl: audio.audioUrl,
+                                duration: _formatDuration(audio.duration),
+                                onTap: () =>
+                                    context.push('/audio/details/${audio.id}'),
+                                onPlayTap: () {},
+                                onMoreTap: () {},
+                              ),
+                            );
+                          }, childCount: state.popularAudio.length),
+                        ),
                       ),
                       const SliverPadding(
-                        padding: EdgeInsets.only(bottom: 100),
+                        padding: EdgeInsets.only(bottom: 120),
                       ),
                     ],
                   ),
-                  const Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: MiniPlayer(),
+
+                  // Global Mini Player at the bottom
+                  Positioned(
+                    bottom: AppSpacing.md,
+                    left: AppSpacing.lg,
+                    right: AppSpacing.lg,
+                    child: SSPMiniPlayer(
+                      title: 'प्रभु से प्रीत लगाई रे',
+                      subtitle: 'पूज्य श्री',
+                      imageUrl: 'https://picsum.photos/200',
+                      durationText: '10:15',
+                      themeColor: AppColors.deepSaffron,
+                      onPlay: () {},
+                    ),
                   ),
                 ],
               ),
             ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return duration.inHours > 0
+        ? "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds"
+        : "$twoDigitMinutes:$twoDigitSeconds";
   }
 }
