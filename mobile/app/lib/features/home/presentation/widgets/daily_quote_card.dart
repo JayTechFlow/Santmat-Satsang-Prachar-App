@@ -16,10 +16,10 @@ class DailyQuoteCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp8,
       ),
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.sp16),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -33,7 +33,7 @@ class DailyQuoteCard extends StatelessWidget {
                 Icons.format_quote,
                 color: theme.colorScheme.onSecondaryContainer,
               ),
-              const SizedBox(width: AppSpacing.xs),
+              const SizedBox(width: AppSpacing.sp4),
               Text(
                 l10n.todaysQuote,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -43,7 +43,7 @@ class DailyQuoteCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.sp8),
           Text(
             '"${quote.quoteText}"',
             style: theme.textTheme.bodyLarge?.copyWith(
@@ -51,7 +51,7 @@ class DailyQuoteCard extends StatelessWidget {
               color: theme.colorScheme.onSecondaryContainer,
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: AppSpacing.sp4),
           Align(
             alignment: Alignment.centerRight,
             child: Text(

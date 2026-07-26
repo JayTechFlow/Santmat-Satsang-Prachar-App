@@ -25,7 +25,7 @@ class NotificationCard extends StatelessWidget {
       background: Container(
         color: Colors.red,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: InkWell(
@@ -34,7 +34,7 @@ class NotificationCard extends StatelessWidget {
           color: notification.isRead
               ? null
               : Theme.of(context).colorScheme.primary.withAlpha(20),
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,7 +45,7 @@ class NotificationCard extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,14 +58,14 @@ class NotificationCard extends StatelessWidget {
                             : FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       notification.body,
                       style: Theme.of(context).textTheme.bodyMedium,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: AppSpacing.sp8),
                     Text(
                       '${notification.timestamp.day}/${notification.timestamp.month}/${notification.timestamp.year} ${notification.timestamp.hour}:${notification.timestamp.minute.toString().padLeft(2, '0')}',
                       style: Theme.of(

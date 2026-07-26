@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_icons.dart';
 
 class PlaceholderPage extends StatelessWidget {
   final String title;
@@ -8,34 +11,30 @@ class PlaceholderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: AppSpacing.p24,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.construction,
+                AppIcons.info,
                 size: 64,
-                color: theme.colorScheme.primary,
+                color: AppColors.deepSaffron,
               ),
-              const SizedBox(height: AppSpacing.md),
+              AppSpacing.gapH24,
               Text(
                 title,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTypography.headline,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.sm),
+              AppSpacing.gapH12,
               Text(
                 'This module is currently under development.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textMuted(context),
                 ),
                 textAlign: TextAlign.center,
               ),

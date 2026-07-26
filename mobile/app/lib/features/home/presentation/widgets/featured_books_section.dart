@@ -21,8 +21,8 @@ class FeaturedBooksSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,13 +41,13 @@ class FeaturedBooksSection extends StatelessWidget {
           height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16),
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index];
               return Container(
                 width: 120,
-                margin: const EdgeInsets.only(right: AppSpacing.md),
+                margin: const EdgeInsets.only(right: AppSpacing.sp16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -69,7 +69,7 @@ class FeaturedBooksSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       book.title,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -84,7 +84,7 @@ class FeaturedBooksSection extends StatelessWidget {
             },
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.sp16),
       ],
     );
   }

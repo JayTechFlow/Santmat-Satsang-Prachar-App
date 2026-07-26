@@ -18,11 +18,11 @@ class StorageManagementPage extends ConsumerWidget {
           final usagePercent = usedSpace / stats.totalSpace;
 
           return ListView(
-            padding: AppSpacing.paddingAllMd,
+            padding: AppSpacing.p16,
             children: [
               Card(
                 child: Padding(
-                  padding: AppSpacing.paddingAllMd,
+                  padding: AppSpacing.p16,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -30,13 +30,13 @@ class StorageManagementPage extends ConsumerWidget {
                         'Device Storage',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.sp16),
                       LinearProgressIndicator(
                         value: usagePercent,
                         minHeight: 12,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.sp8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -48,12 +48,12 @@ class StorageManagementPage extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.sp24),
               Text(
                 'App Storage Usage',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sp16),
               ListTile(
                 leading: const Icon(Icons.download),
                 title: const Text('Downloads'),

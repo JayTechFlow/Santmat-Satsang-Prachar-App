@@ -16,7 +16,7 @@ class AccountInfoCard extends StatelessWidget {
     final dateStr = DateFormat.yMMMd().format(accountInfo.memberSince);
 
     return Padding(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.sp16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,7 +26,7 @@ class AccountInfoCard extends StatelessWidget {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: AppSpacing.sp4),
           Text(
             l10n.appVersion(accountInfo.applicationVersion),
             style: theme.textTheme.bodySmall?.copyWith(

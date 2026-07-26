@@ -42,7 +42,7 @@ class EventsHomePage extends ConsumerWidget {
                   if (state.featuredEvents.isNotEmpty) ...[
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
+                        padding: const EdgeInsets.all(AppSpacing.sp16),
                         child: Text(
                           'Featured Events',
                           style: Theme.of(context).textTheme.titleLarge,
@@ -55,7 +55,7 @@ class EventsHomePage extends ConsumerWidget {
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
+                            horizontal: AppSpacing.sp16,
                           ),
                           itemCount: state.featuredEvents.length,
                           itemBuilder: (context, index) {
@@ -72,7 +72,7 @@ class EventsHomePage extends ConsumerWidget {
                   ],
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
+                      padding: const EdgeInsets.all(AppSpacing.sp16),
                       child: Text(
                         'Upcoming Events',
                         style: Theme.of(context).textTheme.titleLarge,
@@ -83,7 +83,7 @@ class EventsHomePage extends ConsumerWidget {
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
+                          horizontal: AppSpacing.sp16,
                         ),
                         child: EventCard(
                           event: state.upcomingEvents[index],

@@ -17,13 +17,13 @@ class MiniPlayer extends ConsumerWidget {
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp8,
       ),
       child: Row(
         children: [
           CircleAvatar(backgroundImage: NetworkImage(audio.thumbnailUrl)),
-          const SizedBox(width: AppSpacing.md),
+          const SizedBox(width: AppSpacing.sp16),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,

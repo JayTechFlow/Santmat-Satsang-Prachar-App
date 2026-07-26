@@ -19,7 +19,7 @@ class FeaturedCampaignCard extends StatelessWidget {
 
     return Container(
       width: 300,
-      margin: const EdgeInsets.only(right: AppSpacing.md),
+      margin: const EdgeInsets.only(right: AppSpacing.sp16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         image: DecorationImage(
@@ -35,7 +35,7 @@ class FeaturedCampaignCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,13 +49,13 @@ class FeaturedCampaignCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.sp8),
               LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.white30,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: AppSpacing.sp4),
               Text(
                 '${(progress * 100).toStringAsFixed(1)}% Funded',
                 style: Theme.of(

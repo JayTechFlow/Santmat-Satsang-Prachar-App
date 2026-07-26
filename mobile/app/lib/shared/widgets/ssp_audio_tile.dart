@@ -4,148 +4,145 @@ import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_icons.dart';
+import '../theme/app_animations.dart';
 
 class SSPAudioTile extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String imageUrl;
   final String duration;
+  final String? imageUrl;
+  final bool isPlaying;
   final VoidCallback onTap;
-  final VoidCallback? onPlayTap;
-  final VoidCallback? onMoreTap;
+  final VoidCallback? onPlayPause;
+  final VoidCallback? onFavorite;
 
   const SSPAudioTile({
     super.key,
     required this.title,
     required this.subtitle,
-    required this.imageUrl,
     required this.duration,
+    this.imageUrl,
+    this.isPlaying = false,
     required this.onTap,
-    this.onPlayTap,
-    this.onMoreTap,
+    this.onPlayPause,
+    this.onFavorite,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return SSPPressable(
       onTap: onTap,
-      borderRadius: AppRadius.borderRadiusLg,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: AppSpacing.sm,
-          horizontal: AppSpacing.md,
+      scaleDown: 0.98,
+      child: Container(
+        padding: AppSpacing.p12,
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16, vertical: AppSpacing.sp4),
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: AppRadius.brLg,
+          border: Border.all(color: AppColors.border(context)),
         ),
         child: Row(
           children: [
-            // Thumbnail with Play Overlay & Duration
+            // Artwork
             ClipRRect(
-              borderRadius: AppRadius.borderRadiusMd,
-              child: SizedBox(
-                width: 100,
-                height: 56,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
+              borderRadius: AppRadius.brMd,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (imageUrl != null)
                     Image.network(
-                      imageUrl,
+                      imageUrl!, 
+                      width: 64, 
+                      height: 64, 
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHighest,
-                        child: const Icon(AppIcons.library, size: 24),
+                        width: 64,
+                        height: 64,
+                        color: AppColors.deepSaffron.withValues(alpha: 0.1),
+                        child: Icon(AppIcons.library, color: AppColors.deepSaffron),
                       ),
+                    )
+                  else
+                    Container(
+                      width: 64,
+                      height: 64,
+                      color: AppColors.deepSaffron.withValues(alpha: 0.1),
+                      child: Icon(AppIcons.library, color: AppColors.deepSaffron),
                     ),
-                    Container(color: Colors.black.withValues(alpha: 0.2)),
-                    const Center(
-                      child: Icon(
-                        Icons.play_circle_fill_rounded,
-                        color: Colors.white,
-                        size: 28,
-                      ),
+                  if (isPlaying)
+                    Container(
+                      width: 64,
+                      height: 64,
+                      color: Colors.black.withValues(alpha: 0.4),
+                      child: const Icon(AppIcons.waveform, color: Colors.white),
                     ),
-                    Positioned(
-                      bottom: 4,
-                      right: 4,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          duration,
-                          style: AppTypography.labelSmall.copyWith(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
             ),
-            AppSpacing.horizontalSpaceMd,
-
-            // Details
+            AppSpacing.gapW16,
+            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: AppTypography.titleMedium.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary(context),
-                    ),
+                    style: AppTypography.title.copyWith(fontSize: 18),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  AppSpacing.verticalSpaceXs,
+                  AppSpacing.gapH4,
                   Text(
                     subtitle,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary(context),
-                    ),
+                    style: AppTypography.body.copyWith(color: AppColors.textSecondary(context), fontSize: 14),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                  ),
+                  AppSpacing.gapH8,
+                  // Duration Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.deepSaffron.withValues(alpha: 0.1),
+                      borderRadius: AppRadius.pill,
+                    ),
+                    child: Text(
+                      duration,
+                      style: AppTypography.label.copyWith(color: AppColors.deepSaffron),
+                    ),
                   ),
                 ],
               ),
             ),
-
-            AppSpacing.horizontalSpaceSm,
-
-            // Play Button Action
-            if (onPlayTap != null)
-              GestureDetector(
-                onTap: onPlayTap,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    color: AppColors.deepSaffron,
-                    shape: BoxShape.circle,
+            // Actions
+            Column(
+              children: [
+                if (onFavorite != null)
+                  IconButton(
+                    icon: Icon(AppIcons.favoriteOutline, size: 20, color: AppColors.textMuted(context)),
+                    onPressed: onFavorite,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
-                  child: const Icon(
-                    Icons.play_arrow_rounded,
-                    color: Colors.white,
-                    size: 20,
+                AppSpacing.gapH12,
+                if (onPlayPause != null)
+                  SSPPressable(
+                    onTap: onPlayPause!,
+                    child: Container(
+                      padding: AppSpacing.p8,
+                      decoration: BoxDecoration(
+                        color: isPlaying ? AppColors.deepSaffron : AppColors.deepSaffron.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isPlaying ? AppIcons.pause : AppIcons.play,
+                        size: 20,
+                        color: isPlaying ? Colors.white : AppColors.deepSaffron,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-
-            // More Menu
-            if (onMoreTap != null)
-              IconButton(
-                icon: const Icon(AppIcons.more),
-                color: AppColors.textSecondary(context),
-                onPressed: onMoreTap,
-                visualDensity: VisualDensity.compact,
-              ),
+              ],
+            ),
           ],
         ),
       ),

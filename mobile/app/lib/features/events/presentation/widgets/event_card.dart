@@ -12,7 +12,7 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -20,7 +20,7 @@ class EventCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -39,7 +39,7 @@ class EventCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,14 +52,14 @@ class EventCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       '${event.schedule.startDate.day}/${event.schedule.startDate.month}/${event.schedule.startDate.year}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       '${event.location.city}, ${event.location.state}',
                       style: Theme.of(context).textTheme.bodySmall,

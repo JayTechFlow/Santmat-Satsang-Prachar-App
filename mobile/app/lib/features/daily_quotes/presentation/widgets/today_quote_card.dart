@@ -13,8 +13,8 @@ class TodayQuoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp8,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -31,7 +31,7 @@ class TodayQuoteCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Padding(
-          padding: AppSpacing.paddingAllLg,
+          padding: AppSpacing.p24,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -43,7 +43,7 @@ class TodayQuoteCard extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.sp24),
               Text(
                 '"${quote.quoteText}"',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -52,7 +52,7 @@ class TodayQuoteCard extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.sp24),
               Text(
                 '- ${quote.author.name}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(

@@ -12,13 +12,13 @@ class FilterBottomSheet extends StatelessWidget {
 
     return SafeArea(
       child: Padding(
-        padding: AppSpacing.paddingAllLg,
+        padding: AppSpacing.p24,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.filters, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.sp24),
             Text(l10n.categories),
             // Mock categories
             Wrap(
@@ -36,7 +36,7 @@ class FilterBottomSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sp16),
             Text(l10n.language),
             Wrap(
               spacing: 8,
@@ -53,7 +53,7 @@ class FilterBottomSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.sp24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

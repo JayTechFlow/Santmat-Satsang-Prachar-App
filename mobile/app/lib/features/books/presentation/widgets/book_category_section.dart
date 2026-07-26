@@ -24,18 +24,18 @@ class BookCategorySection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Text(title, style: Theme.of(context).textTheme.titleLarge),
         ),
         SizedBox(
           height: 100,
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16),
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sp16),
             itemBuilder: (context, index) {
               final category = categories[index];
               return InkWell(
@@ -43,7 +43,7 @@ class BookCategorySection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.md),
                 child: Container(
                   width: 140,
-                  padding: AppSpacing.paddingAllSm,
+                  padding: AppSpacing.p8,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(AppRadius.md),
@@ -63,7 +63,7 @@ class BookCategorySection extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.sp4),
                       Text(
                         category.description,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(

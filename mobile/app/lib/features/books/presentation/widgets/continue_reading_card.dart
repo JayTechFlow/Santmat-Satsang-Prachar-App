@@ -18,9 +18,9 @@ class ContinueReadingCard extends StatelessWidget {
     final book = progress.book;
     return Card(
       margin: const EdgeInsets.only(
-        bottom: AppSpacing.md,
-        left: AppSpacing.md,
-        right: AppSpacing.md,
+        bottom: AppSpacing.sp16,
+        left: AppSpacing.sp16,
+        right: AppSpacing.sp16,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -29,7 +29,7 @@ class ContinueReadingCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Row(
             children: [
               ClipRRect(
@@ -47,7 +47,7 @@ class ContinueReadingCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,20 +58,20 @@ class ContinueReadingCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       'Page ${progress.lastReadPage} of ${book.pageCount}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    const SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: AppSpacing.sp8),
                     LinearProgressIndicator(
                       value: progress.percentage,
-                      borderRadius: BorderRadius.circular(AppRadius.xs),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Icon(
                 Icons.play_circle_fill,
                 size: 32,

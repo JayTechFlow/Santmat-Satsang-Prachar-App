@@ -12,7 +12,7 @@ class BookCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -20,7 +20,7 @@ class BookCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllSm,
+          padding: AppSpacing.p8,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -39,7 +39,7 @@ class BookCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +50,7 @@ class BookCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       book.author.name,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -59,7 +59,7 @@ class BookCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Row(
                       children: [
                         Icon(
@@ -67,7 +67,7 @@ class BookCard extends StatelessWidget {
                           size: 14,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.sp4),
                         Text(
                           '${book.pageCount} pages',
                           style: Theme.of(context).textTheme.bodySmall

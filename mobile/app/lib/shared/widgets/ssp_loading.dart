@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
 
-class SSPLoading extends StatelessWidget {
+class SSPLoadingWidget extends StatelessWidget {
   final String? message;
 
-  const SSPLoading({super.key, this.message});
+  const SSPLoadingWidget({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(
+          CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.deepSaffron),
           ),
           if (message != null) ...[
-            AppSpacing.verticalSpaceMd,
-            Text(message!, style: Theme.of(context).textTheme.bodyMedium),
+            AppSpacing.gapH16,
+            Text(
+              message!,
+              style: AppTypography.body.copyWith(color: AppColors.textMuted(context)),
+              textAlign: TextAlign.center,
+            ),
           ],
         ],
       ),

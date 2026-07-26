@@ -27,7 +27,7 @@ class SSPActionCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: AppRadius.borderRadiusLg,
+        borderRadius: AppRadius.brLg,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -47,9 +47,9 @@ class SSPActionCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: AppRadius.borderRadiusLg,
+          borderRadius: AppRadius.brLg,
           child: Padding(
-            padding: AppSpacing.paddingAllLg,
+            padding: AppSpacing.p24,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -63,28 +63,28 @@ class SSPActionCard extends StatelessWidget {
                   ),
                   child: Icon(icon, color: Colors.white, size: 32),
                 ),
-                AppSpacing.verticalSpaceMd,
+                AppSpacing.gapH16,
                 // Title
                 Text(
                   title,
-                  style: AppTypography.titleMedium.copyWith(
+                  style: AppTypography.subtitle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary(context),
                   ),
                   textAlign: TextAlign.center,
                 ),
-                AppSpacing.verticalSpaceXs,
+                AppSpacing.gapH4,
                 // Subtitle
                 Text(
                   subtitle,
-                  style: AppTypography.bodySmall.copyWith(
+                  style: AppTypography.caption.copyWith(
                     color: AppColors.textSecondary(context),
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                AppSpacing.verticalSpaceLg,
+                AppSpacing.gapH24,
                 // Button
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -100,12 +100,12 @@ class SSPActionCard extends StatelessWidget {
                     children: [
                       Text(
                         buttonText,
-                        style: AppTypography.labelLarge.copyWith(
+                        style: AppTypography.button.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      AppSpacing.horizontalSpaceXs,
+                      AppSpacing.gapW4,
                       const Icon(
                         Icons.arrow_forward_rounded,
                         color: Colors.white,

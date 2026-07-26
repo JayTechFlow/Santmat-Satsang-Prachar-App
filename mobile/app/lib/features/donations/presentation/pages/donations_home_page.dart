@@ -40,7 +40,7 @@ class DonationsHomePage extends ConsumerWidget {
                   if (state.featuredCampaigns.isNotEmpty) ...[
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
+                        padding: const EdgeInsets.all(AppSpacing.sp16),
                         child: Text(
                           'Featured Campaigns',
                           style: Theme.of(context).textTheme.titleLarge,
@@ -53,7 +53,7 @@ class DonationsHomePage extends ConsumerWidget {
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
+                            horizontal: AppSpacing.sp16,
                           ),
                           itemCount: state.featuredCampaigns.length,
                           itemBuilder: (context, index) {
@@ -70,7 +70,7 @@ class DonationsHomePage extends ConsumerWidget {
                   ],
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
+                      padding: const EdgeInsets.all(AppSpacing.sp16),
                       child: Text(
                         'All Campaigns',
                         style: Theme.of(context).textTheme.titleLarge,
@@ -81,7 +81,7 @@ class DonationsHomePage extends ConsumerWidget {
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
+                          horizontal: AppSpacing.sp16,
                         ),
                         child: DonationCampaignCard(
                           campaign: state.campaigns[index],

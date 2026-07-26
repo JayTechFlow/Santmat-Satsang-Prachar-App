@@ -14,8 +14,8 @@ class DeleteAccountButton extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.md,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp16,
       ),
       child: TextButton.icon(
         onPressed: onDelete,

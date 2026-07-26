@@ -33,8 +33,8 @@ class QuickActionsGrid extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp8,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +45,7 @@ class QuickActionsGrid extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.sp8),
           LayoutBuilder(
             builder: (context, constraints) {
               final crossAxisCount = constraints.maxWidth > 600 ? 8 : 4;
@@ -54,8 +54,8 @@ class QuickActionsGrid extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: AppSpacing.sm,
-                  mainAxisSpacing: AppSpacing.sm,
+                  crossAxisSpacing: AppSpacing.sp8,
+                  mainAxisSpacing: AppSpacing.sp8,
                   childAspectRatio: 0.8,
                 ),
                 itemCount: actions.length,
@@ -70,7 +70,7 @@ class QuickActionsGrid extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(AppSpacing.md),
+                          padding: const EdgeInsets.all(AppSpacing.sp16),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.primaryContainer,
                             shape: BoxShape.circle,
@@ -80,7 +80,7 @@ class QuickActionsGrid extends StatelessWidget {
                             color: theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.xs),
+                        const SizedBox(height: AppSpacing.sp4),
                         Text(
                           action.title,
                           textAlign: TextAlign.center,

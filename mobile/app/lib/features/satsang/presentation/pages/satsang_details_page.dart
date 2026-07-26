@@ -50,7 +50,7 @@ class SatsangDetailsPage extends ConsumerWidget {
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: AppSpacing.paddingAllLg,
+                  padding: AppSpacing.p24,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -58,7 +58,7 @@ class SatsangDetailsPage extends ConsumerWidget {
                         satsang.title,
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.sp4),
                       Text(
                         satsang.speaker.name,
                         style: Theme.of(context).textTheme.titleMedium
@@ -66,33 +66,33 @@ class SatsangDetailsPage extends ConsumerWidget {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.sp16),
                       Row(
                         children: [
                           const Icon(Icons.access_time, size: 16),
-                          const SizedBox(width: AppSpacing.xs),
+                          const SizedBox(width: AppSpacing.sp4),
                           Text('${satsang.duration.inMinutes} min'),
-                          const SizedBox(width: AppSpacing.lg),
+                          const SizedBox(width: AppSpacing.sp24),
                           const Icon(Icons.language, size: 16),
-                          const SizedBox(width: AppSpacing.xs),
+                          const SizedBox(width: AppSpacing.sp4),
                           Text(satsang.language),
-                          const SizedBox(width: AppSpacing.lg),
+                          const SizedBox(width: AppSpacing.sp24),
                           const Icon(Icons.category, size: 16),
-                          const SizedBox(width: AppSpacing.xs),
+                          const SizedBox(width: AppSpacing.sp4),
                           Text(satsang.category.name),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.lg),
+                      const SizedBox(height: AppSpacing.sp24),
                       Text(
                         l10n.description,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.sp8),
                       Text(
                         satsang.description,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                      const SizedBox(height: AppSpacing.lg),
+                      const SizedBox(height: AppSpacing.sp24),
                       Wrap(
                         spacing: 8,
                         children: satsang.tags.map((tag) {

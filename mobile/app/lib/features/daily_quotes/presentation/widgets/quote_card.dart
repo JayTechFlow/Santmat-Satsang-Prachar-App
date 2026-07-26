@@ -12,7 +12,7 @@ class QuoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -20,7 +20,7 @@ class QuoteCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -32,7 +32,7 @@ class QuoteCard extends StatelessWidget {
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.sp8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -57,7 +57,7 @@ class QuoteCard extends StatelessWidget {
                             ? Colors.red
                             : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(width: AppSpacing.sm),
+                      const SizedBox(width: AppSpacing.sp8),
                       Icon(
                         Icons.share,
                         size: 20,

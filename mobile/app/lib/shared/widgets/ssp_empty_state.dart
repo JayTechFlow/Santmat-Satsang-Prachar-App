@@ -1,59 +1,73 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
-import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
+import '../theme/app_icons.dart';
 
 class SSPEmptyState extends StatelessWidget {
   final String title;
   final String message;
-  final IconData icon;
-  final Widget? action;
+  final IconData? icon;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const SSPEmptyState({
     super.key,
     required this.title,
     required this.message,
-    this.icon = Icons.inbox_rounded,
-    this.action,
+    this.icon,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     return Center(
       child: Padding(
-        padding: AppSpacing.paddingAllLg,
+        padding: AppSpacing.p32,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: isDark
-                  ? AppColors.darkOnSurface.withValues(alpha: 0.5)
-                  : AppColors.lightOnSurface.withValues(alpha: 0.5),
+            Container(
+              padding: AppSpacing.p24,
+              decoration: BoxDecoration(
+                color: AppColors.deepSaffron.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon ?? AppIcons.info,
+                size: 48,
+                color: AppColors.deepSaffron,
+              ),
             ),
-            AppSpacing.verticalSpaceMd,
+            AppSpacing.gapH24,
             Text(
               title,
-              style: AppTypography.titleLarge.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.title,
               textAlign: TextAlign.center,
             ),
-            AppSpacing.verticalSpaceSm,
+            AppSpacing.gapH8,
             Text(
               message,
-              style: AppTypography.bodyMedium.copyWith(
-                color: isDark
-                    ? AppColors.darkOnSurface.withValues(alpha: 0.7)
-                    : AppColors.lightOnSurface.withValues(alpha: 0.7),
-              ),
+              style: AppTypography.body.copyWith(color: AppColors.textMuted(context)),
               textAlign: TextAlign.center,
             ),
-            if (action != null) ...[AppSpacing.verticalSpaceLg, action!],
+            if (actionLabel != null && onAction != null) ...[
+              AppSpacing.gapH32,
+              ElevatedButton(
+                onPressed: onAction,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.surface(context),
+                  foregroundColor: AppColors.deepSaffron,
+                  elevation: 0,
+                  side: BorderSide(color: AppColors.deepSaffron.withValues(alpha: 0.5)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.pill),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: Text(actionLabel!, style: AppTypography.button),
+              ),
+            ],
           ],
         ),
       ),

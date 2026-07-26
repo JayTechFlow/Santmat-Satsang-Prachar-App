@@ -1,64 +1,60 @@
 import 'package:flutter/material.dart';
-import '../theme/app_typography.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
+import '../theme/app_icons.dart';
+import '../theme/app_animations.dart';
 
-/// SSPSectionHeader creates a unified, premium section title with an optional trailing action.
 class SSPSectionHeader extends StatelessWidget {
   final String title;
-  final String? actionLabel;
+  final String? actionText;
   final VoidCallback? onActionTap;
   final IconData? icon;
 
   const SSPSectionHeader({
     super.key,
     required this.title,
-    this.actionLabel,
+    this.actionText,
     this.onActionTap,
     this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                color: Theme.of(context).colorScheme.primary,
-                size: 24,
-              ),
-              AppSpacing.horizontalSpaceSm,
-            ],
-            Text(
-              title,
-              style: AppTypography.titleLarge.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16, vertical: AppSpacing.sp12),
+      child: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: AppColors.deepSaffron, size: 24),
+            AppSpacing.gapW8,
           ],
-        ),
-        if (actionLabel != null && onActionTap != null)
-          GestureDetector(
-            onTap: onActionTap,
-            child: Padding(
-              padding: const EdgeInsets.only(left: AppSpacing.md),
-              child: Text(
-                actionLabel!,
-                style: AppTypography.labelLarge.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
+          Expanded(
+            child: Text(
+              title,
+              style: AppTypography.title,
+            ),
+          ),
+          if (actionText != null && onActionTap != null)
+            SSPPressable(
+              onTap: onActionTap!,
+              child: Padding(
+                padding: AppSpacing.p4,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      actionText!,
+                      style: AppTypography.button.copyWith(color: AppColors.deepSaffron),
+                    ),
+                    AppSpacing.gapW4,
+                    Icon(AppIcons.arrowForward, color: AppColors.deepSaffron, size: 14),
+                  ],
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

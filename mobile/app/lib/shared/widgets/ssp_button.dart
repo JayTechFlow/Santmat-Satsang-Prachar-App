@@ -1,33 +1,20 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_gradients.dart';
+import '../theme/app_animations.dart';
 
-/// Defines the visual style variant for [SSPButton].
 enum SSPButtonVariant { primary, secondary, outline, text }
 
-/// A premium, reusable button component following the SSP Design System.
-/// Supports multiple visual variants, loading states, icons, and analytics integration.
 class SSPButton extends StatelessWidget {
-  /// The text displayed on the button.
   final String label;
-
-  /// Callback fired when the button is pressed.
   final VoidCallback? onPressed;
-
-  /// Visual style variant of the button. Defaults to [SSPButtonVariant.primary].
   final SSPButtonVariant variant;
-
-  /// Optional icon to display before the label.
   final IconData? icon;
-
-  /// Whether the button is in a loading state (disables press and shows spinner).
   final bool isLoading;
-
-  /// Whether the button should stretch to fill its parent's width.
   final bool isFullWidth;
-
-  /// Optional identifier for analytics tracking.
   final String? analyticsName;
 
   const SSPButton({
@@ -43,43 +30,29 @@ class SSPButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    Color backgroundColor;
-    Color foregroundColor;
+    Color backgroundColor = Colors.transparent;
+    Color foregroundColor = AppColors.textPrimary(context);
     BorderSide? borderSide;
+    Gradient? gradient;
 
     switch (variant) {
       case SSPButtonVariant.primary:
-        backgroundColor = theme.colorScheme.primary;
-        foregroundColor = theme.colorScheme.onPrimary;
+        gradient = AppGradients.primaryButton;
+        foregroundColor = Colors.white;
         break;
       case SSPButtonVariant.secondary:
-        backgroundColor = theme.colorScheme.secondaryContainer;
-        foregroundColor = theme.colorScheme.onSecondaryContainer;
+        backgroundColor = AppColors.surface(context);
+        foregroundColor = AppColors.textPrimary(context);
+        borderSide = BorderSide(color: AppColors.border(context));
         break;
       case SSPButtonVariant.outline:
-        backgroundColor = Colors.transparent;
-        foregroundColor = theme.colorScheme.primary;
-        borderSide = BorderSide(color: theme.colorScheme.primary, width: 1.5);
+        foregroundColor = AppColors.deepSaffron;
+        borderSide = BorderSide(color: AppColors.deepSaffron, width: 1.5);
         break;
       case SSPButtonVariant.text:
-        backgroundColor = Colors.transparent;
-        foregroundColor = theme.colorScheme.primary;
+        foregroundColor = AppColors.deepSaffron;
         break;
     }
-
-    final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
-      elevation: 0,
-      side: borderSide,
-      padding: AppSpacing.paddingAllMd,
-      shape: const RoundedRectangleBorder(
-        borderRadius: AppRadius.borderRadiusLg,
-      ),
-      textStyle: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w600),
-    );
 
     Widget content = Row(
       mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -94,36 +67,42 @@ class SSPButton extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
             ),
           ),
-          AppSpacing.horizontalSpaceSm,
+          AppSpacing.gapW8,
         ] else if (icon != null) ...[
-          Icon(icon, size: 20),
-          AppSpacing.horizontalSpaceSm,
+          Icon(icon, size: 20, color: foregroundColor),
+          AppSpacing.gapW8,
         ],
-        Text(label),
+        Text(
+          label,
+          style: AppTypography.button.copyWith(color: foregroundColor),
+        ),
       ],
     );
 
-    void handlePress() {
-      if (isLoading) return;
-      // TODO: Log analytics event using analyticsName if provided
-      onPressed?.call();
+    final bool isDisabled = onPressed == null || isLoading;
+
+    Widget buttonSurface = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: BoxDecoration(
+        color: gradient == null ? (isDisabled ? AppColors.border(context) : backgroundColor) : null,
+        gradient: isDisabled ? null : gradient,
+        borderRadius: AppRadius.pill,
+        border: borderSide != null ? Border.all(color: borderSide.color, width: borderSide.width) : null,
+      ),
+      child: content,
+    );
+
+    if (isDisabled) {
+      return Opacity(opacity: 0.6, child: buttonSurface);
     }
 
-    return variant == SSPButtonVariant.text
-        ? TextButton(
-            onPressed: onPressed == null ? null : handlePress,
-            style: TextButton.styleFrom(
-              foregroundColor: foregroundColor,
-              textStyle: AppTypography.labelLarge.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            child: content,
-          )
-        : ElevatedButton(
-            onPressed: onPressed == null ? null : handlePress,
-            style: buttonStyle,
-            child: content,
-          );
+    return SSPPressable(
+      onTap: () {
+        if (!isLoading && onPressed != null) {
+          onPressed!();
+        }
+      },
+      child: buttonSurface,
+    );
   }
 }

@@ -3,152 +3,121 @@ import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_animations.dart';
+import '../theme/app_shadows.dart';
+import '../theme/app_icons.dart';
 
 class SSPMiniPlayer extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String imageUrl;
-  final String durationText;
-  final Color themeColor;
-  final VoidCallback onPlay;
+  final String? imageUrl;
+  final bool isPlaying;
+  final VoidCallback onPlayPause;
+  final VoidCallback? onClose;
+  final VoidCallback? onTap;
+  final double progress; // 0.0 to 1.0
 
   const SSPMiniPlayer({
     super.key,
     required this.title,
     required this.subtitle,
-    required this.imageUrl,
-    required this.durationText,
-    required this.themeColor,
-    required this.onPlay,
+    this.imageUrl,
+    required this.isPlaying,
+    required this.onPlayPause,
+    this.onClose,
+    this.onTap,
+    this.progress = 0.0,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: AppSpacing.paddingAllLg,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: AppRadius.borderRadiusLg,
-        boxShadow: [
-          BoxShadow(
-            color: themeColor.withValues(alpha: 0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return SSPPressable(
+      onTap: onTap ?? () {},
+      child: Container(
+        margin: AppSpacing.p16,
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: AppRadius.brLg,
+          boxShadow: AppShadows.floating(context),
+        ),
+        child: ClipRRect(
+          borderRadius: AppRadius.brLg,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ClipRRect(
-                borderRadius: AppRadius.borderRadiusMd,
-                child: Image.network(
-                  imageUrl,
-                  width: 72,
-                  height: 72,
-                  fit: BoxFit.cover,
-                  errorBuilder: (ctx, err, stack) => Container(
-                    width: 72,
-                    height: 72,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: const Icon(Icons.music_note),
-                  ),
-                ),
-              ),
-              AppSpacing.horizontalSpaceMd,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                padding: AppSpacing.p8,
+                child: Row(
                   children: [
-                    Text(
-                      title,
-                      style: AppTypography.titleMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    // Artwork
+                    ClipRRect(
+                      borderRadius: AppRadius.brMd,
+                      child: imageUrl != null
+                          ? Image.network(
+                              imageUrl!, 
+                              width: 48, 
+                              height: 48, 
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                width: 48,
+                                height: 48,
+                                color: AppColors.deepSaffron,
+                              ),
+                            )
+                          : Container(
+                              width: 48,
+                              height: 48,
+                              color: AppColors.deepSaffron.withValues(alpha: 0.2),
+                              child: Icon(AppIcons.library, color: AppColors.deepSaffron),
+                            ),
                     ),
-                    AppSpacing.verticalSpaceXs,
-                    Text(
-                      subtitle,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary(context),
+                    AppSpacing.gapW12,
+                    // Title and Subtitle
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: AppTypography.button,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            subtitle,
+                            style: AppTypography.caption.copyWith(color: AppColors.textMuted(context)),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
+                    // Controls
+                    IconButton(
+                      icon: Icon(
+                        isPlaying ? AppIcons.pause : AppIcons.play,
+                        color: AppColors.textPrimary(context),
+                      ),
+                      onPressed: onPlayPause,
+                    ),
+                    if (onClose != null)
+                      IconButton(
+                        icon: Icon(Icons.close_rounded, color: AppColors.textMuted(context)),
+                        onPressed: onClose,
+                      ),
                   ],
                 ),
               ),
-            ],
-          ),
-          AppSpacing.verticalSpaceLg,
-          Row(
-            children: [
-              GestureDetector(
-                onTap: onPlay,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: themeColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow_rounded,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-              ),
-              AppSpacing.horizontalSpaceMd,
-              Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: themeColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        width: 30, // Mock progress
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: themeColor,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    AppSpacing.verticalSpaceXs,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '00:00',
-                          style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.textSecondary(context),
-                          ),
-                        ),
-                        Text(
-                          durationText,
-                          style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.textSecondary(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              // Progress Bar
+              LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.transparent,
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.sacredGold),
+                minHeight: 2,
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

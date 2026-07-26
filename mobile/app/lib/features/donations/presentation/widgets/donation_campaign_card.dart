@@ -18,7 +18,7 @@ class DonationCampaignCard extends StatelessWidget {
     final progress = campaign.collectedAmount / campaign.goalAmount;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -46,7 +46,7 @@ class DonationCampaignCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: AppSpacing.paddingAllMd,
+              padding: AppSpacing.p16,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -58,16 +58,16 @@ class DonationCampaignCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.sp4),
                   Text(
                     campaign.subtitle,
                     style: Theme.of(context).textTheme.bodySmall,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.sp16),
                   LinearProgressIndicator(value: progress),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.sp4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

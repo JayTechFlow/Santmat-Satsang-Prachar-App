@@ -77,7 +77,7 @@ class PreferencesHomePage extends ConsumerWidget {
                 ),
                 const Divider(),
                 Padding(
-                  padding: AppSpacing.paddingAllMd,
+                  padding: AppSpacing.p16,
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.restore),
                     label: const Text('Reset All Settings'),

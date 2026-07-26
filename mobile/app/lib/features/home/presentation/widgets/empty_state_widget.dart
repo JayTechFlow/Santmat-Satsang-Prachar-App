@@ -16,7 +16,7 @@ class EmptyStateWidget extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.sp24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -25,20 +25,20 @@ class EmptyStateWidget extends StatelessWidget {
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sp16),
             Text(
               title ?? l10n.emptyStateTitle,
               style: theme.textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.sp8),
             Text(
               message ?? l10n.emptyStateMessage,
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.sp24),
               ElevatedButton(onPressed: onRetry, child: Text(l10n.retry)),
             ],
           ],

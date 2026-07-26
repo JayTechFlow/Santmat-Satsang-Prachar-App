@@ -33,7 +33,7 @@ class AudioDetailsPage extends ConsumerWidget {
             icon: const Icon(Icons.favorite_border_rounded),
             onPressed: () {},
           ),
-          AppSpacing.horizontalSpaceSm,
+          AppSpacing.gapW8,
         ],
       ),
       body: audioAsync.when(
@@ -60,17 +60,17 @@ class AudioDetailsPage extends ConsumerWidget {
             ),
             child: SafeArea(
               child: Padding(
-                padding: AppSpacing.paddingAllLg,
+                padding: AppSpacing.p24,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    AppSpacing.verticalSpaceLg,
+                    AppSpacing.gapH24,
                     // Large Artwork
                     Hero(
                       tag: 'audio_art_${audio.id}',
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: AppRadius.borderRadiusXl,
+                          borderRadius: AppRadius.brXl,
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.deepSaffron.withValues(
@@ -82,7 +82,7 @@ class AudioDetailsPage extends ConsumerWidget {
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: AppRadius.borderRadiusXl,
+                          borderRadius: AppRadius.brXl,
                           child: Image.network(
                             audio.artworkUrl,
                             width: MediaQuery.of(context).size.width * 0.8,
@@ -110,7 +110,7 @@ class AudioDetailsPage extends ConsumerWidget {
                     // Title & Speaker
                     Text(
                       audio.title,
-                      style: AppTypography.headlineMedium.copyWith(
+                      style: AppTypography.headline.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary(context),
                       ),
@@ -118,15 +118,15 @@ class AudioDetailsPage extends ConsumerWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    AppSpacing.verticalSpaceSm,
+                    AppSpacing.gapH8,
                     Text(
                       audio.speaker,
-                      style: AppTypography.titleMedium.copyWith(
+                      style: AppTypography.subtitle.copyWith(
                         color: AppColors.textSecondary(context),
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    AppSpacing.verticalSpaceLg,
+                    AppSpacing.gapH24,
 
                     // Progress Bar
                     SliderTheme(
@@ -151,27 +151,27 @@ class AudioDetailsPage extends ConsumerWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
+                        horizontal: AppSpacing.sp16,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             '01:30',
-                            style: AppTypography.labelLarge.copyWith(
+                            style: AppTypography.button.copyWith(
                               color: AppColors.textSecondary(context),
                             ),
                           ),
                           Text(
                             _formatDuration(audio.duration),
-                            style: AppTypography.labelLarge.copyWith(
+                            style: AppTypography.button.copyWith(
                               color: AppColors.textSecondary(context),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    AppSpacing.verticalSpaceLg,
+                    AppSpacing.gapH24,
 
                     // Playback Controls
                     Row(
@@ -241,7 +241,7 @@ class AudioDetailsPage extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    AppSpacing.verticalSpaceLg,
+                    AppSpacing.gapH24,
                   ],
                 ),
               ),

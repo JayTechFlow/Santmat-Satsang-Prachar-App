@@ -13,8 +13,8 @@ class SatsangCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp4,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -39,7 +39,7 @@ class SatsangCard extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: AppSpacing.paddingAllSm,
+                padding: AppSpacing.p8,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -49,7 +49,7 @@ class SatsangCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       satsang.speaker.name,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -58,18 +58,18 @@ class SatsangCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Row(
                       children: [
                         const Icon(Icons.access_time, size: 14),
-                        const SizedBox(width: AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.sp4),
                         Text(
                           '${satsang.duration.inMinutes} min',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
-                        const SizedBox(width: AppSpacing.sm),
+                        const SizedBox(width: AppSpacing.sp8),
                         const Icon(Icons.category_outlined, size: 14),
-                        const SizedBox(width: AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.sp4),
                         Expanded(
                           child: Text(
                             satsang.category.name,

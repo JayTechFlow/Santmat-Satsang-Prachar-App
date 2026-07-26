@@ -3,168 +3,132 @@ import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
-import 'ssp_quote_card.dart';
+import '../theme/app_shadows.dart';
+import '../theme/app_icons.dart';
+import '../theme/app_gradients.dart';
+import 'ssp_glass_card.dart';
 import 'ssp_mini_player.dart';
 
 class SSPPrayerCard extends StatelessWidget {
-  final String timeTitle;
-  final String timeSubtitle;
-  final IconData timeIcon;
-  final Color themeColor;
-  final LinearGradient backgroundGradient;
-
   final String title;
   final String subtitle;
-  final String imageUrl;
-  final String durationText;
-  final String quoteText;
-
-  final VoidCallback onPlay;
-  final VoidCallback onLyrics;
-  final VoidCallback onFavorite;
-  final VoidCallback onShare;
+  final String timeText;
+  final String? imageUrl;
+  final bool isPlaying;
+  final VoidCallback onPlayPause;
+  final VoidCallback onTap;
 
   const SSPPrayerCard({
     super.key,
-    required this.timeTitle,
-    required this.timeSubtitle,
-    required this.timeIcon,
-    required this.themeColor,
-    required this.backgroundGradient,
     required this.title,
     required this.subtitle,
-    required this.imageUrl,
-    required this.durationText,
-    required this.quoteText,
-    required this.onPlay,
-    required this.onLyrics,
-    required this.onFavorite,
-    required this.onShare,
+    required this.timeText,
+    this.imageUrl,
+    required this.isPlaying,
+    required this.onPlayPause,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: backgroundGradient,
-        borderRadius: AppRadius.borderRadiusXl,
-        border: Border.all(color: themeColor.withValues(alpha: 0.1)),
-      ),
-      padding: AppSpacing.paddingAllLg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: AppSpacing.p16,
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.brXl,
+          boxShadow: AppShadows.large(context),
+        ),
+        child: ClipRRect(
+          borderRadius: AppRadius.brXl,
+          child: Stack(
             children: [
-              Icon(timeIcon, color: themeColor, size: 36),
-              AppSpacing.horizontalSpaceMd,
-              Expanded(
+              // Background (Image or Gradient)
+              if (imageUrl != null)
+                Positioned.fill(
+                  child: Image.network(
+                    imageUrl!, 
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      decoration: BoxDecoration(gradient: AppGradients.prayerCard(context)),
+                    ),
+                  ),
+                )
+              else
+                Positioned.fill(
+                  child: Container(decoration: BoxDecoration(gradient: AppGradients.prayerCard(context))),
+                ),
+              
+              // Dark Gradient Overlay for text readability
+              Positioned.fill(
+                child: Container(decoration: BoxDecoration(gradient: AppGradients.premiumOverlay)),
+              ),
+
+              // Content
+              Padding(
+                padding: AppSpacing.p24,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      timeTitle,
-                      style: AppTypography.titleLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary(context),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SSPGlassCard(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          borderRadius: AppRadius.pill,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(AppIcons.time, size: 14, color: AppColors.sacredGold),
+                              AppSpacing.gapW4,
+                              Text(
+                                timeText.toUpperCase(),
+                                style: AppTypography.label.copyWith(color: AppColors.sacredGold),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(AppIcons.favoriteOutline, color: Colors.white),
+                          onPressed: () {},
+                        ),
+                      ],
                     ),
+                    AppSpacing.gapH48,
                     Text(
-                      timeSubtitle,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary(context),
-                      ),
+                      title,
+                      style: AppTypography.title.copyWith(color: Colors.white),
+                    ),
+                    AppSpacing.gapH8,
+                    Text(
+                      subtitle,
+                      style: AppTypography.body.copyWith(color: Colors.white.withValues(alpha: 0.8)),
+                    ),
+                    AppSpacing.gapH24,
+                    // Integrated mini controls
+                    Row(
+                      children: [
+                        FloatingActionButton(
+                          heroTag: 'prayer_play_$title',
+                          backgroundColor: AppColors.deepSaffron,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          onPressed: onPlayPause,
+                          child: Icon(isPlaying ? AppIcons.pause : AppIcons.play),
+                        ),
+                        AppSpacing.gapW16,
+                        Text(
+                          isPlaying ? 'Playing...' : 'Listen Now',
+                          style: AppTypography.button.copyWith(color: Colors.white),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          AppSpacing.verticalSpaceLg,
-
-          // Inner White Card (Player and Actions)
-          Container(
-            padding: AppSpacing.paddingAllLg,
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: AppRadius.borderRadiusLg,
-              boxShadow: [
-                BoxShadow(
-                  color: themeColor.withValues(alpha: 0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                SSPMiniPlayer(
-                  title: title,
-                  subtitle: subtitle,
-                  imageUrl: imageUrl,
-                  durationText: durationText,
-                  themeColor: themeColor,
-                  onPlay: onPlay,
-                ),
-                AppSpacing.verticalSpaceSm,
-                const Divider(),
-                AppSpacing.verticalSpaceSm,
-                // Actions Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildAction(
-                      context,
-                      Icons.lyrics_outlined,
-                      'लिरिक्स पढ़ें',
-                      onLyrics,
-                    ),
-                    _buildAction(
-                      context,
-                      Icons.favorite_border_rounded,
-                      'पसंदीदा में जोड़ें',
-                      onFavorite,
-                    ),
-                    _buildAction(
-                      context,
-                      Icons.share_rounded,
-                      'शेयर करें',
-                      onShare,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          AppSpacing.verticalSpaceLg,
-
-          // Embedded Quote Card
-          SSPQuoteCard(text: quoteText),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAction(
-    BuildContext context,
-    IconData icon,
-    String label,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Icon(icon, color: AppColors.textPrimary(context)),
-          AppSpacing.verticalSpaceXs,
-          Text(
-            label,
-            style: AppTypography.labelSmall.copyWith(
-              color: AppColors.textSecondary(context),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

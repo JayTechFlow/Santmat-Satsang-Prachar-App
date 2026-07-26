@@ -25,7 +25,7 @@ class LibraryHomePage extends ConsumerWidget {
           : RefreshIndicator(
               onRefresh: () => ref.read(libraryProvider.notifier).loadData(),
               child: ListView(
-                padding: AppSpacing.paddingAllMd,
+                padding: AppSpacing.p16,
                 children: [
                   _buildSectionHeader(
                     context,
@@ -46,7 +46,7 @@ class LibraryHomePage extends ConsumerWidget {
                             onTap: () => context.push(act.item.route),
                           ),
                         ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.sp24),
 
                   _buildSectionHeader(
                     context,
@@ -67,7 +67,7 @@ class LibraryHomePage extends ConsumerWidget {
                             onTap: () => context.push(fav.item.route),
                           ),
                         ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.sp24),
 
                   _buildSectionHeader(
                     context,
@@ -88,7 +88,7 @@ class LibraryHomePage extends ConsumerWidget {
                             onTap: () => context.push(bm.item.route),
                           ),
                         ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.sp24),
 
                   _buildSectionHeader(context, 'History', '/library/history'),
                   if (state.history.isEmpty)
@@ -113,7 +113,7 @@ class LibraryHomePage extends ConsumerWidget {
 
   Widget _buildSectionHeader(BuildContext context, String title, String route) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sp16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

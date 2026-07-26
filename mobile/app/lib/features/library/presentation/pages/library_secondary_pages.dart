@@ -22,7 +22,7 @@ class LibraryFavoritesPage extends ConsumerWidget {
               icon: Icons.favorite_border,
             )
           : ListView.builder(
-              padding: AppSpacing.paddingAllMd,
+              padding: AppSpacing.p16,
               itemCount: state.favorites.length,
               itemBuilder: (context, index) {
                 final item = state.favorites[index].item;
@@ -54,7 +54,7 @@ class LibraryBookmarksPage extends ConsumerWidget {
               icon: Icons.bookmark_border,
             )
           : ListView.builder(
-              padding: AppSpacing.paddingAllMd,
+              padding: AppSpacing.p16,
               itemCount: state.bookmarks.length,
               itemBuilder: (context, index) {
                 final item = state.bookmarks[index].item;
@@ -91,7 +91,7 @@ class LibraryHistoryPage extends ConsumerWidget {
       body: state.history.isEmpty
           ? const LibraryEmptyWidget(message: 'No history', icon: Icons.history)
           : ListView.builder(
-              padding: AppSpacing.paddingAllMd,
+              padding: AppSpacing.p16,
               itemCount: state.history.length,
               itemBuilder: (context, index) {
                 final hist = state.history[index];
@@ -121,7 +121,7 @@ class LibraryRecentActivityPage extends ConsumerWidget {
               icon: Icons.history,
             )
           : ListView.builder(
-              padding: AppSpacing.paddingAllMd,
+              padding: AppSpacing.p16,
               itemCount: state.recentActivities.length,
               itemBuilder: (context, index) {
                 final act = state.recentActivities[index];

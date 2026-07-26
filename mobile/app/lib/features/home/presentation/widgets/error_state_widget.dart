@@ -15,12 +15,12 @@ class ErrorStateWidget extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.sp24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sp16),
             Text(
               message ?? l10n.errorGeneric,
               style: theme.textTheme.titleMedium?.copyWith(
@@ -29,7 +29,7 @@ class ErrorStateWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.sp24),
               ElevatedButton(onPressed: onRetry, child: Text(l10n.retry)),
             ],
           ],

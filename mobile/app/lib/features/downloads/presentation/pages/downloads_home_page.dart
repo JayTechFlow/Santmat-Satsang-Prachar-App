@@ -60,7 +60,7 @@ class DownloadsHomePage extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: notifier.loadData,
       child: ListView.builder(
-        padding: AppSpacing.paddingAllMd,
+        padding: AppSpacing.p16,
         itemCount: downloads.length,
         itemBuilder: (context, index) {
           final dl = downloads[index];

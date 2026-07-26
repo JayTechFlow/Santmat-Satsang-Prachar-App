@@ -56,8 +56,8 @@ class DailyQuotesHomePage extends ConsumerWidget {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm,
+                        horizontal: AppSpacing.sp16,
+                        vertical: AppSpacing.sp8,
                       ),
                       child: Text(
                         'Featured Quotes',
@@ -69,7 +69,7 @@ class DailyQuotesHomePage extends ConsumerWidget {
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
+                          horizontal: AppSpacing.sp16,
                         ),
                         child: QuoteCard(
                           quote: state.featuredQuotes[index],

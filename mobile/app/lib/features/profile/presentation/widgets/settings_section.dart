@@ -20,8 +20,8 @@ class SettingsSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Text(
             title,

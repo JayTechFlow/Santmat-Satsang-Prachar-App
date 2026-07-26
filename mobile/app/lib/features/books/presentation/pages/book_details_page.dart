@@ -31,7 +31,7 @@ class BookDetailsPage extends ConsumerWidget {
         ),
         data: (book) {
           return SingleChildScrollView(
-            padding: AppSpacing.paddingAllLg,
+            padding: AppSpacing.p24,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -53,21 +53,21 @@ class BookDetailsPage extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.sp24),
                 Text(
                   book.title,
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
                 if (book.subtitle.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.sp4),
                   Text(
                     book.subtitle,
                     style: Theme.of(context).textTheme.titleMedium,
                     textAlign: TextAlign.center,
                   ),
                 ],
-                const SizedBox(height: AppSpacing.sm),
+                const SizedBox(height: AppSpacing.sp8),
                 Text(
                   book.author.name,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -75,7 +75,7 @@ class BookDetailsPage extends ConsumerWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.sp24),
 
                 // Read Button
                 SizedBox(
@@ -88,7 +88,7 @@ class BookDetailsPage extends ConsumerWidget {
                     label: const Text('Read Now'),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.sp24),
 
                 // Details
                 Align(
@@ -100,9 +100,9 @@ class BookDetailsPage extends ConsumerWidget {
                         l10n.description,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.sp8),
                       Text(book.description),
-                      const SizedBox(height: AppSpacing.lg),
+                      const SizedBox(height: AppSpacing.sp24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -118,7 +118,7 @@ class BookDetailsPage extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.sp16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -134,7 +134,7 @@ class BookDetailsPage extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.sp16),
                       _buildDetailChip(
                         context,
                         Icons.info_outline,
@@ -160,7 +160,7 @@ class BookDetailsPage extends ConsumerWidget {
           size: 16,
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-        const SizedBox(width: AppSpacing.xs),
+        const SizedBox(width: AppSpacing.sp4),
         Text(
           text,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(

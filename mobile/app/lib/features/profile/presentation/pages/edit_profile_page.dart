@@ -68,7 +68,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         error: (error, _) => Center(child: Text(error.toString())),
         data: (profile) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.sp16),
             child: Form(
               key: _formKey,
               child: Column(
@@ -108,7 +108,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xlg),
+                  const SizedBox(height: AppSpacing.sp32),
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
@@ -118,7 +118,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     validator: (val) =>
                         (val == null || val.isEmpty) ? 'Required' : null,
                   ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.sp24),
                   TextFormField(
                     controller: _phoneController,
                     decoration: InputDecoration(

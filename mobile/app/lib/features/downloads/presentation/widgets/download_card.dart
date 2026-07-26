@@ -28,7 +28,7 @@ class DownloadCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -36,7 +36,7 @@ class DownloadCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Row(
             children: [
               if (download.thumbnail != null)
@@ -66,7 +66,7 @@ class DownloadCard extends StatelessWidget {
                     color: theme.colorScheme.primary,
                   ),
                 ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,14 +79,14 @@ class DownloadCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     if (!download.isCompleted) ...[
                       LinearProgressIndicator(
                         value: download.progress,
                         backgroundColor:
                             theme.colorScheme.surfaceContainerHighest,
                       ),
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.sp4),
                     ],
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,7 +110,7 @@ class DownloadCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sp8),
               _buildActionButtons(),
             ],
           ),

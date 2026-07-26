@@ -15,7 +15,7 @@ class CategoryChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Chip(
         label: Text(category.name),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp8),
       ),
     );
   }

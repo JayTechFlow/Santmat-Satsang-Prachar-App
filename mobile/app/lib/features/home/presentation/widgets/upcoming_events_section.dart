@@ -22,8 +22,8 @@ class UpcomingEventsSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,17 +41,17 @@ class UpcomingEventsSection extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16),
           itemCount: events.length,
           itemBuilder: (context, index) {
             final event = events[index];
             return Card(
-              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+              margin: const EdgeInsets.only(bottom: AppSpacing.sp8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.all(AppSpacing.sm),
+                contentPadding: const EdgeInsets.all(AppSpacing.sp8),
                 leading: Container(
                   width: 50,
                   height: 50,
@@ -88,7 +88,7 @@ class UpcomingEventsSection extends StatelessWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Row(
                       children: [
                         Icon(

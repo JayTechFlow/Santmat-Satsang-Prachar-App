@@ -56,8 +56,8 @@ class BooksHomePage extends ConsumerWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.sm,
+                              horizontal: AppSpacing.sp16,
+                              vertical: AppSpacing.sp8,
                             ),
                             child: Text(
                               'Continue Reading',
@@ -80,8 +80,8 @@ class BooksHomePage extends ConsumerWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.sm,
+                              horizontal: AppSpacing.sp16,
+                              vertical: AppSpacing.sp8,
                             ),
                             child: Text(
                               'Featured Books',
@@ -103,7 +103,7 @@ class BooksHomePage extends ConsumerWidget {
                               },
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
+                          const SizedBox(height: AppSpacing.sp16),
                         ],
                       ),
                     ),
@@ -118,8 +118,8 @@ class BooksHomePage extends ConsumerWidget {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm,
+                        horizontal: AppSpacing.sp16,
+                        vertical: AppSpacing.sp8,
                       ),
                       child: Text(
                         'Popular Books',
@@ -131,7 +131,7 @@ class BooksHomePage extends ConsumerWidget {
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
+                          horizontal: AppSpacing.sp16,
                         ),
                         child: BookCard(
                           book: state.popularBooks[index],

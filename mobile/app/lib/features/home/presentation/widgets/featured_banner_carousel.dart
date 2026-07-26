@@ -21,8 +21,8 @@ class FeaturedBannerCarousel extends StatelessWidget {
           final banner = banners[index];
           return Container(
             margin: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.xs,
-              vertical: AppSpacing.sm,
+              horizontal: AppSpacing.sp4,
+              vertical: AppSpacing.sp8,
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -40,7 +40,7 @@ class FeaturedBannerCarousel extends StatelessWidget {
                   end: Alignment.topCenter,
                 ),
               ),
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.sp16),
               alignment: Alignment.bottomLeft,
               child: Text(
                 banner.title,

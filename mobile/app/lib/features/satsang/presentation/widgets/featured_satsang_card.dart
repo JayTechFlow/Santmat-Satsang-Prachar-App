@@ -17,8 +17,8 @@ class FeaturedSatsangCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp4,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -45,7 +45,7 @@ class FeaturedSatsangCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: AppSpacing.paddingAllMd,
+                padding: AppSpacing.p16,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -55,7 +55,7 @@ class FeaturedSatsangCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       satsang.speaker.name,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(

@@ -17,7 +17,7 @@ class FeaturedAudioCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 250,
-      margin: const EdgeInsets.only(right: AppSpacing.md, left: AppSpacing.md),
+      margin: const EdgeInsets.only(right: AppSpacing.sp16, left: AppSpacing.sp16),
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -40,7 +40,7 @@ class FeaturedAudioCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: AppSpacing.paddingAllMd,
+                padding: AppSpacing.p16,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -50,7 +50,7 @@ class FeaturedAudioCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       audio.speaker,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(

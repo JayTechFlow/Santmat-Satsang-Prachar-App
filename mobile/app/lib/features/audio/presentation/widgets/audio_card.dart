@@ -12,7 +12,7 @@ class AudioCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -20,7 +20,7 @@ class AudioCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllSm,
+          padding: AppSpacing.p8,
           child: Row(
             children: [
               ClipRRect(
@@ -38,7 +38,7 @@ class AudioCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +49,7 @@ class AudioCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       audio.speaker,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -61,7 +61,7 @@ class AudioCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sp8),
               Text(
                 '${audio.duration.inMinutes}m',
                 style: Theme.of(context).textTheme.bodySmall,

@@ -16,10 +16,10 @@ class StatisticsCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.sp16,
+        vertical: AppSpacing.sp8,
       ),
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.sp16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -76,7 +76,7 @@ class _StatItem extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, color: theme.colorScheme.primary),
-        const SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: AppSpacing.sp4),
         Text(
           value,
           style: theme.textTheme.titleMedium?.copyWith(

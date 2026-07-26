@@ -24,18 +24,18 @@ class AudioCategorySection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Text(title, style: Theme.of(context).textTheme.titleLarge),
         ),
         SizedBox(
           height: 100,
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16),
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sp16),
             itemBuilder: (context, index) {
               final category = categories[index];
               return InkWell(

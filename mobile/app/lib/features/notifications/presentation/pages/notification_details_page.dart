@@ -13,7 +13,7 @@ class NotificationDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Notification Details')),
       body: SingleChildScrollView(
-        padding: AppSpacing.paddingAllMd,
+        padding: AppSpacing.p16,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -27,7 +27,7 @@ class NotificationDetailsPage extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sp16),
             ],
             Text(
               notification.title,
@@ -35,20 +35,20 @@ class NotificationDetailsPage extends StatelessWidget {
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.sp8),
             Text(
               '${notification.timestamp.day}/${notification.timestamp.month}/${notification.timestamp.year} ${notification.timestamp.hour}:${notification.timestamp.minute.toString().padLeft(2, '0')}',
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sp16),
             Text(
               notification.body,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             if (notification.action != null) ...[
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.sp24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

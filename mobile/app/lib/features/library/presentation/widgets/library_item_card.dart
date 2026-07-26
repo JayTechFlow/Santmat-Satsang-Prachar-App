@@ -24,7 +24,7 @@ class LibraryItemCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sp8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
@@ -32,7 +32,7 @@ class LibraryItemCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -51,7 +51,7 @@ class LibraryItemCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sp16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +71,7 @@ class LibraryItemCard extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       item.title,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -80,7 +80,7 @@ class LibraryItemCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       item.subtitle,
                       style: theme.textTheme.bodySmall,
@@ -88,7 +88,7 @@ class LibraryItemCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (item.progress != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.sp8),
                       LinearProgressIndicator(
                         value: item.progress,
                         backgroundColor:
@@ -98,7 +98,7 @@ class LibraryItemCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sp8),
               Column(
                 children: [
                   if (onFavoriteToggle != null)

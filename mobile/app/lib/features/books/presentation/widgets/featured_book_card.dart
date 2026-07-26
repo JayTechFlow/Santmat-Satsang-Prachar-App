@@ -13,7 +13,7 @@ class FeaturedBookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 160,
-      margin: const EdgeInsets.only(right: AppSpacing.md, left: AppSpacing.md),
+      margin: const EdgeInsets.only(right: AppSpacing.sp16, left: AppSpacing.sp16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -37,7 +37,7 @@ class FeaturedBookCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: AppSpacing.sp4),
           Text(
             book.title,
             style: Theme.of(context).textTheme.titleSmall,

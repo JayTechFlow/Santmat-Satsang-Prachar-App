@@ -3,49 +3,46 @@ import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_shadows.dart';
 
 class SSPQuoteCard extends StatelessWidget {
-  final String text;
+  final String quote;
+  final String author;
+  final VoidCallback? onShare;
 
-  const SSPQuoteCard({super.key, required this.text});
+  const SSPQuoteCard({
+    super.key,
+    required this.quote,
+    required this.author,
+    this.onShare,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: AppSpacing.paddingAllLg,
+      padding: AppSpacing.p24,
       decoration: BoxDecoration(
-        color: AppColors.templeGold.withValues(
-          alpha: 0.05,
-        ), // Faint cream background
-        borderRadius: AppRadius.borderRadiusLg,
-        border: Border.all(color: AppColors.templeGold.withValues(alpha: 0.1)),
+        color: AppColors.sacredGold.withValues(alpha: 0.1),
+        borderRadius: AppRadius.brLg,
+        border: Border.all(color: AppColors.sacredGold.withValues(alpha: 0.3)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
         children: [
-          const Icon(
-            Icons.format_quote_rounded,
-            color: AppColors.deepSaffron,
-            size: 32,
-          ),
-          AppSpacing.horizontalSpaceMd,
-          Expanded(
-            child: Text(
-              text,
-              style: AppTypography.bodyLarge.copyWith(
-                color: AppColors.textPrimary(context),
-                height: 1.5,
-              ),
+          Icon(Icons.format_quote_rounded, color: AppColors.sacredGold, size: 32),
+          AppSpacing.gapH12,
+          Text(
+            quote,
+            style: AppTypography.title.copyWith(
+              fontStyle: FontStyle.italic,
+              color: AppColors.textPrimary(context),
             ),
+            textAlign: TextAlign.center,
           ),
-          AppSpacing.horizontalSpaceMd,
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Icon(
-              Icons.spa_rounded, // Approximate for diya
-              color: AppColors.deepSaffron,
-              size: 28,
-            ),
+          AppSpacing.gapH16,
+          Text(
+            '- $author',
+            style: AppTypography.label.copyWith(color: AppColors.textSecondary(context)),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

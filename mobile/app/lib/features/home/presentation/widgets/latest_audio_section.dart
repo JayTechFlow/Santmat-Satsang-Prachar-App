@@ -21,8 +21,8 @@ class LatestAudioSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,7 +45,7 @@ class LatestAudioSection extends StatelessWidget {
             final audio = audios[index];
             return ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
+                padding: const EdgeInsets.all(AppSpacing.sp8),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(AppRadius.sm),

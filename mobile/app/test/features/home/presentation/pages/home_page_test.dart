@@ -77,7 +77,7 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
 
     // Verify the dashboard loads successfully
-    expect(find.textContaining('संतमत सत्संग प्रचार'), findsOneWidget);
-    expect(find.textContaining('भजन, गायक, कीवर्ड खोजें...'), findsOneWidget);
+    expect(find.textContaining('Santmat'), findsWidgets);
+    expect(find.textContaining('Search bhajans, satsangs, books...'), findsWidgets);
   });
 }

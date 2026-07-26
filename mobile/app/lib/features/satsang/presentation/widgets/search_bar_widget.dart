@@ -17,7 +17,7 @@ class SearchBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppSpacing.paddingAllMd,
+      padding: AppSpacing.p16,
       child: Row(
         children: [
           Expanded(
@@ -35,13 +35,13 @@ class SearchBarWidget extends StatelessWidget {
                   context,
                 ).colorScheme.surfaceContainerHighest,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
+                  horizontal: AppSpacing.sp16,
                 ),
               ),
             ),
           ),
           if (onFilterTap != null) ...[
-            const SizedBox(width: AppSpacing.sm),
+            const SizedBox(width: AppSpacing.sp8),
             IconButton.filledTonal(
               onPressed: onFilterTap,
               icon: const Icon(Icons.filter_list),

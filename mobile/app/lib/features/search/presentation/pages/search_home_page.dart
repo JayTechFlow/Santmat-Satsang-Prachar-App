@@ -63,7 +63,7 @@ class _SearchHomePageState extends ConsumerState<SearchHomePage> {
             )
           : state.results.isNotEmpty
           ? ListView.builder(
-              padding: AppSpacing.paddingAllMd,
+              padding: AppSpacing.p16,
               itemCount: state.results.length,
               itemBuilder: (context, index) {
                 final result = state.results[index];
@@ -84,7 +84,7 @@ class _SearchHomePageState extends ConsumerState<SearchHomePage> {
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return const Padding(
-                        padding: EdgeInsets.all(AppSpacing.md),
+                        padding: EdgeInsets.all(AppSpacing.sp16),
                         child: Text(
                           'Recent Searches',
                           style: TextStyle(fontWeight: FontWeight.bold),

@@ -17,7 +17,7 @@ class FeaturedEventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 280,
-      margin: const EdgeInsets.only(right: AppSpacing.md),
+      margin: const EdgeInsets.only(right: AppSpacing.sp16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         image: DecorationImage(
@@ -33,7 +33,7 @@ class FeaturedEventCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Padding(
-          padding: AppSpacing.paddingAllMd,
+          padding: AppSpacing.p16,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +47,7 @@ class FeaturedEventCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: AppSpacing.sp4),
               Text(
                 event.location.city,
                 style: Theme.of(

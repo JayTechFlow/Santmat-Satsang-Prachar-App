@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
-import '../theme/app_colors.dart';
-import 'ssp_button.dart';
+import '../theme/app_radius.dart';
+import '../theme/app_icons.dart';
 
 class SSPErrorState extends StatelessWidget {
   final String title;
   final String message;
+  final String? retryLabel;
   final VoidCallback? onRetry;
 
   const SSPErrorState({
     super.key,
-    this.title = 'Oops!',
-    this.message = 'Something went wrong. Please try again.',
+    this.title = 'Oops, something went wrong',
+    required this.message,
+    this.retryLabel = 'Try Again',
     this.onRetry,
   });
 
@@ -20,36 +23,46 @@ class SSPErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: AppSpacing.paddingAllLg,
+        padding: AppSpacing.p32,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              size: 64,
-              color: AppColors.maroon,
+            Container(
+              padding: AppSpacing.p24,
+              decoration: BoxDecoration(
+                color: AppColors.softRed.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                AppIcons.error,
+                size: 48,
+                color: AppColors.softRed,
+              ),
             ),
-            AppSpacing.verticalSpaceMd,
+            AppSpacing.gapH24,
             Text(
               title,
-              style: AppTypography.titleLarge.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.title,
               textAlign: TextAlign.center,
             ),
-            AppSpacing.verticalSpaceSm,
+            AppSpacing.gapH8,
             Text(
               message,
-              style: AppTypography.bodyMedium,
+              style: AppTypography.body.copyWith(color: AppColors.textMuted(context)),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              AppSpacing.verticalSpaceLg,
-              SSPButton(
-                label: 'Retry',
+              AppSpacing.gapH32,
+              ElevatedButton(
                 onPressed: onRetry,
-                icon: Icons.refresh_rounded,
-                isFullWidth: false,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.softRed,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.pill),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: Text(retryLabel ?? 'Try Again', style: AppTypography.button),
               ),
             ],
           ],

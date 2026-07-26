@@ -3,131 +3,94 @@ import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_animations.dart';
+import '../theme/app_gradients.dart';
+import '../theme/app_shadows.dart';
+import 'ssp_glass_card.dart';
 
 class SSPHeroBanner extends StatelessWidget {
-  final String imageUrl;
-  final String quoteText;
-  final VoidCallback? onShareTap;
+  final String title;
+  final String subtitle;
+  final String? badgeText;
+  final String? imageUrl;
+  final VoidCallback? onPlay;
+  final VoidCallback? onShare;
 
   const SSPHeroBanner({
     super.key,
-    required this.imageUrl,
-    required this.quoteText,
-    this.onShareTap,
+    required this.title,
+    required this.subtitle,
+    this.badgeText,
+    this.imageUrl,
+    this.onPlay,
+    this.onShare,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      constraints: const BoxConstraints(minHeight: 220),
-      decoration: BoxDecoration(borderRadius: AppRadius.borderRadiusLg),
-      child: ClipRRect(
-        borderRadius: AppRadius.borderRadiusLg,
-        child: Stack(
-          children: [
-            // Background Image
-            Positioned.fill(
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  child: const Icon(Icons.image_not_supported_rounded),
-                ),
-              ),
-            ),
-
-            // Gradient Overlay
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.6),
-                    ],
+    return SSPPressable(
+      onTap: onPlay ?? () {},
+      child: Container(
+        height: 240,
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.brXl,
+          boxShadow: AppShadows.hero(context),
+        ),
+        child: ClipRRect(
+          borderRadius: AppRadius.brXl,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Background Image or Gradient
+              if (imageUrl != null)
+                Image.network(
+                  imageUrl!, 
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: AppColors.deepSaffron,
                   ),
-                ),
-              ),
-            ),
+                )
+              else
+                Container(decoration: BoxDecoration(gradient: AppGradients.heroBanner(context))),
 
-            // Share Button top right
-            if (onShareTap != null)
-              Positioned(
-                top: AppSpacing.md,
-                right: AppSpacing.md,
-                child: GestureDetector(
-                  onTap: onShareTap,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.share_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
+              // Premium Dark Overlay
+              Container(decoration: BoxDecoration(gradient: AppGradients.premiumOverlay)),
 
-            // Content
-            Padding(
-              padding: AppSpacing.paddingAllLg,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppSpacing.verticalSpaceLg,
-                  AppSpacing.verticalSpaceLg,
-                  Text(
-                    quoteText,
-                    style: AppTypography.titleLarge.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      height: 1.4,
-                    ),
-                  ),
-                  AppSpacing.verticalSpaceLg,
-                  // Today's Suvichar Badge inside Banner
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.wb_sunny_outlined,
-                          color: AppColors.templeGold,
-                          size: 16,
+              // Content
+              Padding(
+                padding: AppSpacing.p24,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (badgeText != null)
+                      SSPGlassCard(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        borderRadius: AppRadius.pill,
+                        child: Text(
+                          badgeText!.toUpperCase(),
+                          style: AppTypography.label.copyWith(color: AppColors.sacredGold),
                         ),
-                        AppSpacing.horizontalSpaceXs,
-                        Text(
-                          "आज का सुविचार",
-                          style: AppTypography.labelSmall.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                      ),
+                    if (badgeText != null) AppSpacing.gapH12,
+                    Text(
+                      title,
+                      style: AppTypography.title.copyWith(color: Colors.white, fontSize: 28),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    AppSpacing.gapH8,
+                    Text(
+                      subtitle,
+                      style: AppTypography.subtitle.copyWith(color: Colors.white.withValues(alpha: 0.8)),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

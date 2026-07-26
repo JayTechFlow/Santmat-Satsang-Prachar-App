@@ -13,7 +13,7 @@ class SpeakerCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp8),
         child: Column(
           children: [
             CircleAvatar(
@@ -25,7 +25,7 @@ class SpeakerCard extends StatelessWidget {
                   ? const Icon(Icons.person, size: 32)
                   : null,
             ),
-            const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.sp4),
             SizedBox(
               width: 80,
               child: Text(

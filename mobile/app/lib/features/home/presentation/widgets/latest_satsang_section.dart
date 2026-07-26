@@ -21,8 +21,8 @@ class LatestSatsangSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.sp16,
+            vertical: AppSpacing.sp8,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,13 +41,13 @@ class LatestSatsangSection extends StatelessWidget {
           height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sp16),
             itemCount: satsangs.length,
             itemBuilder: (context, index) {
               final satsang = satsangs[index];
               return Container(
                 width: 240,
-                margin: const EdgeInsets.only(right: AppSpacing.md),
+                margin: const EdgeInsets.only(right: AppSpacing.sp16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -62,7 +62,7 @@ class LatestSatsangSection extends StatelessWidget {
                         ),
                         child: Center(
                           child: Container(
-                            padding: const EdgeInsets.all(AppSpacing.xs),
+                            padding: const EdgeInsets.all(AppSpacing.sp4),
                             decoration: const BoxDecoration(
                               color: Colors.black54,
                               shape: BoxShape.circle,
@@ -75,7 +75,7 @@ class LatestSatsangSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.sp4),
                     Text(
                       satsang.title,
                       style: theme.textTheme.bodyMedium?.copyWith(
