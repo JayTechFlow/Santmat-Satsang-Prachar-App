@@ -1,197 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { Plus, Trash2, Edit2, X, Image as ImageIcon } from 'lucide-react';
+import { useToast } from '../hooks/useToast';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { LoadingOverlay } from '../components/ui/LoadingOverlay';
+import { EmptyState } from '../components/ui/EmptyState';
+import { ImageUpload } from '../components/ui/ImageUpload';
 
-export const Banners = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [banners, setBanners] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
+export function Banners() {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  
   // Form State
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [order, setOrder] = useState<number | ''>('');
-  const [active, setActive] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  
+  const { success, error } = useToast();
 
-  useEffect(() => {
-    const q = query(collection(db, 'banners'), orderBy('order', 'asc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setBanners(data);
-    }, (error) => {
-      console.error("Error fetching banners: ", error);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const fetchItems = async () => {
     try {
-      const newBanner = {
-        title,
-        imageUrl,
-        order: Number(order) || 0,
-        active
-      };
-
-      await addDoc(collection(db, 'banners'), newBanner);
-      
-      setTitle('');
-      setImageUrl('');
-      setOrder('');
-      setActive(true);
-      setIsFormOpen(false);
-    } catch (error) {
-      console.error("Error adding banner: ", error);
-      alert("Error adding banner. Check console.");
+      setLoading(true);
+      const snapshot = await getDocs(collection(db, 'banners'));
+      setItems(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+    } catch (err: any) {
+      console.error(err);
+      error("Error fetching banners");
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this banner?")) {
-      try {
-        await deleteDoc(doc(db, 'banners', id));
-      } catch (error) {
-        console.error("Error deleting banner: ", error);
-      }
+  useEffect(() => {
+    fetchItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!imageUrl) {
+      error("Please upload an image for the banner");
+      return;
     }
+    
+    try {
+      setUploading(true);
+      if (editingId) {
+        await updateDoc(doc(db, 'banners', editingId), { title, imageUrl });
+        success("Banner updated successfully");
+      } else {
+        await addDoc(collection(db, 'banners'), { title, imageUrl, createdAt: new Date() });
+        success("Banner added successfully");
+      }
+      setIsModalOpen(false);
+      resetForm();
+      fetchItems();
+    } catch (err: any) {
+      console.error(err);
+      error("Error saving banner");
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteDoc(doc(db, 'banners', deleteId));
+      success("Banner deleted successfully");
+      fetchItems();
+    } catch (err: any) {
+      console.error(err);
+      error("Error deleting banner");
+      console.error(err);
+    } finally {
+      setDeleteId(null);
+    }
+  };
+
+  const openEdit = (item: any) => {
+    setEditingId(item.id);
+    setTitle(item.title || '');
+    setImageUrl(item.imageUrl || '');
+    setIsModalOpen(true);
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setTitle('');
+    setImageUrl('');
   };
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Manage Banners</h2>
-        <button
-          onClick={() => setIsFormOpen(!isFormOpen)}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          {isFormOpen ? "Cancel" : "Add Banner"}
+      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 'var(--space-8)' }}>Hero Banners</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Manage home app banners and promotional graphics</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
+          <Plus size={18} /> Add New Banner
         </button>
       </div>
 
-      {isFormOpen && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4">Add New Banner</h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input
-                  required
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Enter banner title..."
-                />
-              </div>
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        {loading ? (
+          <LoadingOverlay />
+        ) : items.length === 0 ? (
+          <EmptyState
+            icon={<ImageIcon size={48} />}
+            title="No Banners Found"
+            message="Click 'Add New Banner' to upload your first hero graphic."
+          />
+        ) : (
+          <div className="table-container" style={{ border: 'none', boxShadow: 'none', borderRadius: 0 }}>
+            <table>
+              <thead>
+                <tr>
+                  <th style={{ paddingLeft: 'var(--space-32)' }}>Banner Image</th>
+                  <th>Title</th>
+                  <th style={{ textAlign: 'right', paddingRight: 'var(--space-32)' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map(item => (
+                  <tr key={item.id}>
+                    <td style={{ paddingLeft: 'var(--space-32)', width: '200px' }}>
+                      {item.imageUrl ? (
+                        <div style={{ width: '140px', height: '70px', borderRadius: 'var(--radius-input)', overflow: 'hidden', border: '1px solid var(--border)', backgroundColor: 'var(--background)' }}>
+                          <img 
+                            src={item.imageUrl} 
+                            alt={item.title} 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          />
+                        </div>
+                      ) : (
+                        <div style={{ width: '140px', height: '70px', borderRadius: 'var(--radius-input)', border: '1px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', backgroundColor: 'var(--background)' }}>
+                          <ImageIcon size={20} style={{ marginRight: '4px' }} /> No Image
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
+                      {item.title}
+                    </td>
+                    <td style={{ textAlign: 'right', paddingRight: 'var(--space-32)' }}>
+                      <div style={{ display: 'inline-flex', gap: 'var(--space-8)' }}>
+                        <button 
+                          className="btn btn-outline" 
+                          style={{ padding: 'var(--space-8) var(--space-8)' }}
+                          onClick={() => openEdit(item)}
+                          title="Edit Banner"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
+                          className="btn btn-outline" 
+                          style={{ padding: 'var(--space-8) var(--space-8)', color: 'var(--danger)', borderColor: 'var(--border)' }}
+                          onClick={() => setDeleteId(item.id)}
+                          title="Delete Banner"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                <input
-                  required
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
-                <input
-                  required
-                  type="number"
-                  value={order}
-                  onChange={(e) => setOrder(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="0"
-                />
-              </div>
-
-              <div className="flex items-center pt-6">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={active}
-                    onChange={(e) => setActive(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Active</span>
-                </label>
-              </div>
-            </div>
-            
-            <div className="flex justify-end pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+      {isModalOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100,
+            padding: 'var(--space-16)'
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div 
+            className="card"
+            style={{
+              width: '100%',
+              maxWidth: '520px',
+              marginBottom: 0,
+              padding: 'var(--space-32)',
+              boxShadow: 'var(--shadow-md)',
+              border: '1px solid var(--border)'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex-between" style={{ marginBottom: 'var(--space-24)' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+                {editingId ? 'Edit Banner' : 'Add New Banner'}
+              </h2>
+              <button 
+                className="btn btn-outline" 
+                style={{ padding: 'var(--space-8)', borderRadius: 'var(--radius-full)', border: 'none' }}
+                onClick={() => setIsModalOpen(false)}
               >
-                {loading ? 'Saving...' : 'Save Banner'}
+                <X size={20} />
               </button>
             </div>
-          </form>
+
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label">Banner Title</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="Enter banner title"
+                  value={title} 
+                  onChange={e => setTitle(e.target.value)} 
+                  required 
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Banner Image</label>
+                <ImageUpload 
+                  onFileSelect={() => {}} 
+                  onUploadComplete={(url: string) => setImageUrl(url)} 
+                  folder="banners" 
+                  previewUrl={imageUrl} 
+                  onClear={() => setImageUrl('')} 
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-outline" 
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  disabled={uploading}
+                >
+                  {uploading ? 'Saving...' : (editingId ? 'Update Banner' : 'Save Banner')}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-6 py-3 text-sm font-medium text-gray-500 w-24">Image</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Title</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Order</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Status</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {banners.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                  No banners found.
-                </td>
-              </tr>
-            ) : (
-              banners.map((b) => (
-                <tr key={b.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                  <td className="px-6 py-4">
-                    {b.imageUrl ? (
-                      <img src={b.imageUrl} alt={b.title} className="w-16 h-10 object-cover rounded" />
-                    ) : (
-                      <div className="w-16 h-10 bg-gray-200 rounded"></div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{b.title}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{b.order}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {b.active ? (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                    ) : (
-                      <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">Inactive</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-right">
-                    <button onClick={() => handleDelete(b.id)} className="text-red-600 hover:text-red-800">
-                      <Trash2 className="w-4 h-4 inline" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Delete Banner"
+        message="Are you sure you want to delete this banner? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
-};
+}

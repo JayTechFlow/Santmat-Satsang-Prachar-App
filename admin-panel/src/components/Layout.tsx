@@ -1,14 +1,17 @@
-import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
+import { Header } from './Header';
 
-export const Layout = () => {
+export function Layout() {
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="app-container">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto p-8">
-        <Outlet />
-      </main>
+      <div className="main-wrapper">
+        <Header />
+        <main className="main-content">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
-};
+}

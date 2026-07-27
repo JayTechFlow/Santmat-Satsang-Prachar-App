@@ -1,52 +1,81 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, 
+  LayoutDashboard, 
+  Music,
+  BookOpen, 
+  Tags,
+  Users,
+  ListVideo,
+  Bell, 
   Image as ImageIcon, 
-  Quote, 
-  Music, 
-  Video, 
-  Book,
-  Bell 
+  BarChart,
+  Settings,
+  HelpCircle,
+  LogOut
 } from 'lucide-react';
+import { auth } from '../firebase/config';
+import { signOut } from 'firebase/auth';
 
-const navItems = [
-  { path: '/', label: 'Home', icon: Home },
-  { path: '/banners', label: 'Banners', icon: ImageIcon },
-  { path: '/quotes', label: 'Quotes', icon: Quote },
-  { path: '/audio', label: 'Audio', icon: Music },
-  { path: '/satsang', label: 'Satsang', icon: Video },
-  { path: '/books', label: 'Books', icon: Book },
+const NAV_ITEMS = [
+  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/bhajans', label: 'Bhajan Management', icon: Music },
+  { path: '/stuti-vinati', label: 'Stuti-Vinati', icon: BookOpen },
+  { path: '/categories', label: 'Categories', icon: Tags },
+  { path: '/users', label: 'Users', icon: Users },
+  { path: '/playlist', label: 'Playlist', icon: ListVideo },
   { path: '/notifications', label: 'Notifications', icon: Bell },
+  { path: '/banners', label: 'Banner Management', icon: ImageIcon },
+  { path: '/reports', label: 'Reports', icon: BarChart },
+  { path: '/settings', label: 'App Settings', icon: Settings },
+  { path: '/support', label: 'Support', icon: HelpCircle },
 ];
 
-export const Sidebar = () => {
+export function Sidebar() {
+  const location = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out", error);
+    }
+  };
+
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
+    <aside className="sidebar">
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '1.25rem', color: 'var(--primary)', lineHeight: 1.2 }}>
+          Santmat Satsang Prachar
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Admin Panel</p>
       </div>
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1">
-          {navItems.map((item) => (
-            <li key={item.path}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center px-6 py-3 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`
-                }
-              >
-                <item.icon className="w-5 h-5 mr-3" />
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem', overflowY: 'auto' }}>
+        {NAV_ITEMS.map(({ path, label, icon: Icon }) => (
+          <Link
+            key={path}
+            to={path}
+            className={`nav-link ${location.pathname === path ? 'active' : ''}`}
+          >
+            <Icon size={20} />
+            {label}
+          </Link>
+        ))}
       </nav>
+      <button 
+        onClick={handleLogout} 
+        className="btn" 
+        style={{ 
+          marginTop: '1rem',
+          justifyContent: 'flex-start', 
+          padding: '0.75rem 1rem', 
+          background: 'transparent', 
+          color: 'var(--danger)',
+          width: '100%'
+        }}
+      >
+        <LogOut size={20} />
+        Logout
+      </button>
     </aside>
   );
-};
+}

@@ -4,10 +4,39 @@ service firebase.storage {
     function isAuthenticated() {
       return request.auth != null;
     }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
     
     match /public/{allPaths=**} {
       allow read: if isAuthenticated();
-      allow write: if false;
+      allow write: if isAdmin();
+    }
+
+    match /audio/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /banners/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /thumbnails/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /books/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /prayers/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
     match /users/{userId}/{allPaths=**} {

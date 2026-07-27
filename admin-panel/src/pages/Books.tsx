@@ -1,368 +1,278 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
+import { Plus, Trash2, Edit2, X, BookOpen } from 'lucide-react';
+import { useToast } from '../hooks/useToast';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { LoadingOverlay } from '../components/ui/LoadingOverlay';
+import { EmptyState } from '../components/ui/EmptyState';
+import { ImageUpload } from '../components/ui/ImageUpload';
 
-export const Books = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [books, setBooks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
+export function Books() {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { success, error } = useToast();
+  
   // Form State
   const [title, setTitle] = useState('');
-  const [subtitle, setSubtitle] = useState('');
+  const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
-  const [authorName, setAuthorName] = useState('');
-  const [categoryName, setCategoryName] = useState('');
-  const [language, setLanguage] = useState('Hindi');
-  const [edition, setEdition] = useState('');
-  const [pageCount, setPageCount] = useState<number | ''>('');
-  const [readingTime, setReadingTime] = useState<number | ''>('');
-  const [coverImageUrl, setCoverImageUrl] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
-  const [pdfUrlPlaceholder, setPdfUrlPlaceholder] = useState('');
-  const [tagsInput, setTagsInput] = useState('');
-  
-  const [isFeatured, setIsFeatured] = useState(false);
-  const [isPopular, setIsPopular] = useState(false);
-  const [isRecentlyAdded, setIsRecentlyAdded] = useState(true);
+  const [coverUrl, setCoverUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    const q = query(collection(db, 'books'), orderBy('publicationDate', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setBooks(data);
-    }, (error) => {
-      console.error("Error fetching books: ", error);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const fetchItems = async () => {
     try {
-      const tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag);
-
-      const newBook = {
-        title,
-        subtitle,
-        description,
-        author: {
-          id: authorName.toLowerCase().replace(/\s+/g, '-'),
-          name: authorName,
-          bio: "",
-          imageUrl: ""
-        },
-        category: {
-          id: categoryName.toLowerCase().replace(/\s+/g, '-'),
-          name: categoryName,
-          description: ""
-        },
-        language,
-        edition,
-        publicationDate: serverTimestamp(),
-        pageCount: Number(pageCount) || 0,
-        estimatedReadingTimeMinutes: Number(readingTime) || 0,
-        coverImageUrl,
-        thumbnailUrl,
-        tags,
-        isFeatured,
-        isPopular,
-        isRecentlyAdded,
-        chapters: [],
-        pdfUrlPlaceholder
-      };
-
-      await addDoc(collection(db, 'books'), newBook);
-      
-      // Reset form
-      setTitle('');
-      setSubtitle('');
-      setDescription('');
-      setAuthorName('');
-      setCategoryName('');
-      setLanguage('Hindi');
-      setEdition('');
-      setPageCount('');
-      setReadingTime('');
-      setCoverImageUrl('');
-      setThumbnailUrl('');
-      setPdfUrlPlaceholder('');
-      setTagsInput('');
-      setIsFeatured(false);
-      setIsPopular(false);
-      setIsRecentlyAdded(true);
-      
-      setIsFormOpen(false);
-    } catch (error) {
-      console.error("Error adding book: ", error);
-      alert("Error adding book. Check console.");
+      setLoading(true);
+      const snapshot = await getDocs(collection(db, 'books'));
+      setItems(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+    } catch (err: any) {
+      console.error(err);
+      error("Failed to load books");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this book?")) {
-      try {
-        await deleteDoc(doc(db, 'books', id));
-      } catch (error) {
-        console.error("Error deleting book: ", error);
+  useEffect(() => {
+    fetchItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setUploading(true);
+      const payload = { title, author, description, coverUrl };
+
+      if (editingId) {
+        await updateDoc(doc(db, 'books', editingId), payload);
+        success("Book updated successfully");
+      } else {
+        await addDoc(collection(db, 'books'), { ...payload, createdAt: new Date() });
+        success("Book added successfully");
       }
+      setIsModalOpen(false);
+      resetForm();
+      fetchItems();
+    } catch (err: any) {
+      console.error(err);
+      error("Error saving document");
+    } finally {
+      setUploading(false);
     }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteDoc(doc(db, 'books', deleteId));
+      success("Book deleted successfully");
+      fetchItems();
+    } catch (err: any) {
+      console.error(err);
+      error("Failed to delete book");
+    } finally {
+      setDeleteId(null);
+    }
+  };
+
+  const openEdit = (item: any) => {
+    setEditingId(item.id);
+    setTitle(item.title || '');
+    setAuthor(item.author || '');
+    setDescription(item.description || '');
+    setCoverUrl(item.coverUrl || '');
+    setIsModalOpen(true);
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setTitle('');
+    setAuthor('');
+    setDescription('');
+    setCoverUrl('');
   };
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Manage Books</h2>
-        <button
-          onClick={() => setIsFormOpen(!isFormOpen)}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          {isFormOpen ? "Cancel" : "Add Book"}
+      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 'var(--space-8)' }}>Books Library</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Manage spiritual books, literature, and publications</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
+          <Plus size={18} /> Add New Book
         </button>
       </div>
 
-      {isFormOpen && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4">Add New Book</h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input
-                  required
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Enter book title"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-                <input
-                  type="text"
-                  value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Optional subtitle"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Author Name</label>
-                <input
-                  required
-                  type="text"
-                  value={authorName}
-                  onChange={(e) => setAuthorName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Author name"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Book description..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-                <input
-                  required
-                  type="text"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="E.g., Spiritual"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Edition</label>
-                <input
-                  type="text"
-                  value={edition}
-                  onChange={(e) => setEdition(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="E.g., First Edition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Page Count</label>
-                <input
-                  type="number"
-                  value={pageCount}
-                  onChange={(e) => setPageCount(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="e.g. 200"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reading Time (minutes)</label>
-                <input
-                  type="number"
-                  value={readingTime}
-                  onChange={(e) => setReadingTime(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="e.g. 300"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-                <select 
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="Hindi">Hindi</option>
-                  <option value="English">English</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">PDF URL</label>
-                <input
-                  type="text"
-                  value={pdfUrlPlaceholder}
-                  onChange={(e) => setPdfUrlPlaceholder(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Thumbnail URL</label>
-                <input
-                  type="text"
-                  value={thumbnailUrl}
-                  onChange={(e) => setThumbnailUrl(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image URL</label>
-                <input
-                  type="text"
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
-                <input
-                  type="text"
-                  value={tagsInput}
-                  onChange={(e) => setTagsInput(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="peace, truth"
-                />
-              </div>
-
-              <div className="flex items-center space-x-6 col-span-2 pt-2">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isFeatured}
-                    onChange={(e) => setIsFeatured(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Is Featured</span>
-                </label>
-                
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isPopular}
-                    onChange={(e) => setIsPopular(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Is Popular</span>
-                </label>
-
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isRecentlyAdded}
-                    onChange={(e) => setIsRecentlyAdded(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Is Recently Added</span>
-                </label>
-              </div>
-            </div>
-            
-            <div className="flex justify-end pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : 'Save Book'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Title</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Author</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Language</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {books.length === 0 ? (
+      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+        {loading && <LoadingOverlay />}
+        
+        <div className="table-container" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
+          <table>
+            <thead>
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                  No books found.
-                </td>
+                <th style={{ width: '80px' }}>Cover</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Description</th>
+                <th style={{ textAlign: 'right', width: '120px' }}>Actions</th>
               </tr>
-            ) : (
-              books.map((b) => (
-                <tr key={b.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                    {b.title}
+            </thead>
+            <tbody>
+              {items.map(item => (
+                <tr key={item.id}>
+                  <td>
+                    {item.coverUrl ? (
+                      <img
+                        src={item.coverUrl}
+                        alt={item.title}
+                        className="image-preview"
+                        style={{ width: '48px', height: '64px', borderRadius: 'var(--radius-input)', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '48px',
+                          height: '64px',
+                          backgroundColor: 'var(--background)',
+                          border: '1px solid var(--border)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 'var(--radius-input)'
+                        }}
+                      >
+                        <BookOpen size={20} color="var(--text-muted)" />
+                      </div>
+                    )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{b.author?.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{b.language}</td>
-                  <td className="px-6 py-4 text-sm text-right">
-                    <button onClick={() => handleDelete(b.id)} className="text-red-600 hover:text-red-800">
-                      <Trash2 className="w-4 h-4 inline" />
-                    </button>
+                  <td>
+                    <div style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{item.title}</div>
+                  </td>
+                  <td>
+                    <span style={{ color: 'var(--text-body)' }}>{item.author || '—'}</span>
+                  </td>
+                  <td>
+                    <div
+                      style={{
+                        color: 'var(--text-muted)',
+                        fontSize: '0.875rem',
+                        maxWidth: '300px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {item.description || '—'}
+                    </div>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: 'var(--space-8)' }}>
+                      <button className="btn-icon" onClick={() => openEdit(item)} title="Edit book">
+                        <Edit2 size={18} />
+                      </button>
+                      <button className="btn-icon danger" onClick={() => setDeleteId(item.id)} title="Delete book">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+          {!loading && items.length === 0 && (
+            <EmptyState 
+              icon={<BookOpen size={48} />}
+              title="No books found"
+              message="Click 'Add New Book' to add one."
+            />
+          )}
+        </div>
       </div>
+
+      {isModalOpen && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <div className="flex-between" style={{ marginBottom: 'var(--space-24)' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+                {editingId ? 'Edit Book' : 'Add New Book'}
+              </h2>
+              <button className="btn-icon" onClick={() => setIsModalOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label">Title</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter book title"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Author</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter author name"
+                  value={author}
+                  onChange={e => setAuthor(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="Enter book description"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                ></textarea>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Book Cover Image</label>
+                <ImageUpload
+                  folder="book_covers"
+                  previewUrl={coverUrl}
+                  onFileSelect={() => {}}
+                  onUploadComplete={(url: string) => setCoverUrl(url)}
+                  onClear={() => setCoverUrl('')}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={uploading}>
+                  {uploading ? 'Saving...' : (editingId ? 'Update Book' : 'Save Book')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Delete Book"
+        message="Are you sure you want to delete this book? This action cannot be undone."
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
-};
+}

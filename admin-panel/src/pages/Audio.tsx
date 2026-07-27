@@ -1,321 +1,367 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
-import { db } from '../firebase/config';
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, Edit2, X, Music, FileAudio } from 'lucide-react';
+import { useToast } from '../hooks/useToast';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { LoadingOverlay } from '../components/ui/LoadingOverlay';
+import { EmptyState } from '../components/ui/EmptyState';
+import { AudioUpload } from '../components/ui/AudioUpload';
+import { ImageUpload } from '../components/ui/ImageUpload';
+import { useBhajans } from '../features/bhajans/hooks/useBhajans';
+import { useBhajanMutations } from '../features/bhajans/hooks/useBhajanMutations';
+import { useBhajanForm } from '../features/bhajans/hooks/useBhajanForm';
+import { bhajanRepository } from '../features/bhajans/repositories/bhajanRepository';
+import { Pagination } from '../components/ui/Pagination';
+import { LyricsEditor } from '../components/ui/LyricsEditor';
+import { DataTable } from '../components/ui/DataTable';
+import { useTableSelection } from '../hooks/useTableSelection';
+import { useBulkActions } from '../hooks/useBulkActions';
+import { BulkActionBar } from '../components/ui/BulkActionBar';
+import { bhajanService } from '../features/bhajans/services/bhajanService';
 
-export const Audio = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [audios, setAudios] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+export function Audio() {
+  const { data: items, loading: fetching, error: fetchError, refetch, currentPage, totalPages, goToPage } = useBhajans();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { error, success } = useToast();
 
-  // Form State
-  const [title, setTitle] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [speaker, setSpeaker] = useState('');
-  const [categoryName, setCategoryName] = useState('');
-  const [durationMinutes, setDurationMinutes] = useState<number | ''>('');
-  const [language, setLanguage] = useState('Hindi');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
-  const [artworkUrl, setArtworkUrl] = useState('');
-  const [audioUrl, setAudioUrl] = useState('');
-  
-  const [isFeatured, setIsFeatured] = useState(false);
-  const [isRecentlyAdded, setIsRecentlyAdded] = useState(true);
-  const [isPopular, setIsPopular] = useState(false);
+  const { selectedIds, selectedCount, toggleSelection, selectAll, clearSelection } = useTableSelection<string>();
+  const { executeBulkAction } = useBulkActions();
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+
+  const { createBhajan, updateBhajan, deleteBhajan, loading: mutating } = useBhajanMutations(() => {
+    setIsModalOpen(false);
+    setDeleteId(null);
+    resetForm();
+    refetch();
+  });
+
+  const { formData, setField, reset, validate, isDirty } = useBhajanForm();
 
   useEffect(() => {
-    const q = query(collection(db, 'audio'), orderBy('releaseDate', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setAudios(data);
-    }, (error) => {
-      console.error("Error fetching audios: ", error);
-    });
-
-    return () => unsubscribe();
-  }, []);
+    if (fetchError) {
+      error("Failed to load audio tracks.");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    const validationError = validate();
+    if (validationError) {
+      error(validationError);
+      return;
+    }
 
-    try {
-      const newAudio = {
-        title,
-        subtitle,
-        description,
-        speaker,
-        categoryId: categoryName.toLowerCase().replace(/\s+/g, '-'),
-        categoryName,
-        durationMinutes: Number(durationMinutes) || 0,
-        language,
-        thumbnailUrl,
-        artworkUrl,
-        audioUrl,
-        releaseDate: serverTimestamp(),
-        playCount: 0,
-        favoriteCount: 0,
-        isFeatured,
-        isRecentlyAdded,
-        isPopular
-      };
-
-      await addDoc(collection(db, 'audio'), newAudio);
-      
-      // Reset form
-      setTitle('');
-      setSubtitle('');
-      setDescription('');
-      setSpeaker('');
-      setCategoryName('');
-      setDurationMinutes('');
-      setLanguage('Hindi');
-      setThumbnailUrl('');
-      setArtworkUrl('');
-      setAudioUrl('');
-      setIsFeatured(false);
-      setIsRecentlyAdded(true);
-      setIsPopular(false);
-      
-      setIsFormOpen(false);
-    } catch (error) {
-      console.error("Error adding audio: ", error);
-      alert("Error adding audio. Check console.");
-    } finally {
-      setLoading(false);
+    if (editingId) {
+      await updateBhajan(editingId, formData);
+    } else {
+      await createBhajan(formData);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this audio?")) {
-      try {
-        await deleteDoc(doc(db, 'audio', id));
-      } catch (error) {
-        console.error("Error deleting audio: ", error);
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
+    await deleteBhajan(deleteId);
+  };
+
+  const handleBulkDelete = async () => {
+    const result = await executeBulkAction(
+      selectedIds,
+      async (id) => {
+        await bhajanService.deleteBhajan(id);
+      }
+    );
+    
+    setIsBulkDeleteModalOpen(false);
+    clearSelection();
+    refetch();
+    
+    if (result.failed > 0) {
+      error(`Deleted ${result.successful} bhajans, but ${result.failed} failed.`);
+    } else {
+      success(`Successfully deleted ${result.successful} bhajans.`);
+    }
+  };
+
+  const openEdit = (item: any) => {
+    setEditingId(item.id);
+    reset({
+      title: item.title || '',
+      description: item.description || '',
+      audioUrl: item.audioUrl || '',
+      thumbnailUrl: item.thumbnailUrl || '',
+      lyrics: item.lyrics || ''
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    if (isDirty) {
+      if (!window.confirm('You have unsaved changes. Are you sure you want to discard them?')) {
+        return;
       }
     }
+    setIsModalOpen(false);
   };
+
+  const resetForm = () => {
+    setEditingId(null);
+    reset();
+  };
+
+  const isLoading = fetching || mutating;
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Latest Audio</h2>
-        <button
-          onClick={() => setIsFormOpen(!isFormOpen)}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          {isFormOpen ? "Cancel" : "Add Audio"}
+      {/* Header Section */}
+      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 'var(--space-8)' }}>Bhajan & Audio Management</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+            Upload, organize, and manage spiritual audio tracks and bhajans
+          </p>
+        </div>
+        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
+          <Plus size={18} /> Add New Bhajan
         </button>
       </div>
 
-      {isFormOpen && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold mb-4">Add New Audio</h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input
-                  required
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Enter audio title"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-                <input
-                  type="text"
-                  value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Optional subtitle"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Speaker</label>
-                <input
-                  required
-                  type="text"
-                  value={speaker}
-                  onChange={(e) => setSpeaker(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Speaker name"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="Audio description..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-                <input
-                  required
-                  type="text"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="E.g., Morning Satsang"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
-                <input
-                  required
-                  type="number"
-                  value={durationMinutes}
-                  onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="e.g. 45"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-                <select 
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="Hindi">Hindi</option>
-                  <option value="English">English</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Audio URL (.mp3)</label>
-                <input
-                  required
-                  type="text"
-                  value={audioUrl}
-                  onChange={(e) => setAudioUrl(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Thumbnail URL</label>
-                <input
-                  type="text"
-                  value={thumbnailUrl}
-                  onChange={(e) => setThumbnailUrl(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Artwork URL (optional)</label>
-                <input
-                  type="text"
-                  value={artworkUrl}
-                  onChange={(e) => setArtworkUrl(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div className="flex items-center space-x-6 col-span-2 pt-2">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isFeatured}
-                    onChange={(e) => setIsFeatured(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+      {/* Main Table Card */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden', minHeight: '300px', position: 'relative' }}>
+        {isLoading ? (
+          <LoadingOverlay message="Loading..." />
+        ) : items.length === 0 ? (
+          <EmptyState title="No bhajans found" message="Get started by adding your first spiritual audio track." icon={<Music size={40} />} />
+        ) : (
+          <DataTable
+            data={items}
+            keyExtractor={item => item.id}
+            selectable={true}
+            selectedIds={selectedIds}
+            onToggleSelection={toggleSelection}
+            onSelectAll={selectAll}
+            onClearSelection={clearSelection}
+            columns={[
+              {
+                key: 'thumbnailUrl',
+                header: 'Thumbnail',
+                render: (item) => item.thumbnailUrl ? (
+                  <img
+                    src={item.thumbnailUrl}
+                    alt={item.title}
+                    style={{ width: '52px', height: '52px', objectFit: 'cover', borderRadius: 'var(--radius-input)', border: '1px solid var(--border)' }}
                   />
-                  <span className="text-sm font-medium text-gray-700">Is Featured</span>
-                </label>
-                
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isRecentlyAdded}
-                    onChange={(e) => setIsRecentlyAdded(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Is Recently Added</span>
-                </label>
+                ) : (
+                  <div style={{ width: '52px', height: '52px', backgroundColor: 'var(--background)', borderRadius: 'var(--radius-input)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Music size={22} color="var(--primary)" />
+                  </div>
+                )
+              },
+              {
+                key: 'title',
+                header: 'Title',
+                sortable: true,
+                render: (item) => (
+                  <div style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
+                    <div>{item.title}</div>
+                    {item.audioUrl && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <FileAudio size={12} color="var(--primary)" /> Audio attached
+                      </div>
+                    )}
+                  </div>
+                )
+              },
+              {
+                key: 'description',
+                header: 'Description',
+                render: (item) => (
+                  <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', maxWidth: '300px' }}>
+                    {item.description || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No description</span>}
+                  </div>
+                )
+              },
+              {
+                key: 'actions',
+                header: 'Actions',
+                render: (item) => (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-8)' }}>
+                    <button
+                      className="btn btn-outline"
+                      style={{ padding: 'var(--space-8) var(--space-8)', fontSize: '0.875rem' }}
+                      onClick={() => openEdit(item)}
+                      title="Edit bhajan"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button
+                      className="btn btn-outline"
+                      style={{ padding: 'var(--space-8) var(--space-8)', fontSize: '0.875rem', color: 'var(--danger)', borderColor: 'rgba(220, 38, 38, 0.2)' }}
+                      onClick={() => setDeleteId(item.id)}
+                      title="Delete bhajan"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )
+              }
+            ]}
+          />
+        )}
+      </div>
 
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isPopular}
-                    onChange={(e) => setIsPopular(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Is Popular</span>
-                </label>
-              </div>
-            </div>
-            
-            <div className="flex justify-end pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : 'Save Audio'}
-              </button>
-            </div>
-          </form>
+      {totalPages > 1 && (
+        <div style={{ marginTop: 'var(--space-24)' }}>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+          />
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Title</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Speaker</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Category</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500">Duration</th>
-              <th className="px-6 py-3 text-sm font-medium text-gray-500 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {audios.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                  No audio tracks found.
-                </td>
-              </tr>
-            ) : (
-              audios.map((a) => (
-                <tr key={a.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                    {a.title}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{a.speaker}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{a.categoryName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{a.durationMinutes} min</td>
-                  <td className="px-6 py-4 text-sm text-right">
-                    <button onClick={() => handleDelete(a.id)} className="text-red-600 hover:text-red-800">
-                      <Trash2 className="w-4 h-4 inline" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this bhajan?"
+        isDestructive={true}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteId(null)}
+      />
+
+      <ConfirmDialog
+        isOpen={isBulkDeleteModalOpen}
+        title={`Delete ${selectedCount} Bhajans`}
+        message={`Are you sure you want to delete ${selectedCount} selected bhajans? This action cannot be undone.`}
+        isDestructive={true}
+        onConfirm={handleBulkDelete}
+        onCancel={() => setIsBulkDeleteModalOpen(false)}
+      />
+
+      <BulkActionBar
+        selectedCount={selectedCount}
+        onClearSelection={clearSelection}
+        onDelete={() => setIsBulkDeleteModalOpen(true)}
+      />
+
+      {/* Modal Dialog */}
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 50,
+          padding: 'var(--space-16)',
+        }}>
+          <div className="card" style={{
+            width: '100%',
+            maxWidth: '560px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            marginBottom: 0,
+            boxShadow: 'var(--shadow-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-card)',
+            padding: 'var(--space-32)',
+          }}>
+            {/* Modal Header */}
+            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+                {editingId ? 'Edit Bhajan' : 'Add New Bhajan'}
+              </h2>
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ border: 'none', padding: 'var(--space-8)', borderRadius: 'var(--radius-input)' }}
+                onClick={handleCloseModal}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              {/* Title Field */}
+              <div className="form-group">
+                <label className="form-label">Title</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter bhajan title"
+                  value={formData.title}
+                  onChange={e => setField('title', e.target.value)}
+                  required
+                />
+              </div>
+
+              {/* Description Field */}
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="Enter details or lyrics preview"
+                  value={formData.description}
+                  onChange={e => setField('description', e.target.value)}
+                />
+              </div>
+
+              {/* Lyrics Field */}
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="form-label">Lyrics (Markdown Supported)</label>
+                <LyricsEditor
+                  value={formData.lyrics}
+                  onChange={val => setField('lyrics', val)}
+                  id={editingId || 'new'}
+                />
+              </div>
+
+              {/* Audio Uploader Box */}
+              <div className="form-group">
+                <label className="form-label">Audio File (MP3)</label>
+                <AudioUpload 
+                  onFileSelect={() => {}} 
+                  onUploadComplete={(url: string) => setField('audioUrl', url)} 
+                  folder="audio" 
+                  audioUrl={formData.audioUrl} 
+                  onClear={() => setField('audioUrl', '')} 
+                  uploadFn={bhajanRepository.uploadFile}
+                />
+              </div>
+
+              {/* Thumbnail Uploader Box */}
+              <div className="form-group">
+                <label className="form-label">Thumbnail Cover Image</label>
+                <ImageUpload 
+                  onFileSelect={() => {}} 
+                  onUploadComplete={(url: string) => setField('thumbnailUrl', url)} 
+                  folder="thumbnails" 
+                  previewUrl={formData.thumbnailUrl} 
+                  onClear={() => setField('thumbnailUrl', '')} 
+                  uploadFn={bhajanRepository.uploadFile}
+                />
+              </div>
+
+              {/* Modal Footer Actions */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)', paddingTop: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
+                <button type="button" className="btn btn-outline" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={mutating}>
+                  {mutating ? 'Saving...' : (editingId ? 'Update Bhajan' : 'Save Bhajan')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
+}
