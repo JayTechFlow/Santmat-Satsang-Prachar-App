@@ -18,6 +18,7 @@ const StutiVinati = lazy(() => import('./pages/StutiVinati').then(m => ({ defaul
 const Books = lazy(() => import('./pages/Books').then(m => ({ default: m.Books })));
 const Notifications = lazy(() => import('./pages/Notifications').then(m => ({ default: m.Notifications })));
 const Categories = lazy(() => import('./pages/Categories').then(m => ({ default: m.Categories })));
+const Users = lazy(() => import('./pages/Users').then(m => ({ default: m.Users })));
 const ComponentsTest = lazy(() => import('./pages/ComponentsTest').then(m => ({ default: m.ComponentsTest })));
 
 import { ToastProvider } from './components/ui/ToastProvider';
@@ -57,6 +58,7 @@ function App() {
               <Route path="books" element={<Books />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="categories" element={<Categories />} />
+              <Route path="users" element={<Users />} />
             </Route>
           </Routes>
         </Suspense>
