@@ -7,6 +7,7 @@ export interface BulkActionBarProps {
   onDelete?: () => void;
   onPublish?: () => void;
   onArchive?: () => void;
+  customActions?: { label: string; icon?: React.ReactNode; onClick: () => void; }[];
 }
 
 export function BulkActionBar({ 
@@ -14,7 +15,8 @@ export function BulkActionBar({
   onClearSelection, 
   onDelete, 
   onPublish, 
-  onArchive 
+  onArchive,
+  customActions 
 }: BulkActionBarProps) {
   if (selectedCount === 0) return null;
 
@@ -70,6 +72,11 @@ export function BulkActionBar({
             <Trash2 size={16} style={{ marginRight: '4px' }} /> Delete
           </button>
         )}
+        {customActions?.map((action, idx) => (
+          <button key={idx} className="btn btn-outline" onClick={action.onClick} style={{ padding: 'var(--space-8) var(--space-12)' }}>
+            {action.icon && <span style={{ marginRight: '4px', display: 'flex' }}>{action.icon}</span>} {action.label}
+          </button>
+        ))}
       </div>
 
       <button 

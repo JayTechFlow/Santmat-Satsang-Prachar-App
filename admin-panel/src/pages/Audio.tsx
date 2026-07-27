@@ -11,7 +11,7 @@ import { useBhajanMutations } from '../features/bhajans/hooks/useBhajanMutations
 import { useBhajanForm } from '../features/bhajans/hooks/useBhajanForm';
 import { bhajanRepository } from '../features/bhajans/repositories/bhajanRepository';
 import { Pagination } from '../components/ui/Pagination';
-import { LyricsEditor } from '../components/ui/LyricsEditor';
+import { MarkdownEditor } from '../components/ui/MarkdownEditor';
 import { DataTable } from '../components/ui/DataTable';
 import { useTableSelection } from '../hooks/useTableSelection';
 import { useBulkActions } from '../hooks/useBulkActions';
@@ -316,10 +316,11 @@ export function Audio() {
               {/* Lyrics Field */}
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label className="form-label">Lyrics (Markdown Supported)</label>
-                <LyricsEditor
+                <MarkdownEditor
                   value={formData.lyrics}
                   onChange={val => setField('lyrics', val)}
                   id={editingId || 'new'}
+                  placeholder="Enter lyrics here..."
                 />
               </div>
 

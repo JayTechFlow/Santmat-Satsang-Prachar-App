@@ -3,19 +3,27 @@ import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from 'rehype-sanitize';
 import { Save } from 'lucide-react';
 
-interface LyricsEditorProps {
+export interface MarkdownEditorProps {
   value: string;
   onChange: (val: string) => void;
   id?: string;
+  placeholder?: string;
+  height?: number;
 }
 
-export const LyricsEditor: React.FC<LyricsEditorProps> = ({ value, onChange, id = 'draft' }) => {
+export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ 
+  value, 
+  onChange, 
+  id = 'draft',
+  placeholder = 'Enter markdown content here...',
+  height = 400
+}) => {
   const [draftSaved, setDraftSaved] = useState(false);
 
   // Auto-save draft to local storage
   useEffect(() => {
     if (!value && !id) {
-      const saved = localStorage.getItem('bhajan-lyrics-draft-draft');
+      const saved = localStorage.getItem(`md-editor-draft-draft`);
       if (saved) {
         onChange(saved);
       }
@@ -23,7 +31,7 @@ export const LyricsEditor: React.FC<LyricsEditorProps> = ({ value, onChange, id 
   }, [id, value, onChange]);
 
   useEffect(() => {
-    const draftKey = `bhajan-lyrics-draft-${id}`;
+    const draftKey = `md-editor-draft-${id}`;
     if (value) {
       const timer = setTimeout(() => {
         localStorage.setItem(draftKey, value);
@@ -45,7 +53,7 @@ export const LyricsEditor: React.FC<LyricsEditorProps> = ({ value, onChange, id 
   }, [value]);
 
   return (
-    <div className="lyrics-editor-container" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }} data-color-mode="light">
+    <div className="markdown-editor-container" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }} data-color-mode="light">
       <style>
         {`
           .w-md-editor {
@@ -64,9 +72,9 @@ export const LyricsEditor: React.FC<LyricsEditorProps> = ({ value, onChange, id 
         previewOptions={{
           rehypePlugins: [[rehypeSanitize]]
         }}
-        height={400}
+        height={height}
         textareaProps={{
-          placeholder: 'Enter bhajan lyrics here... Use markdown for verses and formatting.'
+          placeholder
         }}
       />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '12px', color: 'var(--text-muted)' }}>
