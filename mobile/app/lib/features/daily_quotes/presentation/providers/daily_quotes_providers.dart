@@ -14,10 +14,6 @@ import '../../domain/entities/quote_author_entity.dart';
 import 'daily_quotes_state.dart';
 
 final dailyQuoteDataSourceProvider = Provider<DailyQuoteDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockDailyQuoteDataSource();
-  }
   return FirestoreDailyQuoteDataSource(ref.watch(firestoreServiceProvider));
 });
 

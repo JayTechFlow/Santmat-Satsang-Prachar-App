@@ -14,10 +14,6 @@ import '../../domain/entities/recently_played_entity.dart';
 import 'audio_state.dart';
 
 final audioDataSourceProvider = Provider<AudioDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockAudioDataSource();
-  }
   return FirestoreAudioDataSource(ref.watch(firestoreServiceProvider));
 });
 

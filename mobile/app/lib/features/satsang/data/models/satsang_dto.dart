@@ -20,6 +20,8 @@ class SatsangDto {
   final String location;
   final String thumbnailUrl;
   final String coverImageUrl;
+  final String videoUrl;
+  final String audioUrl;
   final List<String> tags;
   final bool isFeatured;
   final bool isPopular;
@@ -42,6 +44,8 @@ class SatsangDto {
     required this.location,
     required this.thumbnailUrl,
     required this.coverImageUrl,
+    required this.videoUrl,
+    required this.audioUrl,
     required this.tags,
     required this.isFeatured,
     required this.isPopular,
@@ -67,6 +71,8 @@ class SatsangDto {
       location: data['location'] as String? ?? '',
       thumbnailUrl: data['thumbnailUrl'] as String? ?? '',
       coverImageUrl: data['coverImageUrl'] as String? ?? '',
+      videoUrl: data['videoUrl'] as String? ?? '',
+      audioUrl: data['audioUrl'] as String? ?? '',
       tags: List<String>.from(data['tags'] ?? []),
       isFeatured: data['isFeatured'] as bool? ?? false,
       isPopular: data['isPopular'] as bool? ?? false,
@@ -91,6 +97,8 @@ class SatsangDto {
       'location': location,
       'thumbnailUrl': thumbnailUrl,
       'coverImageUrl': coverImageUrl,
+      'videoUrl': videoUrl,
+      'audioUrl': audioUrl,
       'tags': tags,
       'isFeatured': isFeatured,
       'isPopular': isPopular,
@@ -117,6 +125,8 @@ class SatsangDto {
       location: location,
       thumbnailUrl: thumbnailUrl,
       coverImageUrl: coverImageUrl,
+      videoUrl: videoUrl,
+      audioUrl: audioUrl,
       tags: tags,
       isFeatured: isFeatured,
       isPopular: isPopular,

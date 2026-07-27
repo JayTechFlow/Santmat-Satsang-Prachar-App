@@ -14,6 +14,8 @@ class SatsangEntity {
   final String location;
   final String thumbnailUrl;
   final String coverImageUrl;
+  final String videoUrl;
+  final String audioUrl;
   final List<String> tags;
   final bool isFeatured;
   final bool isPopular;
@@ -32,6 +34,8 @@ class SatsangEntity {
     required this.location,
     required this.thumbnailUrl,
     required this.coverImageUrl,
+    required this.videoUrl,
+    required this.audioUrl,
     required this.tags,
     required this.isFeatured,
     required this.isPopular,

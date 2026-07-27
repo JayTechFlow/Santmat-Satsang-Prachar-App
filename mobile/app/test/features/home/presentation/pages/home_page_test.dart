@@ -8,6 +8,7 @@ import 'package:santmat_satsang_prachar/features/authentication/presentation/pro
 import 'package:santmat_satsang_prachar/features/home/domain/entities/home_dashboard_entity.dart';
 import 'package:santmat_satsang_prachar/features/home/domain/usecases/home_usecases.dart';
 import 'package:santmat_satsang_prachar/features/home/presentation/providers/home_providers.dart';
+import 'package:santmat_satsang_prachar/features/home/data/datasources/mock_home_data_source.dart';
 
 import 'package:santmat_satsang_prachar/features/authentication/domain/entities/user_entity.dart';
 
@@ -61,6 +62,7 @@ void main() {
       ProviderScope(
         overrides: [
           authStateProvider.overrideWith(() => MockAuthStateNotifier()),
+          homeDataSourceProvider.overrideWithValue(MockHomeDataSource()),
           getHomeDashboardUseCaseProvider.overrideWith(
             (ref) =>
                 MockGetHomeDashboardUseCase(ref.read(homeRepositoryProvider)),
@@ -77,7 +79,7 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
 
     // Verify the dashboard loads successfully
-    expect(find.textContaining('Santmat'), findsWidgets);
-    expect(find.textContaining('Search bhajans, satsangs, books...'), findsWidgets);
+    expect(find.textContaining('संतमत'), findsWidgets);
+    expect(find.textContaining('भजन'), findsWidgets);
   });
 }

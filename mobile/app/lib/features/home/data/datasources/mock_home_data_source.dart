@@ -8,7 +8,9 @@ import '../../domain/entities/latest_satsang_entity.dart';
 import '../../domain/entities/quick_action_entity.dart';
 import '../../domain/entities/upcoming_event_entity.dart';
 
-class MockHomeDataSource {
+import 'home_data_source.dart';
+
+class MockHomeDataSource implements HomeDataSource {
   Future<HomeDashboardEntity> getHomeDashboard() async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 800));

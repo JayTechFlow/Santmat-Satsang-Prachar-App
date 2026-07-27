@@ -5,6 +5,7 @@ import 'package:santmat_satsang_prachar/features/home/domain/entities/home_dashb
 import 'package:santmat_satsang_prachar/features/home/domain/usecases/home_usecases.dart';
 
 import 'package:santmat_satsang_prachar/features/home/presentation/providers/home_providers.dart';
+import 'package:santmat_satsang_prachar/features/home/data/datasources/mock_home_data_source.dart';
 
 class MockGetHomeDashboardUseCase extends GetHomeDashboardUseCase {
   MockGetHomeDashboardUseCase(super.repository);
@@ -29,6 +30,7 @@ void main() {
   test('HomeNotifier fetchDashboard updates state to data', () async {
     final container = ProviderContainer(
       overrides: [
+        homeDataSourceProvider.overrideWithValue(MockHomeDataSource()),
         getHomeDashboardUseCaseProvider.overrideWith(
           (ref) =>
               MockGetHomeDashboardUseCase(ref.read(homeRepositoryProvider)),

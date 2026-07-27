@@ -390,14 +390,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/satsang',
-                builder: (context, state) => const SatsangHomePage(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
                 path: '/audio',
                 builder: (context, state) => const AudioHomePage(),
               ),
@@ -406,8 +398,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/books',
-                builder: (context, state) => const BooksHomePage(),
+                path: '/satsang',
+                builder: (context, state) => const SatsangHomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/notifications',
+                builder: (context, state) => const NotificationsPage(),
               ),
             ],
           ),

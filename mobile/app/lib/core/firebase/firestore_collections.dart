@@ -13,4 +13,6 @@ class FirestoreCollections {
   static const String library = 'library';
   static const String preferences = 'preferences';
   static const String searchIndex = 'search_index';
+  static const String banners = 'banners';
+  static const String quickActions = 'quick_actions';
 }

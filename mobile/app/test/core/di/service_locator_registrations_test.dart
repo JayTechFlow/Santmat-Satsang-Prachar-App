@@ -21,14 +21,14 @@ void main() {
     final container = ProviderContainer();
     final config = container.read(environmentConfigurationProvider);
     expect(config, isA<EnvironmentConfiguration>());
-    expect(config.isDev, isTrue);
+    expect(config.isProd, isTrue);
   });
 
   test('DI registers BackendConfiguration', () {
     final container = ProviderContainer();
     final config = container.read(backendConfigurationProvider);
     expect(config, isA<BackendConfiguration>());
-    expect(config.apiBaseUrl, 'https://dev-api.example.com');
+    expect(config.apiBaseUrl, 'https://api.example.com');
   });
 
   test('DI registers FirestoreService', () {

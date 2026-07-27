@@ -10,6 +10,7 @@ import 'package:santmat_satsang_prachar/core/utils/result.dart';
 import 'package:santmat_satsang_prachar/features/home/domain/entities/home_dashboard_entity.dart';
 import 'package:santmat_satsang_prachar/features/home/domain/usecases/home_usecases.dart';
 import 'package:santmat_satsang_prachar/features/home/presentation/providers/home_providers.dart';
+import 'package:santmat_satsang_prachar/features/home/data/datasources/mock_home_data_source.dart';
 
 class MockAuthStateNotifier extends Notifier<AsyncValue<SessionModel>>
     implements AuthStateNotifier {
@@ -62,6 +63,7 @@ void main() {
       ProviderScope(
         overrides: [
           authStateProvider.overrideWith(() => MockAuthStateNotifier()),
+          homeDataSourceProvider.overrideWithValue(MockHomeDataSource()),
           getHomeDashboardUseCaseProvider.overrideWith(
             (ref) =>
                 MockGetHomeDashboardUseCase(ref.read(homeRepositoryProvider)),
@@ -83,6 +85,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify shell bottom navigation bar is visible
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
   });
 }

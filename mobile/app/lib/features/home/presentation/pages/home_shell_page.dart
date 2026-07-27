@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../l10n/gen/app_localizations.dart';
+import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/app_typography.dart';
 
 class HomeShellPage extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -16,40 +17,51 @@ class HomeShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onDestinationSelected,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: l10n.home,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.temple_hindu_outlined),
-            selectedIcon: const Icon(Icons.temple_hindu),
-            label: l10n.tabSatsang,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.headphones_outlined),
-            selectedIcon: const Icon(Icons.headphones),
-            label: l10n.tabAudio,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.menu_book_outlined),
-            selectedIcon: const Icon(Icons.menu_book),
-            label: l10n.tabBooks,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.settings_outlined),
-            selectedIcon: const Icon(Icons.settings),
-            label: l10n.tabSettings,
-          ),
-        ],
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          currentIndex: navigationShell.currentIndex,
+          onTap: _onDestinationSelected,
+          backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.sacredGold, // Or the reddish-brown from screenshot
+          unselectedItemColor: Colors.grey.shade500,
+          selectedLabelStyle: AppTypography.label.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+          unselectedLabelStyle: AppTypography.label.copyWith(fontSize: 12),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'होम',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.music_note_outlined),
+              activeIcon: Icon(Icons.music_note),
+              label: 'ऑडियो',
+            ),
+            BottomNavigationBarItem(
+              // Using auto_awesome_mosaic or volunteer_activism as fallback for praying hands
+              icon: Icon(Icons.volunteer_activism_outlined),
+              activeIcon: Icon(Icons.volunteer_activism),
+              label: 'स्तुति-बिन्ती',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications_outlined),
+              activeIcon: Icon(Icons.notifications),
+              label: 'सूचनाएँ',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'प्रोफ़ाइल',
+            ),
+          ],
+        ),
       ),
     );
   }

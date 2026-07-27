@@ -29,7 +29,7 @@ import '../storage/validators/media_integrity_validator.dart';
 final environmentConfigurationProvider = Provider<EnvironmentConfiguration>((
   ref,
 ) {
-  return const EnvironmentConfiguration(currentEnvironment: Environment.dev);
+  return const EnvironmentConfiguration(currentEnvironment: Environment.prod);
 });
 
 final backendConfigurationProvider = Provider<BackendConfiguration>((ref) {

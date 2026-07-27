@@ -1,10 +1,10 @@
 import '../../../../core/utils/result.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 import '../../domain/repositories/home_repository.dart';
-import '../datasources/mock_home_data_source.dart';
+import '../datasources/home_data_source.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
-  final MockHomeDataSource _dataSource;
+  final HomeDataSource _dataSource;
 
   HomeRepositoryImpl(this._dataSource);
 

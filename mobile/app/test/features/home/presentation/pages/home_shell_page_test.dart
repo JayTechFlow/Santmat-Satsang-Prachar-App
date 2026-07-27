@@ -58,9 +58,13 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify NavigationBar exists
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
 
     // Verify 5 NavigationDestinations exist
-    expect(find.byType(NavigationDestination), findsNWidgets(5));
+    expect(find.text('होम'), findsOneWidget);
+    expect(find.text('ऑडियो'), findsOneWidget);
+    expect(find.text('स्तुति-बिन्ती'), findsOneWidget);
+    expect(find.text('सूचनाएँ'), findsOneWidget);
+    expect(find.text('प्रोफ़ाइल'), findsOneWidget);
   });
 }
