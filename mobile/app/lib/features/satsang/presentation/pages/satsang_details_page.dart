@@ -5,6 +5,8 @@ import '../widgets/loading_widget.dart';
 import '../widgets/error_state_widget.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../l10n/gen/app_localizations.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class SatsangDetailsPage extends ConsumerWidget {
   final String satsangId;
@@ -33,10 +35,10 @@ class SatsangDetailsPage extends ConsumerWidget {
                 expandedHeight: 300,
                 pinned: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Image.network(
+                  background: SSPImage(
                     satsang.coverImageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
+                    errorWidget: (_, __, ___) =>
                         const ColoredBox(color: Colors.grey),
                   ),
                 ),

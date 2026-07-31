@@ -8,6 +8,8 @@ import '../../../../l10n/gen/app_localizations.dart';
 import '../providers/audio_providers.dart';
 import '../../domain/entities/playback_state_entity.dart';
 import '../../domain/entities/audio_entity.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class AudioDetailsPage extends ConsumerWidget {
   final String audioId;
@@ -105,10 +107,10 @@ class _AudioDetailsContent extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 child: AspectRatio(
                   aspectRatio: 1.0,
-                  child: Image.network(
+                  child: SSPImage(
                     audio.thumbnailUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (ctx, err, stack) => Container(color: Colors.grey.shade300),
+                    errorWidget: (ctx, err, stack) => Container(color: Colors.grey.shade300),
                   ),
                 ),
               ),

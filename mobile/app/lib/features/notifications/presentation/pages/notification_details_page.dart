@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import 'package:go_router/go_router.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class NotificationDetailsPage extends StatelessWidget {
   final NotificationEntity notification;
@@ -20,7 +22,7 @@ class NotificationDetailsPage extends StatelessWidget {
             if (notification.imagePlaceholder != null) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
+                child: SSPImage(
                   notification.imagePlaceholder!,
                   width: double.infinity,
                   height: 200,

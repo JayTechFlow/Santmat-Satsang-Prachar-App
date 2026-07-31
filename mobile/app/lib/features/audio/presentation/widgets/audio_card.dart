@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
 import '../../domain/entities/audio_entity.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class AudioCard extends StatelessWidget {
   final AudioEntity audio;
@@ -25,12 +27,12 @@ class AudioCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Image.network(
+                child: SSPImage(
                   audio.thumbnailUrl,
                   width: 64,
                   height: 64,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorWidget: (_, __, ___) => Container(
                     width: 64,
                     height: 64,
                     color: Colors.grey.shade300,

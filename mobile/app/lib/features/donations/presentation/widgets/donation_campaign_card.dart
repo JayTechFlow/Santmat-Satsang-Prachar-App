@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/donation_campaign_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class DonationCampaignCard extends StatelessWidget {
   final DonationCampaignEntity campaign;
@@ -32,12 +34,12 @@ class DonationCampaignCard extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(AppRadius.md),
               ),
-              child: Image.network(
+              child: SSPImage(
                 campaign.bannerImage,
                 height: 140,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorWidget: (_, __, ___) => Container(
                   height: 140,
                   width: double.infinity,
                   color: Colors.grey.shade300,

@@ -23,20 +23,35 @@ service cloud.firestore {
       allow create: if (isOwner(userId) && !request.resource.data.keys().hasAny(['admin', 'role'])) || isAdmin();
       allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['admin', 'role'])) || isAdmin();
       allow delete: if isAdmin();
+      
+      match /{subcollection}/{document=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
     }
 
     // Publicly readable collections (read by authenticated app users, write by admin)
     match /app_settings/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /home_banners/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /banners/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /quick_actions/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /daily_suvichar/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /daily_quotes/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /featured_content/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /audio_categories/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /book_categories/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /audio/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /stuti_vinati/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /books/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /notifications/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /analytics/{docId} { allow read, write: if isAdmin(); }
     match /audit_logs/{docId} { allow read: if isAdmin(); allow write: if false; }
+    match /search_index/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    
+    match /downloads/{downloadId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isDocOwner() || isAdmin();
+    }
 
     // Legacy collections (keep for now if needed, but restrict)
     match /satsangs/{satsangId} {

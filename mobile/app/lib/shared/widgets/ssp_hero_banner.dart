@@ -7,6 +7,8 @@ import '../theme/app_animations.dart';
 import '../theme/app_gradients.dart';
 import '../theme/app_shadows.dart';
 import 'ssp_glass_card.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class SSPHeroBanner extends StatelessWidget {
   final String title;
@@ -43,10 +45,10 @@ class SSPHeroBanner extends StatelessWidget {
             children: [
               // Background Image or Gradient
               if (imageUrl != null)
-                Image.network(
+                SSPImage(
                   imageUrl!, 
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+                  errorWidget: (context, error, stackTrace) => Container(
                     color: AppColors.deepSaffron,
                   ),
                 )

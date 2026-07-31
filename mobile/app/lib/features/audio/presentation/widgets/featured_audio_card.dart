@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
 import '../../domain/entities/audio_entity.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class FeaturedAudioCard extends StatelessWidget {
   final AudioEntity audio;
@@ -29,11 +31,11 @@ class FeaturedAudioCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Image.network(
+                child: SSPImage(
                   audio.artworkUrl,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const ColoredBox(
+                  errorWidget: (_, __, ___) => const ColoredBox(
                     color: Colors.grey,
                     child: Center(child: Icon(Icons.music_note, size: 50)),
                   ),

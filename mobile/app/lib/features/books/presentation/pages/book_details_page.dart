@@ -5,6 +5,8 @@ import '../widgets/books_state_widgets.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
 import '../../../../l10n/gen/app_localizations.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class BookDetailsPage extends ConsumerWidget {
   final String bookId;
@@ -39,12 +41,12 @@ class BookDetailsPage extends ConsumerWidget {
                   tag: 'book_cover_${book.id}',
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
-                    child: Image.network(
+                    child: SSPImage(
                       book.coverImageUrl,
                       width: 200,
                       height: 300,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorWidget: (_, __, ___) => Container(
                         width: 200,
                         height: 300,
                         color: Colors.grey.shade300,

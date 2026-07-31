@@ -5,6 +5,8 @@ import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_icons.dart';
 import '../theme/app_animations.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class SSPAudioTile extends StatelessWidget {
   final String title;
@@ -50,12 +52,12 @@ class SSPAudioTile extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   if (imageUrl != null)
-                    Image.network(
+                    SSPImage(
                       imageUrl!, 
                       width: 64, 
                       height: 64, 
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                      errorWidget: (context, error, stackTrace) => Container(
                         width: 64,
                         height: 64,
                         color: AppColors.deepSaffron.withValues(alpha: 0.1),

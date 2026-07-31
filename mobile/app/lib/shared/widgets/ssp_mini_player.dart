@@ -6,6 +6,8 @@ import '../theme/app_typography.dart';
 import '../theme/app_animations.dart';
 import '../theme/app_shadows.dart';
 import '../theme/app_icons.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class SSPMiniPlayer extends StatelessWidget {
   final String title;
@@ -53,12 +55,12 @@ class SSPMiniPlayer extends StatelessWidget {
                     ClipRRect(
                       borderRadius: AppRadius.brMd,
                       child: imageUrl != null
-                          ? Image.network(
+                          ? SSPImage(
                               imageUrl!, 
                               width: 48, 
                               height: 48, 
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
+                              errorWidget: (context, error, stackTrace) => Container(
                                 width: 48,
                                 height: 48,
                                 color: AppColors.deepSaffron,

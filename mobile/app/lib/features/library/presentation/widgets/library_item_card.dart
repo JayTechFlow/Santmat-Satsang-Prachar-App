@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/library_item_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class LibraryItemCard extends StatelessWidget {
   final LibraryItemEntity item;
@@ -38,12 +40,12 @@ class LibraryItemCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Image.network(
+                child: SSPImage(
                   item.thumbnail,
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+                  errorWidget: (context, error, stackTrace) => Container(
                     width: 70,
                     height: 70,
                     color: theme.colorScheme.surfaceContainerHighest,

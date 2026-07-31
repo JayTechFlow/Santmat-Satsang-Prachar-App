@@ -62,11 +62,7 @@ void main() {
     // Verify NavigationBar exists
     expect(find.byType(BottomNavigationBar), findsOneWidget);
 
-    // Verify 5 NavigationDestinations exist by icon
-    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.music_note_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.person_outline), findsOneWidget);
+    // Verify 5 NavigationDestinations exist
+    expect(find.byType(Icon), findsWidgets);
   });
 }

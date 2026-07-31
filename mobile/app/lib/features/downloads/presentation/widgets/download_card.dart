@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/download_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class DownloadCard extends StatelessWidget {
   final DownloadEntity download;
@@ -42,7 +44,7 @@ class DownloadCard extends StatelessWidget {
               if (download.thumbnail != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppRadius.sm),
-                  child: Image.network(
+                  child: SSPImage(
                     download.thumbnail!,
                     width: 60,
                     height: 60,

@@ -7,6 +7,8 @@ import '../theme/app_shadows.dart';
 import '../theme/app_icons.dart';
 import '../theme/app_gradients.dart';
 import 'ssp_glass_card.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class SSPPrayerCard extends StatelessWidget {
   final String title;
@@ -45,10 +47,10 @@ class SSPPrayerCard extends StatelessWidget {
               // Background (Image or Gradient)
               if (imageUrl != null)
                 Positioned.fill(
-                  child: Image.network(
+                  child: SSPImage(
                     imageUrl!, 
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+                    errorWidget: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(gradient: AppGradients.prayerCard(context)),
                     ),
                   ),

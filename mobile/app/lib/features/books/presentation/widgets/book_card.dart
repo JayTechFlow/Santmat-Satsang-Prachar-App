@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
 import '../../domain/entities/book_entity.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class BookCard extends StatelessWidget {
   final BookEntity book;
@@ -26,12 +28,12 @@ class BookCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Image.network(
+                child: SSPImage(
                   book.thumbnailUrl,
                   width: 60,
                   height: 90,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorWidget: (_, __, ___) => Container(
                     width: 60,
                     height: 90,
                     color: Colors.grey.shade300,

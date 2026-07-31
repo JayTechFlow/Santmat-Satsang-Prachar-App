@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/satsang_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class FeaturedSatsangCard extends StatelessWidget {
   final SatsangEntity satsang;
@@ -34,10 +36,10 @@ class FeaturedSatsangCard extends StatelessWidget {
               Expanded(
                 child: SizedBox(
                   width: double.infinity,
-                  child: Image.network(
+                  child: SSPImage(
                     satsang.coverImageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const ColoredBox(
+                    errorWidget: (_, __, ___) => const ColoredBox(
                       color: Colors.grey,
                       child: Icon(Icons.broken_image),
                     ),

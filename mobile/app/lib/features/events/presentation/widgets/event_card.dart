@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/event_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class EventCard extends StatelessWidget {
   final EventEntity event;
@@ -26,12 +28,12 @@ class EventCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Image.network(
+                child: SSPImage(
                   event.thumbnail,
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorWidget: (_, __, ___) => Container(
                     width: 80,
                     height: 80,
                     color: Colors.grey.shade300,

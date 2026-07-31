@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../shared/theme/app_radius.dart';
 import '../../domain/entities/reading_progress_entity.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+
 
 class ContinueReadingCard extends StatelessWidget {
   final ReadingProgressEntity progress;
@@ -34,12 +36,12 @@ class ContinueReadingCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Image.network(
+                child: SSPImage(
                   book.thumbnailUrl,
                   width: 50,
                   height: 75,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorWidget: (_, __, ___) => Container(
                     width: 50,
                     height: 75,
                     color: Colors.grey.shade300,
