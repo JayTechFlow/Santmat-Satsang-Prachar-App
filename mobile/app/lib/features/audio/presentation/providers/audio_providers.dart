@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/service_locator_registrations.dart';
 import '../../data/datasources/audio_data_source.dart';
-import '../../data/datasources/mock_audio_data_source.dart';
 import '../../data/datasources/firestore_audio_data_source.dart';
 import '../../data/repositories/audio_repository_impl.dart';
 import '../../domain/repositories/audio_repository.dart';

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../shared/widgets/ssp_loading.dart';
+import '../../../../shared/widgets/ssp_error_state.dart';
+import '../../../../shared/widgets/ssp_audio_tile.dart';
+import '../../../../l10n/gen/app_localizations.dart';
 import '../providers/audio_providers.dart';
+import '../../domain/entities/playback_state_entity.dart';
+import '../../domain/entities/audio_entity.dart';
 
 class AudioDetailsPage extends ConsumerWidget {
   final String audioId;
@@ -13,40 +19,76 @@ class AudioDetailsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // We will build this exactly as the screenshot.
-    const primaryBrown = Color(0xFF8B2B0F);
-    const greyText = Color(0xFF757575);
+    final audioAsync = ref.watch(audioDetailsProvider(audioId));
+    final l10n = AppLocalizations.of(context)!;
+    final primaryBrown = Theme.of(context).colorScheme.primary;
+
+    return audioAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.audio)),
+        body: const SSPLoadingWidget(),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(title: Text(l10n.audio)),
+        body: SSPErrorState(
+          message: error.toString(),
+          onRetry: () => ref.refresh(audioDetailsProvider(audioId)),
+        ),
+      ),
+      data: (audio) {
+        return _AudioDetailsContent(audio: audio, l10n: l10n, primaryBrown: primaryBrown);
+      },
+    );
+  }
+}
+
+class _AudioDetailsContent extends ConsumerWidget {
+  final AudioEntity audio;
+  final AppLocalizations l10n;
+  final Color primaryBrown;
+
+  const _AudioDetailsContent({
+    required this.audio,
+    required this.l10n,
+    required this.primaryBrown,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final playbackState = ref.watch(playbackStateProvider);
+    final notifier = ref.read(playbackStateProvider.notifier);
+
+    // If current audio isn't this one, maybe we should auto-play it?
+    // For now, let's keep it manual or assume the router already played it.
+    final isPlayingThis = playbackState.currentAudio?.id == audio.id &&
+        playbackState.status == PlaybackStatus.playing;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Standard full-screen player background
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leadingWidth: 150,
         leading: Row(
           children: [
             const SizedBox(width: 8),
             IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+              icon: const Icon(Icons.keyboard_arrow_down, size: 30),
               onPressed: () => context.pop(),
-            ),
-            const Text(
-              'अब चल रहा है',
-              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
+            icon: const Icon(Icons.favorite_border),
+            onPressed: () {}, // TODO: Favorite toggle
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
+            icon: const Icon(Icons.more_vert),
             onPressed: () {},
           ),
         ],
@@ -58,118 +100,39 @@ class AudioDetailsPage extends ConsumerWidget {
             const SizedBox(height: 16),
             // Large Artwork
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: SizedBox(
-                  height: 250,
-                  width: double.infinity,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Image.network(
-                          'https://images.unsplash.com/photo-1604871000636-074FA5117945?auto=format&fit=crop&w=800&q=80',
-                          fit: BoxFit.cover,
-                          errorBuilder: (ctx, err, stack) => Container(color: Colors.grey.shade300),
-                        ),
-                      ),
-                      // Gradient Overlay for text
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.6),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Top Left Logo & Text
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: Column(
-                          children: const [
-                            Icon(Icons.wb_twilight, color: Colors.white, size: 32),
-                            SizedBox(height: 4),
-                            Text(
-                              'संतमत सत्संग\nप्रचार',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Main text
-                      Positioned(
-                        top: 90,
-                        left: 24,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'सत्संग',
-                              style: TextStyle(
-                                color: primaryBrown,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                height: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'से ही जीवन का उद्धार है।',
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Aaj Ka Suvichar Badge (Top Right in this screen)
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: const Color(0xCC3E2015),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.wb_sunny_outlined, color: Colors.white, size: 14),
-                              SizedBox(width: 4),
-                              Text(
-                                'आज का सुविचार',
-                                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: Image.network(
+                    audio.thumbnailUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (ctx, err, stack) => Container(color: Colors.grey.shade300),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             // Track Info
-            const Text(
-              'प्रभु से प्रीत लगाई रे',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  Text(
+                    audio.title,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    audio.speaker,
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'स्वर : पूज्य श्री',
-              style: TextStyle(fontSize: 14, color: greyText),
-            ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             // Progress Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -185,17 +148,19 @@ class AudioDetailsPage extends ConsumerWidget {
                       overlayShape: const RoundSliderOverlayShape(overlayRadius: 14.0),
                     ),
                     child: Slider(
-                      value: 0.25,
-                      onChanged: (val) {},
+                      value: playbackState.position.inMilliseconds > 0 && audio.duration.inMilliseconds > 0
+                          ? (playbackState.position.inMilliseconds / audio.duration.inMilliseconds).clamp(0.0, 1.0)
+                          : 0.0,
+                      onChanged: (val) {}, // TODO: Seek
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('02:45', style: TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w500)),
-                        Text('10:30', style: TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w500)),
+                      children: [
+                        Text(_formatDuration(playbackState.position), style: const TextStyle(fontSize: 12)),
+                        Text(_formatDuration(audio.duration), style: const TextStyle(fontSize: 12)),
                       ],
                     ),
                   ),
@@ -207,221 +172,109 @@ class AudioDetailsPage extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  children: const [
-                    Icon(Icons.shuffle, color: greyText, size: 24),
-                    SizedBox(height: 4),
-                    Text('शफ़ल', style: TextStyle(color: greyText, fontSize: 10)),
-                  ],
-                ),
-                const Icon(Icons.skip_previous, color: Colors.black87, size: 36),
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: const BoxDecoration(
-                    color: primaryBrown,
-                    shape: BoxShape.circle,
+                IconButton(
+                  icon: Icon(
+                    Icons.shuffle,
+                    color: playbackState.isShuffleEnabled ? primaryBrown : Colors.grey.shade600,
                   ),
-                  child: const Icon(Icons.pause, color: Colors.white, size: 32),
+                  onPressed: () => notifier.toggleShuffle(),
                 ),
-                const Icon(Icons.skip_next, color: Colors.black87, size: 36),
-                Column(
-                  children: const [
-                    Icon(Icons.repeat, color: greyText, size: 24),
-                    SizedBox(height: 4),
-                    Text('दोहराएँ', style: TextStyle(color: greyText, fontSize: 10)),
-                  ],
+                IconButton(
+                  icon: const Icon(Icons.skip_previous, size: 36),
+                  onPressed: () {}, // TODO: Previous
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (playbackState.currentAudio?.id != audio.id) {
+                      notifier.play(audio);
+                    } else if (isPlayingThis) {
+                      notifier.pause();
+                    } else {
+                      notifier.resume();
+                    }
+                  },
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: primaryBrown,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryBrown.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      isPlayingThis ? Icons.pause : Icons.play_arrow,
+                      color: Colors.white,
+                      size: 36,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.skip_next, size: 36),
+                  onPressed: () {}, // TODO: Next
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.repeat,
+                    color: playbackState.isRepeatEnabled ? primaryBrown : Colors.grey.shade600,
+                  ),
+                  onPressed: () => notifier.toggleRepeat(),
                 ),
               ],
             ),
+            const SizedBox(height: 48),
+            // Up Next Section (Dummy UI mapped to state if possible, else just static block)
+            _buildUpNextSection(ref, l10n),
             const SizedBox(height: 32),
-            // Action Buttons Row
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  _buildActionButton(Icons.replay_10, '10 सेकंड पीछे'),
-                  const SizedBox(width: 8),
-                  _buildActionButton(Icons.library_music_outlined, 'लिरिक्स'),
-                  const SizedBox(width: 8),
-                  _buildActionButton(Icons.favorite_border, 'पसंदीदा'),
-                  const SizedBox(width: 8),
-                  _buildActionButton(Icons.share, 'शेयर करें'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            // Up Next Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'आगे सुनें (Up Next)',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                  ),
-                  Row(
-                    children: const [
-                      Text(
-                        'सभी भजन देखें',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: primaryBrown),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward, color: primaryBrown, size: 16),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Up Next List
-            _buildUpNextItem('मनवा रे सत्संग कर ले', '08:42', isFirst: true),
-            _buildUpNextItem('दुनिया से मन हटाले रे', '11:30'),
-            _buildUpNextItem('गुरु चरणों में मन लगा ले', '09:15'),
-            _buildUpNextItem('सत्संग सुनो, जीवन संवारो', '07:28'),
-            _buildUpNextItem('तेरा नाम ही आधार है', '12:05'),
-            const SizedBox(height: 120), // Space for mini player + nav bar if added
           ],
         ),
       ),
-      // Mocking Bottom Navigation and Mini Player exactly like the screenshot
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
+    );
+  }
+
+  String _formatDuration(Duration d) {
+    final min = d.inMinutes.toString().padLeft(2, '0');
+    final sec = (d.inSeconds % 60).toString().padLeft(2, '0');
+    return '$min:$sec';
+  }
+
+  Widget _buildUpNextSection(WidgetRef ref, AppLocalizations l10n) {
+    final homeState = ref.read(audioHomeStateProvider);
+    final upNextList = homeState.popularAudio.take(5).toList();
+
+    if (upNextList.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Mini Player
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9F9F9),
-              border: Border(top: BorderSide(color: Colors.grey.shade300)),
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.network(
-                    'https://images.unsplash.com/photo-1604871000636-074FA5117945?auto=format&fit=crop&w=100&q=80',
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    errorBuilder: (ctx, err, stack) => Container(color: Colors.grey.shade300, width: 40, height: 40),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('प्रभु से प्रीत लगाई रे', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      Text('स्वर : पूज्य श्री', style: TextStyle(color: greyText, fontSize: 12)),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.skip_previous, color: Colors.black87),
-                const SizedBox(width: 16),
-                const Icon(Icons.pause, color: Colors.black87),
-                const SizedBox(width: 16),
-                const Icon(Icons.skip_next, color: Colors.black87),
-              ],
-            ),
-          ),
-          // Bottom Navigation Bar
-          BottomNavigationBar(
-            currentIndex: 1, // Audio is selected
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            selectedItemColor: primaryBrown,
-            unselectedItemColor: greyText,
-            selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontSize: 12),
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'होम'),
-              BottomNavigationBarItem(icon: Icon(Icons.music_note), label: 'ऑडियो'),
-              BottomNavigationBarItem(icon: Icon(Icons.volunteer_activism_outlined), label: 'स्तुति-बिन्ती'),
-              BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: 'सूचनाएँ'),
-              BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'प्रोफ़ाइल'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.popularAudio, // Using this as Up Next
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(IconData icon, String label) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.black87, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(color: Color(0xFF757575), fontSize: 10, fontWeight: FontWeight.w500),
+          const SizedBox(height: 16),
+          ...upNextList.map((item) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: SSPAudioTile(
+              title: item.title,
+              subtitle: item.speaker,
+              duration: _formatDuration(item.duration),
+              imageUrl: item.thumbnailUrl,
+              onTap: () {}, // Switch track
+              onPlayPause: () {},
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUpNextItem(String title, String duration, {bool isFirst = false}) {
-    return Container(
-      color: isFirst ? const Color(0xFFFFF7F0) : Colors.white, // Soft orange tint for the first item
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          // Thumbnail
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: SizedBox(
-              width: 50,
-              height: 50,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.network(
-                      'https://images.unsplash.com/photo-1604871000636-074FA5117945?auto=format&fit=crop&w=100&q=80',
-                      fit: BoxFit.cover,
-                      errorBuilder: (ctx, err, stack) => Container(color: Colors.grey.shade300),
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.play_arrow, color: Colors.white, size: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87)),
-                const SizedBox(height: 4),
-                const Text('स्वर : पूज्य श्री', style: TextStyle(color: Color(0xFF757575), fontSize: 12)),
-              ],
-            ),
-          ),
-          // Duration
-          Text(duration, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black87)),
-          const SizedBox(width: 16),
-          const Icon(Icons.more_vert, color: Color(0xFF757575)),
+          )),
         ],
       ),
     );

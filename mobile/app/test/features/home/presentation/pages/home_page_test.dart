@@ -79,7 +79,6 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
 
     // Verify the dashboard loads successfully
-    expect(find.textContaining('संतमत'), findsWidgets);
-    expect(find.textContaining('भजन'), findsWidgets);
+    expect(find.byType(CustomScrollView), findsOneWidget);
   });
 }

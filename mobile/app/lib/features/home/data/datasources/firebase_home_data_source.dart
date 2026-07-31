@@ -16,6 +16,7 @@ class FirebaseHomeDataSource implements HomeDataSource {
 
   FirebaseHomeDataSource(this._firestore);
 
+  @override
   Future<HomeDashboardEntity> getHomeDashboard() async {
     // Attempt to fetch from Firebase, fallback to Mock if empty or errors for seamless dev experience
     try {

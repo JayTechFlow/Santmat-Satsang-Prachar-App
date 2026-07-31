@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/service_locator_registrations.dart';
 import '../../data/datasources/daily_quote_data_source.dart';
-import '../../data/datasources/mock_daily_quote_data_source.dart';
 import '../../data/datasources/firestore_daily_quote_data_source.dart';
 import '../../data/repositories/daily_quote_repository_impl.dart';
 import '../../domain/repositories/daily_quote_repository.dart';

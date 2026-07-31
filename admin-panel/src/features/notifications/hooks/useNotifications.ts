@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useCrud } from '../../../core/hooks/useCrud';
 import { notificationService } from '../services/notificationService';
 import type { NotificationDTO, PushStatus, Audience, TargetScreen } from '../types';
@@ -14,35 +14,35 @@ export function useNotifications() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  const buildConstraints = useCallback(() => {
-    const constraints: QueryConstraint[] = [];
+  const constraints = useMemo(() => {
+    const _constraints: QueryConstraint[] = [];
     
     // Sort by createdAt usually
-    constraints.push(orderBy('createdAt', sortOrder));
+    _constraints.push(orderBy('createdAt', sortOrder));
 
     if (statusFilter !== 'all') {
-      constraints.push(where('pushStatus', '==', statusFilter));
+      _constraints.push(where('pushStatus', '==', statusFilter));
     }
     
     if (audienceFilter !== 'all') {
-      constraints.push(where('audience', '==', audienceFilter));
+      _constraints.push(where('audience', '==', audienceFilter));
     }
 
     if (targetScreenFilter !== 'all') {
-      constraints.push(where('targetScreen', '==', targetScreenFilter));
+      _constraints.push(where('targetScreen', '==', targetScreenFilter));
     }
 
     if (searchTerm) {
-      constraints.push(where('title', '>=', searchTerm));
-      constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
+      _constraints.push(where('title', '>=', searchTerm));
+      _constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
     }
 
-    return constraints;
+    return _constraints;
   }, [searchTerm, sortOrder, statusFilter, audienceFilter, targetScreenFilter]);
 
   const { data, loading, error, refresh, pagination } = useCrud<NotificationDTO>(
     notificationService,
-    buildConstraints(),
+    constraints,
     { limit: itemsPerPage }
   );
 

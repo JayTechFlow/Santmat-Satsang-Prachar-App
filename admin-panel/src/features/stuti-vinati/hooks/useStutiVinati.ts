@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useCrud } from '../../../core/hooks/useCrud';
 import { stutiVinatiService } from '../services/stutiVinatiService';
 import type { StutiVinatiDTO, PublishStatus } from '../types';
@@ -13,30 +13,30 @@ export function useStutiVinati() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  const buildConstraints = useCallback(() => {
-    const constraints: QueryConstraint[] = [];
+  const constraints = useMemo(() => {
+    const _constraints: QueryConstraint[] = [];
     
-    constraints.push(orderBy('readingOrder', sortOrder));
+    _constraints.push(orderBy('readingOrder', sortOrder));
 
     if (statusFilter !== 'all') {
-      constraints.push(where('publishStatus', '==', statusFilter));
+      _constraints.push(where('publishStatus', '==', statusFilter));
     }
     
     if (categoryFilter !== 'all') {
-      constraints.push(where('categoryId', '==', categoryFilter));
+      _constraints.push(where('categoryId', '==', categoryFilter));
     }
 
     if (searchTerm) {
-      constraints.push(where('title', '>=', searchTerm));
-      constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
+      _constraints.push(where('title', '>=', searchTerm));
+      _constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
     }
 
-    return constraints;
+    return _constraints;
   }, [searchTerm, sortOrder, statusFilter, categoryFilter]);
 
   const { data, loading, error, refresh, pagination } = useCrud<StutiVinatiDTO>(
     stutiVinatiService,
-    buildConstraints(),
+    constraints,
     { limit: itemsPerPage }
   );
 

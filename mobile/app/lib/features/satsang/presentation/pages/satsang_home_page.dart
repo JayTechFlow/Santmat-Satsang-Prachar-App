@@ -12,7 +12,6 @@ import '../../../../shared/widgets/ssp_loading.dart';
 import '../../../../shared/widgets/ssp_error_state.dart';
 import '../../../../shared/widgets/ssp_empty_state.dart';
 import '../providers/satsang_providers.dart';
-import '../../domain/entities/satsang_category_entity.dart';
 
 class SatsangHomePage extends ConsumerWidget {
   const SatsangHomePage({super.key});

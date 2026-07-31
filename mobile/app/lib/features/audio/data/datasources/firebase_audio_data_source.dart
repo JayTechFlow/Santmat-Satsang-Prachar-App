@@ -100,7 +100,7 @@ class FirebaseAudioDataSource implements AudioDataSource {
   @override
   Future<List<FavoriteAudioEntity>> getFavorites() async {
     // Needs user authentication context in a real app
-    final snapshot = await _firestore.collection('favorites').get();
+    // final snapshot = await _firestore.collection('favorites').get();
     
     // We would need to fetch the audio entities as well, or just return empty for dummy
     // Since this is dummy without full relational fetch, we'll return empty for now

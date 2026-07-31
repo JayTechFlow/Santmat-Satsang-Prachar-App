@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useCrud } from '../../../core/hooks/useCrud';
 import { suvicharService } from '../services/suvicharService';
 import type { SuvicharDTO } from '../types';
@@ -11,27 +11,27 @@ export function useSuvichar() {
   const pageSize = 10;
 
   // Build query constraints dynamically
-  const buildConstraints = useCallback(() => {
-    const constraints: QueryConstraint[] = [];
+  const constraints = useMemo(() => {
+    const _constraints: QueryConstraint[] = [];
     
     // Sort
-    constraints.push(orderBy('createdAt', sortOrder));
+    _constraints.push(orderBy('createdAt', sortOrder));
 
     // Note: In Firestore, filtering by string match is limited. 
     // Usually handled client-side or with basic bounds if required.
     // For this example, we keep constraints simple and handle search client-side for tiny datasets,
     // or add startAt/endAt for title prefix search.
     if (searchTerm) {
-      constraints.push(where('title', '>=', searchTerm));
-      constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
+      _constraints.push(where('title', '>=', searchTerm));
+      _constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
     }
 
-    return constraints;
+    return _constraints;
   }, [searchTerm, sortOrder]);
 
   const { data, loading, error, refresh, pagination } = useCrud<SuvicharDTO>(
     suvicharService,
-    buildConstraints(),
+    constraints,
     { limit: pageSize } // Optional if we want to handle pagination strictly
   );
 

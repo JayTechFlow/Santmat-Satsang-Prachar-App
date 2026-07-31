@@ -19,7 +19,10 @@ const Books = lazy(() => import('./pages/Books').then(m => ({ default: m.Books }
 const Notifications = lazy(() => import('./pages/Notifications').then(m => ({ default: m.Notifications })));
 const Categories = lazy(() => import('./pages/Categories').then(m => ({ default: m.Categories })));
 const Users = lazy(() => import('./pages/Users').then(m => ({ default: m.Users })));
-const ComponentsTest = lazy(() => import('./pages/ComponentsTest').then(m => ({ default: m.ComponentsTest })));
+const Reports = lazy(() => import('./pages/Reports').then(m => ({ default: m.Reports })));
+const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
+const Playlist = lazy(() => import('./pages/Playlist').then(m => ({ default: m.Playlist })));
+const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Support })));
 
 import { ToastProvider } from './components/ui/ToastProvider';
 
@@ -46,9 +49,6 @@ function App() {
           <Routes>
             <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
             
-            {/* Remove auth requirement for components test so it can be viewed easily during dev */}
-            <Route path="/components-test" element={<ComponentsTest />} />
-
             <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
               <Route index element={<Dashboard />} />
               <Route path="suvichar" element={<Suvichar />} />
@@ -59,6 +59,11 @@ function App() {
               <Route path="notifications" element={<Notifications />} />
               <Route path="categories" element={<Categories />} />
               <Route path="users" element={<Users />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="playlist" element={<Playlist />} />
+              <Route path="support" element={<Support />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Route>
           </Routes>
         </Suspense>

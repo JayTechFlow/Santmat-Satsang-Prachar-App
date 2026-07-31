@@ -12,7 +12,7 @@ export const dashboardService = {
     };
 
     return [
-      { label: 'Bhajans', value: stats.bhajans, icon: 'Music', path: '/bhajans', color: 'var(--primary)' },
+      { label: 'Bhajans', value: stats.bhajans, icon: 'Music', path: '/audio', color: 'var(--primary)' },
       { label: 'Stuti & Vinati', value: stats.stutiVinati, icon: 'BookOpen', path: '/stuti-vinati', color: 'var(--success)' },
       { label: 'Users', value: stats.users, icon: 'Users', path: '/users', color: 'var(--danger)' },
       { label: 'Notifications', value: stats.notifications, icon: 'Bell', path: '/notifications', color: '#8b5cf6' },

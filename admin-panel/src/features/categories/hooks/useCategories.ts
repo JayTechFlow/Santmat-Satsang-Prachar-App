@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useCrud } from '../../../core/hooks/useCrud';
 import { categoryService } from '../services/categoryService';
 import type { CategoryDTO } from '../types';
@@ -14,31 +14,31 @@ export function useCategories() {
   // Given standard category limits, fetching all and building the tree client-side is best.
   // We will fetch all without limits here to easily build the tree view.
   
-  const buildConstraints = useCallback(() => {
-    const constraints: QueryConstraint[] = [];
+  const constraints = useMemo(() => {
+    const _constraints: QueryConstraint[] = [];
     
     // Sort by sortOrder then name
-    constraints.push(orderBy('sortOrder', sortOrder));
+    _constraints.push(orderBy('sortOrder', sortOrder));
 
     if (statusFilter !== 'all') {
-      constraints.push(where('status', '==', statusFilter));
+      _constraints.push(where('status', '==', statusFilter));
     }
     
     if (typeFilter !== 'all') {
-      constraints.push(where('type', '==', typeFilter));
+      _constraints.push(where('type', '==', typeFilter));
     }
 
     if (searchTerm) {
-      constraints.push(where('name', '>=', searchTerm));
-      constraints.push(where('name', '<=', searchTerm + '\uf8ff'));
+      _constraints.push(where('name', '>=', searchTerm));
+      _constraints.push(where('name', '<=', searchTerm + '\uf8ff'));
     }
 
-    return constraints;
+    return _constraints;
   }, [searchTerm, sortOrder, statusFilter, typeFilter]);
 
   const { data, loading, error, refresh } = useCrud<CategoryDTO>(
     categoryService,
-    buildConstraints()
+    constraints
     // No pagination limits, to fetch the whole tree
   );
 

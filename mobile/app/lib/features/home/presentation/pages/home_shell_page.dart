@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../l10n/gen/app_localizations.dart';
+import '../../../audio/presentation/widgets/mini_player.dart';
 
 class HomeShellPage extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -17,8 +19,17 @@ class HomeShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      body: navigationShell,
+      body: Stack(
+        children: [
+          navigationShell,
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: MiniPlayer(),
+          ),
+        ],
+      ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           splashColor: Colors.transparent,
@@ -33,32 +44,31 @@ class HomeShellPage extends StatelessWidget {
           unselectedItemColor: Colors.grey.shade500,
           selectedLabelStyle: AppTypography.label.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
           unselectedLabelStyle: AppTypography.label.copyWith(fontSize: 12),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'होम',
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home),
+              label: l10n.home,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.music_note_outlined),
-              activeIcon: Icon(Icons.music_note),
-              label: 'ऑडियो',
+              icon: const Icon(Icons.music_note_outlined),
+              activeIcon: const Icon(Icons.music_note),
+              label: l10n.audio,
             ),
             BottomNavigationBarItem(
-              // Using auto_awesome_mosaic or volunteer_activism as fallback for praying hands
-              icon: Icon(Icons.volunteer_activism_outlined),
-              activeIcon: Icon(Icons.volunteer_activism),
-              label: 'स्तुति-बिन्ती',
+              icon: const Icon(Icons.volunteer_activism_outlined),
+              activeIcon: const Icon(Icons.volunteer_activism),
+              label: l10n.satsang,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_outlined),
-              activeIcon: Icon(Icons.notifications),
-              label: 'सूचनाएँ',
+              icon: const Icon(Icons.notifications_outlined),
+              activeIcon: const Icon(Icons.notifications),
+              label: l10n.notifications,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'प्रोफ़ाइल',
+              icon: const Icon(Icons.person_outline),
+              activeIcon: const Icon(Icons.person),
+              label: l10n.profile,
             ),
           ],
         ),

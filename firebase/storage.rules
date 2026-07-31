@@ -9,6 +9,21 @@ service firebase.storage {
       return isAuthenticated() && request.auth.token.admin == true;
     }
     
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') 
+             && request.resource.size < 5 * 1024 * 1024;
+    }
+    
+    function isValidAudio() {
+      return request.resource.contentType.matches('audio/.*') 
+             && request.resource.size < 50 * 1024 * 1024;
+    }
+
+    function isValidDoc() {
+      return request.resource.contentType.matches('application/pdf') 
+             && request.resource.size < 20 * 1024 * 1024;
+    }
+
     match /public/{allPaths=**} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
@@ -16,22 +31,22 @@ service firebase.storage {
 
     match /audio/{allPaths=**} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidAudio();
     }
 
     match /banners/{allPaths=**} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidImage();
     }
 
     match /thumbnails/{allPaths=**} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidImage();
     }
 
     match /books/{allPaths=**} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidDoc();
     }
 
     match /prayers/{allPaths=**} {
@@ -40,7 +55,8 @@ service firebase.storage {
     }
     
     match /users/{userId}/{allPaths=**} {
-      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAuthenticated() && request.auth.uid == userId && isValidImage();
     }
   }
 }

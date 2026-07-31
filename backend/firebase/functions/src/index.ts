@@ -1,77 +1,23 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-admin.initializeApp();
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
 
-// Authentication Functions
-export const authValidateToken = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const authSessionValidation = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const authRoleResolution = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
+import * as authFuncs from "./auth";
+import * as profileFuncs from "./profile";
+import * as eventsFuncs from "./events";
+import * as notificationsFuncs from "./notifications";
+import * as donationsFuncs from "./donations";
+import * as searchFuncs from "./search";
+import * as mediaFuncs from "./media";
+import * as adminFunctions from "./admin_funcs";
 
-// Profile Functions
-export const profileGetProfile = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-
-// Search Functions
-export const searchGlobalSearch = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const searchAutocomplete = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const searchTrendingSearches = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-
-// Event Functions
-export const eventsRegister = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const eventsCancel = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const eventsAttendance = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-
-// Notification Functions
-export const notificationsSubscribeTopic = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const notificationsBroadcast = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-
-// Donation Functions
-export const donationsCreatePaymentIntent = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const donationsVerifyPayment = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const donationsGenerateReceipt = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-
-// Media Functions
-export const mediaGenerateSignedUrl = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const mediaGenerateUploadUrl = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-
-// Admin Functions
-export const adminGetDashboardStats = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
-export const adminContentModeration = functions.https.onCall(async (data, context) => {
-    return { status: "success", data: {} };
-});
+export const auth = authFuncs;
+export const profile = profileFuncs;
+export const events = eventsFuncs;
+export const notifications = notificationsFuncs;
+export const donations = donationsFuncs;
+export const search = searchFuncs;
+export const media = mediaFuncs;
+export const adminApi = adminFunctions;

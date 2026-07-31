@@ -7,7 +7,6 @@ import '../theme/app_shadows.dart';
 import '../theme/app_icons.dart';
 import '../theme/app_gradients.dart';
 import 'ssp_glass_card.dart';
-import 'ssp_mini_player.dart';
 
 class SSPPrayerCard extends StatelessWidget {
   final String title;

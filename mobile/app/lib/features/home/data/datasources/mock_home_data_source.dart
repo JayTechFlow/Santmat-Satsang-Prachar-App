@@ -11,6 +11,7 @@ import '../../domain/entities/upcoming_event_entity.dart';
 import 'home_data_source.dart';
 
 class MockHomeDataSource implements HomeDataSource {
+  @override
   Future<HomeDashboardEntity> getHomeDashboard() async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 800));

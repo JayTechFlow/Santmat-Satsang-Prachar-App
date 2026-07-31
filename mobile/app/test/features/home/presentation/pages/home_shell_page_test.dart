@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:santmat_satsang_prachar/features/home/presentation/pages/home_shell_page.dart';
 import 'package:santmat_satsang_prachar/l10n/gen/app_localizations.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 void main() {
   testWidgets('HomeShellPage renders NavigationBar with 5 tabs', (
     WidgetTester tester,
@@ -48,10 +48,12 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp.router(
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      ProviderScope(
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
 
@@ -60,11 +62,11 @@ void main() {
     // Verify NavigationBar exists
     expect(find.byType(BottomNavigationBar), findsOneWidget);
 
-    // Verify 5 NavigationDestinations exist
-    expect(find.text('होम'), findsOneWidget);
-    expect(find.text('ऑडियो'), findsOneWidget);
-    expect(find.text('स्तुति-बिन्ती'), findsOneWidget);
-    expect(find.text('सूचनाएँ'), findsOneWidget);
-    expect(find.text('प्रोफ़ाइल'), findsOneWidget);
+    // Verify 5 NavigationDestinations exist by icon
+    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.music_note_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.person_outline), findsOneWidget);
   });
 }

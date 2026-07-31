@@ -9,7 +9,7 @@ import { ImageUpload } from '../components/ui/ImageUpload';
 import { useBhajans } from '../features/bhajans/hooks/useBhajans';
 import { useBhajanMutations } from '../features/bhajans/hooks/useBhajanMutations';
 import { useBhajanForm } from '../features/bhajans/hooks/useBhajanForm';
-import { bhajanRepository } from '../features/bhajans/repositories/bhajanRepository';
+import { storageService } from '../core/storage';
 import { Pagination } from '../components/ui/Pagination';
 import { MarkdownEditor } from '../components/ui/MarkdownEditor';
 import { DataTable } from '../components/ui/DataTable';
@@ -28,6 +28,7 @@ export function Audio() {
   const { selectedIds, selectedCount, toggleSelection, selectAll, clearSelection } = useTableSelection<string>();
   const { executeBulkAction } = useBulkActions();
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [isUnsavedConfirmOpen, setIsUnsavedConfirmOpen] = useState(false);
 
   const { createBhajan, updateBhajan, deleteBhajan, loading: mutating } = useBhajanMutations(() => {
     setIsModalOpen(false);
@@ -69,7 +70,7 @@ export function Audio() {
     const result = await executeBulkAction(
       selectedIds,
       async (id) => {
-        await bhajanService.deleteBhajan(id);
+        await bhajanService.delete(id);
       }
     );
     
@@ -98,10 +99,14 @@ export function Audio() {
 
   const handleCloseModal = () => {
     if (isDirty) {
-      if (!window.confirm('You have unsaved changes. Are you sure you want to discard them?')) {
-        return;
-      }
+      setIsUnsavedConfirmOpen(true);
+      return;
     }
+    setIsModalOpen(false);
+  };
+
+  const handleDiscardChanges = () => {
+    setIsUnsavedConfirmOpen(false);
     setIsModalOpen(false);
   };
 
@@ -231,6 +236,15 @@ export function Audio() {
       />
 
       <ConfirmDialog
+        isOpen={isUnsavedConfirmOpen}
+        title="Discard Changes"
+        message="You have unsaved changes. Are you sure you want to discard them?"
+        isDestructive={true}
+        onConfirm={handleDiscardChanges}
+        onCancel={() => setIsUnsavedConfirmOpen(false)}
+      />
+
+      <ConfirmDialog
         isOpen={isBulkDeleteModalOpen}
         title={`Delete ${selectedCount} Bhajans`}
         message={`Are you sure you want to delete ${selectedCount} selected bhajans? This action cannot be undone.`}
@@ -333,7 +347,7 @@ export function Audio() {
                   folder="audio" 
                   audioUrl={formData.audioUrl} 
                   onClear={() => setField('audioUrl', '')} 
-                  uploadFn={bhajanRepository.uploadFile}
+                  uploadFn={(file, folder, onProgress) => storageService.uploadAudio(file, folder, onProgress)}
                 />
               </div>
 
@@ -346,7 +360,7 @@ export function Audio() {
                   folder="thumbnails" 
                   previewUrl={formData.thumbnailUrl} 
                   onClear={() => setField('thumbnailUrl', '')} 
-                  uploadFn={bhajanRepository.uploadFile}
+                  uploadFn={(file, folder, onProgress) => storageService.uploadImage(file, folder, onProgress)}
                 />
               </div>
 

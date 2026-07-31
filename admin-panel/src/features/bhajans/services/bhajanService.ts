@@ -1,79 +1,78 @@
-import { bhajanRepository } from '../repositories/bhajanRepository';
-import type { BhajanViewModel, BhajanDTO } from '../types';
-import { Timestamp } from 'firebase/firestore';
+import { BaseCrudService } from '../../../core/services/BaseCrudService';
+import { bhajanRepository, BhajanRepository } from '../repositories/bhajanRepository';
+import { required, maxLength } from '../../../core/validation/validators';
+import { AppError } from '../../../core/errors/AppError';
+import type { BhajanDTO } from '../types';
+import { auth } from '../../../firebase/config';
+import { storageService } from '../../../core/storage';
 
-export const bhajanService = {
-  fetchBhajans: async (search: string = '', _filter: string = '', sort: string = 'newest', pageSize: number = 10, lastDoc: any = null): Promise<{ data: BhajanViewModel[], totalCount: number, lastDoc: any }> => {
-    const result = await bhajanRepository.fetchBhajans(search, sort, pageSize, lastDoc);
-    
-    return {
-      data: result.data.map(mapToViewModel),
-      totalCount: result.totalCount,
-      lastDoc: result.lastDoc
-    };
-  },
+export class BhajanService extends BaseCrudService<BhajanDTO> {
+  private _repo: BhajanRepository;
 
-  createBhajan: async (data: Partial<BhajanDTO>): Promise<void> => {
-    if (data.title) {
-      const existing = await bhajanRepository.findByTitle(data.title);
-      if (existing.length > 0) {
-        throw new Error("A bhajan with this title already exists.");
-      }
-    }
-
-    const payload = {
-      ...data,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-      status: 'active'
-    } as any;
-
-    await bhajanRepository.createBhajan(payload);
-  },
-
-  updateBhajan: async (id: string, data: Partial<BhajanDTO>): Promise<void> => {
-    if (data.title) {
-      const existing = await bhajanRepository.findByTitle(data.title);
-      if (existing.some(b => b.id !== id)) {
-        throw new Error("A bhajan with this title already exists.");
-      }
-    }
-
-    const payload = {
-      ...data,
-      updatedAt: Timestamp.now()
-    } as any;
-    
-    await bhajanRepository.updateBhajan(id, payload);
-  },
-
-  deleteBhajan: async (id: string): Promise<void> => {
-    await bhajanRepository.deleteBhajan(id);
-  },
-
-  bulkDeleteBhajans: async (ids: string[]): Promise<any[]> => {
-    return Promise.allSettled(ids.map(id => bhajanRepository.deleteBhajan(id)));
+  constructor(repo: BhajanRepository) {
+    super(repo);
+    this._repo = repo;
   }
-};
 
-function mapToViewModel(dto: BhajanDTO): BhajanViewModel {
-  let createdAtDate: Date | undefined = undefined;
-  if (dto.createdAt) {
-    if (dto.createdAt instanceof Timestamp || (dto.createdAt as any).toDate) {
-      createdAtDate = (dto.createdAt as any).toDate();
-    } else if (dto.createdAt instanceof Date) {
-      createdAtDate = dto.createdAt;
-    } else if (typeof dto.createdAt === 'string' || typeof dto.createdAt === 'number') {
-      createdAtDate = new Date(dto.createdAt);
+  protected override get currentUserId(): string {
+    return auth.currentUser?.uid || 'system';
+  }
+
+  protected override async validateCreate(item: Partial<BhajanDTO>): Promise<void> {
+    const titleError = required(item.title) || maxLength(200)(item.title || '');
+    if (titleError) throw new AppError('VALIDATION_ERROR', `Title: ${titleError}`);
+
+    const exists = await this._repo.titleExists(item.title as string);
+    if (exists) {
+      throw new AppError('DUPLICATE_ERROR', `A bhajan with the title "${item.title}" already exists.`);
     }
   }
 
-  return {
-    id: dto.id || '',
-    title: dto.title || '',
-    description: dto.description || '',
-    audioUrl: dto.audioUrl || '',
-    thumbnailUrl: dto.thumbnailUrl || '',
-    createdAt: createdAtDate
-  };
+  protected override async validateUpdate(id: string, item: Partial<BhajanDTO>): Promise<void> {
+    if (item.title !== undefined) {
+      const titleError = required(item.title) || maxLength(200)(item.title);
+      if (titleError) throw new AppError('VALIDATION_ERROR', `Title: ${titleError}`);
+      
+      const exists = await this._repo.titleExists(item.title, id);
+      if (exists) {
+        throw new AppError('DUPLICATE_ERROR', `A bhajan with the title "${item.title}" already exists.`);
+      }
+    }
+
+    const existing = await this._repo.getById(id);
+    if (!existing) throw new AppError('NOT_FOUND', 'Bhajan not found.');
+
+    if (item.audioUrl && existing.audioUrl && item.audioUrl !== existing.audioUrl) {
+      try {
+        await storageService.deleteFile(existing.audioUrl);
+      } catch (e) {
+        console.warn('Failed to delete old audio', e);
+      }
+    }
+
+    if (item.thumbnailUrl && existing.thumbnailUrl && item.thumbnailUrl !== existing.thumbnailUrl) {
+      try {
+        await storageService.deleteFile(existing.thumbnailUrl);
+      } catch (e) {
+        console.warn('Failed to delete old thumbnail', e);
+      }
+    }
+  }
+
+  public override async delete(id: string): Promise<void> {
+    const existing = await this._repo.getById(id);
+    await super.delete(id);
+    if (existing?.audioUrl) {
+      try {
+        await storageService.deleteFile(existing.audioUrl);
+      } catch (e) { console.warn('Failed to delete audio:', e); }
+    }
+    if (existing?.thumbnailUrl) {
+      try {
+        await storageService.deleteFile(existing.thumbnailUrl);
+      } catch (e) { console.warn('Failed to delete thumbnail:', e); }
+    }
+  }
 }
+
+export const bhajanService = new BhajanService(bhajanRepository);

@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
 export interface BhajanDTO {
-  id?: string;
+  id: string;
   title: string;
   description?: string;
   audioUrl?: string;

@@ -14,8 +14,15 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isDocOwner() {
+      return isAuthenticated() && resource.data.get('userId', '') == request.auth.uid;
+    }
+
     match /users/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if (isOwner(userId) && !request.resource.data.keys().hasAny(['admin', 'role'])) || isAdmin();
+      allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['admin', 'role'])) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Publicly readable collections (read by authenticated app users, write by admin)
@@ -29,6 +36,7 @@ service cloud.firestore {
     match /books/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /notifications/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /analytics/{docId} { allow read, write: if isAdmin(); }
+    match /audit_logs/{docId} { allow read: if isAdmin(); allow write: if false; }
 
     // Legacy collections (keep for now if needed, but restrict)
     match /satsangs/{satsangId} {
@@ -44,9 +52,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     match /donations/{donationId} {
-      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow read: if isDocOwner() || isAdmin();
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
