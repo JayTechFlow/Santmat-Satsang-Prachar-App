@@ -22,14 +22,15 @@ export function useBhajans() {
     return constraints;
   }, [searchTerm, sortOrder]);
 
-  const { data, loading, error, refresh, pagination } = useCrud<BhajanDTO>(
+  const { data: rawData, loading, error, refresh, pagination } = useCrud<BhajanDTO>(
     bhajanService,
-    buildConstraints(),
-    { limit: itemsPerPage }
+    buildConstraints()
   );
 
+  const paginatedData = rawData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return {
-    data,
+    data: paginatedData,
     loading,
     error,
     refetch: refresh,

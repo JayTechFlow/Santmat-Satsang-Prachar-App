@@ -8,36 +8,41 @@ export function useBhajanMutations(onSuccessCallback?: () => void) {
   const mutations = useCrudMutations<BhajanDTO>(bhajanService);
 
   const handleCreate = async (data: Partial<BhajanDTO>) => {
-    const result = await mutations.create(data as BhajanDTO);
-    if (result) {
+    let result = null;
+    try {
+      result = await mutations.create(data as BhajanDTO);
+      if (result) {
       success('Bhajan created successfully');
       if (onSuccessCallback) onSuccessCallback();
-    } else if (mutations.error) {
-      showError(mutations.error.message);
+    }
+    } catch (err: any) {
+      showError(err.message || 'Error occurred');
     }
     return result;
   };
 
   const handleUpdate = async (id: string, data: Partial<BhajanDTO>) => {
-    await mutations.update(id, data);
-    if (!mutations.error) {
+    try {
+      await mutations.update(id, data);
+      
       success('Bhajan updated successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
 
   const handleDelete = async (id: string) => {
-    await mutations.delete(id);
-    if (!mutations.error) {
+    try {
+      await mutations.delete(id);
+      
       success('Bhajan deleted successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };

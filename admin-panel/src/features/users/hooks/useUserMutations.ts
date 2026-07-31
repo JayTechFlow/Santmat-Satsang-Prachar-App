@@ -10,36 +10,41 @@ export function useUserMutations(onSuccessCallback?: () => void) {
   const handleCreate = async (data: Omit<UserDTO, 'id'>) => {
     // Note: Creating an admin user via client-side usually requires Cloud Functions or secondary auth app.
     // For this prototype, we store in Firestore.
-    const result = await mutations.create(data as UserDTO);
-    if (result) {
+    let result = null;
+    try {
+      result = await mutations.create(data as UserDTO);
+      if (result) {
       success('User profile created successfully');
       if (onSuccessCallback) onSuccessCallback();
-    } else if (mutations.error) {
-      showError(mutations.error.message);
+    }
+    } catch (err: any) {
+      showError(err.message || 'Error occurred');
     }
     return result;
   };
 
   const handleUpdate = async (id: string, data: Partial<UserDTO>) => {
-    await mutations.update(id, data);
-    if (!mutations.error) {
+    try {
+      await mutations.update(id, data);
+      
       success('User updated successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
 
   const handleDelete = async (id: string) => {
-    await mutations.delete(id);
-    if (!mutations.error) {
+    try {
+      await mutations.delete(id);
+      
       success('User deleted successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };

@@ -13,12 +13,33 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   value
 }) => {
   const [internalValue, setInternalValue] = useState(value || '');
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    if (value !== undefined && value !== internalValue) {
+      setInternalValue(value);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInternalValue(val);
-    onSearch(val);
+    
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      onSearch(val);
+    }, 500);
   };
+
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
@@ -38,7 +59,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         type="text"
         className="form-input"
         placeholder={placeholder}
-        value={value !== undefined ? value : internalValue}
+        value={internalValue}
         onChange={handleChange}
         style={{ paddingLeft: '44px' }}
       />

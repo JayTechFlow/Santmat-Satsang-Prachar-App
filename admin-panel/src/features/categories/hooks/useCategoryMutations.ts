@@ -8,36 +8,41 @@ export function useCategoryMutations(onSuccessCallback?: () => void) {
   const mutations = useCrudMutations<CategoryDTO>(categoryService);
 
   const handleCreate = async (data: Omit<CategoryDTO, 'id'>) => {
-    const result = await mutations.create(data as CategoryDTO);
-    if (result) {
+    let result = null;
+    try {
+      result = await mutations.create(data as CategoryDTO);
+      if (result) {
       success('Category created successfully');
       if (onSuccessCallback) onSuccessCallback();
-    } else if (mutations.error) {
-      showError(mutations.error.message);
+    }
+    } catch (err: any) {
+      showError(err.message || 'Error occurred');
     }
     return result;
   };
 
   const handleUpdate = async (id: string, data: Partial<CategoryDTO>) => {
-    await mutations.update(id, data);
-    if (!mutations.error) {
+    try {
+      await mutations.update(id, data);
+      
       success('Category updated successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
 
   const handleDelete = async (id: string) => {
-    await mutations.delete(id);
-    if (!mutations.error) {
+    try {
+      await mutations.delete(id);
+      
       success('Category deleted successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };

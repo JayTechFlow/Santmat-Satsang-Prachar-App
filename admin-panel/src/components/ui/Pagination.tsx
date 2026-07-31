@@ -17,18 +17,11 @@ export const Pagination: React.FC<PaginationProps> = ({
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 'var(--space-8)',
-      padding: 'var(--space-16) 0'
-    }}>
+    <div className="flex justify-center items-center gap-2 py-4 border-t">
       <button
         className="btn-icon"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        style={{ opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
       >
         <ChevronLeft size={20} />
       </button>
@@ -37,20 +30,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          style={{
-            width: '36px',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 'var(--radius-input)',
-            border: page === currentPage ? 'none' : '1px solid var(--border)',
-            backgroundColor: page === currentPage ? 'var(--primary)' : 'var(--surface)',
-            color: page === currentPage ? '#fff' : 'var(--text-heading)',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all var(--transition-fast)'
-          }}
+          className={`btn-icon ${page === currentPage ? 'bg-primary text-surface' : ''}`}
+          style={page === currentPage ? { backgroundColor: 'var(--primary)', color: 'white' } : {}}
         >
           {page}
         </button>
@@ -60,7 +41,6 @@ export const Pagination: React.FC<PaginationProps> = ({
         className="btn-icon"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        style={{ opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
       >
         <ChevronRight size={20} />
       </button>

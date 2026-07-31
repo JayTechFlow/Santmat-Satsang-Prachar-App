@@ -161,15 +161,30 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .collection('favorite_audios')
         .get();
 
+    if (snapshot.docs.isEmpty) return [];
+
     List<FavoriteAudioEntity> favorites = [];
-    for (var doc in snapshot.docs) {
-      try {
-        final audioDoc = await _firestoreService.getDocument(
-          FirestoreCollections.audio,
-          doc.id,
-        );
-        if (audioDoc.exists) {
-          final audio = AudioDto.fromFirestore(audioDoc).toEntity();
+    
+    for (int i = 0; i < snapshot.docs.length; i += 30) {
+      final batchDocs = snapshot.docs.sublist(
+        i,
+        i + 30 > snapshot.docs.length ? snapshot.docs.length : i + 30,
+      );
+      
+      final ids = batchDocs.map((d) => d.id).toList();
+      
+      final audioSnapshot = await FirebaseFirestore.instance
+          .collection(FirestoreCollections.audio)
+          .where(FieldPath.documentId, whereIn: ids)
+          .get();
+          
+      final audioDocsMap = {
+        for (var doc in audioSnapshot.docs) doc.id: doc
+      };
+
+      for (var doc in batchDocs) {
+        if (audioDocsMap.containsKey(doc.id)) {
+          final audio = AudioDto.fromFirestore(audioDocsMap[doc.id]!).toEntity();
           final favoritedAt =
               (doc.data()['favoritedAt'] as Timestamp?)?.toDate() ??
               DateTime.now();
@@ -177,8 +192,6 @@ class FirestoreAudioDataSource implements AudioDataSource {
             FavoriteAudioEntity(audio: audio, favoritedAt: favoritedAt),
           );
         }
-      } catch (e) {
-        // Skip missing docs
       }
     }
 
@@ -213,22 +226,37 @@ class FirestoreAudioDataSource implements AudioDataSource {
         .limit(10)
         .get();
 
+    if (snapshot.docs.isEmpty) return [];
+
+    final ids = snapshot.docs
+        .map((d) => d.data()['audioId'] as String?)
+        .where((id) => id != null)
+        .cast<String>()
+        .toSet()
+        .toList();
+    
+    if (ids.isEmpty) return [];
+
     List<RecentlyPlayedEntity> recents = [];
+    
+    // limit is 10, so a single whereIn is safe
+    final audioSnapshot = await FirebaseFirestore.instance
+        .collection(FirestoreCollections.audio)
+        .where(FieldPath.documentId, whereIn: ids)
+        .get();
+        
+    final audioDocsMap = {
+      for (var doc in audioSnapshot.docs) doc.id: doc
+    };
+
     for (var doc in snapshot.docs) {
-      try {
-        final audioDoc = await _firestoreService.getDocument(
-          FirestoreCollections.audio,
-          doc.data()['audioId'],
-        );
-        if (audioDoc.exists) {
-          final audio = AudioDto.fromFirestore(audioDoc).toEntity();
-          final playedAt =
-              (doc.data()['playedAt'] as Timestamp?)?.toDate() ??
-              DateTime.now();
-          recents.add(RecentlyPlayedEntity(audio: audio, playedAt: playedAt));
-        }
-      } catch (e) {
-        // Skip missing docs
+      final audioId = doc.data()['audioId'] as String?;
+      if (audioId != null && audioDocsMap.containsKey(audioId)) {
+        final audio = AudioDto.fromFirestore(audioDocsMap[audioId]!).toEntity();
+        final playedAt =
+            (doc.data()['playedAt'] as Timestamp?)?.toDate() ??
+            DateTime.now();
+        recents.add(RecentlyPlayedEntity(audio: audio, playedAt: playedAt));
       }
     }
     return recents;

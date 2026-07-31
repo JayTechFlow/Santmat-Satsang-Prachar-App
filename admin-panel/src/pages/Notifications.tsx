@@ -146,11 +146,11 @@ export function Notifications() {
       header: 'Notification Content',
       render: (item) => (
         <div>
-          <div style={{ fontWeight: 600, color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-            <Bell size={14} color="var(--primary)" />
+          <div className="font-semibold text-heading flex items-center gap-2">
+            <Bell size={14} className="text-primary" />
             {item.title}
           </div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', marginTop: '4px', maxWidth: '300px' }}>
+          <div className="text-sm text-body mt-1 max-w-xs">
             {item.message}
           </div>
         </div>
@@ -160,9 +160,9 @@ export function Notifications() {
       key: 'target',
       header: 'Target Details',
       render: (item) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <div className="flex flex-col gap-1">
           <div><TargetScreenBadge screen={item.targetScreen} /></div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
+          <div className="text-xs text-muted capitalize">
             Audience: {item.audience}
           </div>
         </div>
@@ -172,12 +172,12 @@ export function Notifications() {
       key: 'delivery',
       header: 'Delivery',
       render: (item) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ fontSize: '0.875rem', textTransform: 'capitalize', color: 'var(--text-heading)' }}>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm capitalize text-heading">
             {item.deliveryType}
           </span>
           {item.deliveryType === 'scheduled' && item.scheduledFor && (
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <span className="text-xs text-muted">
               {new Date(item.scheduledFor).toLocaleString()}
             </span>
           )}
@@ -194,16 +194,16 @@ export function Notifications() {
       header: 'Actions',
       render: (item) => {
         return (
-          <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
+          <div className="flex gap-2 justify-end">
             {item.pushStatus === 'pending' && (
               <button className="btn-icon" onClick={(e) => { e.stopPropagation(); sendNotification(item.id); }} title="Send Now">
-                <Send size={18} color="var(--primary)" />
+                <Send size={18} className="text-primary" />
               </button>
             )}
             <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
               <Trash2 size={18} />
             </button>
           </div>
@@ -215,11 +215,11 @@ export function Notifications() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+    <div className="pb-8 max-w-7xl mx-auto">
+      <div className="page-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Push Notifications</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <h1 className="page-title mb-1">Push Notifications</h1>
+          <p className="text-muted text-sm">
             Broadcast updates, announcements, and deep-link alerts to app users
           </p>
         </div>
@@ -228,7 +228,7 @@ export function Notifications() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-16)', marginBottom: 'var(--space-24)', flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap gap-4 mb-6">
         <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search titles..." />
         <FilterBar
           options={[
@@ -253,7 +253,7 @@ export function Notifications() {
         />
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
         {items.length > 0 ? (
@@ -268,12 +268,12 @@ export function Notifications() {
               onSelectAll={selectAll}
               onClearSelection={clearSelection}
             />
-            <div style={{ padding: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
+            <div className="p-4 border-t">
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
           </>
         ) : !loading && (
-          <div style={{ padding: 'var(--space-48) 0' }}>
+          <div className="py-12">
             <EmptyState 
               title="No Notifications Found" 
               message="Create your first broadcast notification for app users." 
@@ -297,13 +297,13 @@ export function Notifications() {
       />
 
       {isModalOpen && (
-        <div className="modal-backdrop" style={{ alignItems: 'flex-start', overflowY: 'auto' }} onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="modal-content" style={{ marginTop: '5vh', marginBottom: '5vh', maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="card w-full max-w-xl my-8 p-8 shadow-float" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                <Bell size={20} color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <div className="flex items-center gap-2">
+                <Bell size={20} className="text-primary" />
+                <h2 className="text-heading font-semibold text-xl m-0">
                   {editingId ? 'Edit Notification' : 'Compose Notification'}
                 </h2>
               </div>
@@ -313,9 +313,9 @@ export function Notifications() {
             </div>
             
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-                <div className="form-group">
-                  <label className="form-label">Title <span style={{ color: 'var(--danger)' }}>*</span></label>
+              <div className="flex flex-col gap-4">
+                <div className="form-group mb-0">
+                  <label className="form-label">Title <span className="text-danger">*</span></label>
                   <input 
                     type="text" 
                     className="form-input" 
@@ -327,8 +327,8 @@ export function Notifications() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Message <span style={{ color: 'var(--danger)' }}>*</span></label>
+                <div className="form-group mb-0">
+                  <label className="form-label">Message <span className="text-danger">*</span></label>
                   <textarea 
                     className="form-textarea" 
                     rows={3}
@@ -340,8 +340,8 @@ export function Notifications() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)' }}>
-                  <div className="form-group">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="form-group mb-0">
                     <label className="form-label">Target Screen</label>
                     <select className="form-select" value={targetScreen} onChange={e => setTargetScreen(e.target.value as any)} disabled={isLoading}>
                       <option value="Home">Home</option>
@@ -350,7 +350,7 @@ export function Notifications() {
                       <option value="StutiVinati">Stuti & Vinati</option>
                     </select>
                   </div>
-                  <div className="form-group">
+                  <div className="form-group mb-0">
                     <label className="form-label">Audience</label>
                     <select className="form-select" value={audience} onChange={e => setAudience(e.target.value as any)} disabled={isLoading}>
                       <option value="all">All Users</option>
@@ -360,7 +360,7 @@ export function Notifications() {
                   </div>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-0">
                   <label className="form-label">Delivery Type</label>
                   <select className="form-select" value={deliveryType} onChange={e => setDeliveryType(e.target.value as any)} disabled={isLoading}>
                     <option value="immediate">Send Immediately (On Submit)</option>
@@ -369,8 +369,8 @@ export function Notifications() {
                 </div>
 
                 {deliveryType === 'scheduled' && (
-                  <div className="form-group" style={{ backgroundColor: 'var(--background)', padding: 'var(--space-16)', borderRadius: 'var(--radius-input)', border: '1px solid var(--border)' }}>
-                    <label className="form-label">Schedule Time <span style={{ color: 'var(--danger)' }}>*</span></label>
+                  <div className="form-group mb-0 bg-background p-4 rounded-md border border-border">
+                    <label className="form-label">Schedule Time <span className="text-danger">*</span></label>
                     <input 
                       type="datetime-local" 
                       className="form-input"
@@ -379,22 +379,22 @@ export function Notifications() {
                       required={deliveryType === 'scheduled'}
                       disabled={isLoading}
                     />
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    <p className="text-xs text-muted mt-1">
                       Notification will automatically be sent at the scheduled time.
                     </p>
                   </div>
                 )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={isLoading}>
                   {deliveryType === 'immediate' ? (
-                    <><Send size={16} style={{ marginRight: '4px' }} /> Send Now</>
+                    <><Send size={16} className="mr-1" /> Send Now</>
                   ) : (
-                    <><CheckCircle size={16} style={{ marginRight: '4px' }} /> Schedule Notification</>
+                    <><CheckCircle size={16} className="mr-1" /> Schedule Notification</>
                   )}
                 </button>
               </div>

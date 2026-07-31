@@ -7,24 +7,24 @@ interface TopBhajansListProps {
 
 export function TopBhajansList({ bhajans }: TopBhajansListProps) {
   return (
-    <div className="card" style={{ height: '100%' }}>
-      <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-        <h3 style={{ fontSize: '1.125rem' }}>Top Bhajans</h3>
-        <Music size={20} color="var(--text-muted)" />
+    <div className="card h-full">
+      <div className="card-header">
+        <h3 className="card-title">Top Bhajans</h3>
+        <Music size={20} className="text-muted" />
       </div>
       
       {bhajans.length === 0 ? (
-        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <div className="text-center text-muted" style={{ padding: '2rem' }}>
           No bhajans available.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="flex-col gap-4">
           {bhajans.map((item, index) => (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ fontWeight: 'bold', color: 'var(--text-muted)', width: '24px' }}>#{index + 1}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>{item.title}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+            <div key={item.id} className="flex items-center gap-4">
+              <div className="font-bold text-muted" style={{ width: '24px' }}>#{index + 1}</div>
+              <div className="flex-1">
+                <div className="font-medium text-sm">{item.title}</div>
+                <div className="text-xs text-muted mt-1">
                   {item.plays} plays
                 </div>
               </div>

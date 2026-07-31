@@ -3,6 +3,7 @@ import { BaseCrudService } from '../services/BaseCrudService';
 import { AppError } from '../errors/AppError';
 import type { PaginationOptions, PaginatedResult } from '../repositories/BaseRepository';
 import { QueryConstraint } from 'firebase/firestore';
+import { useToast } from '../../hooks/useToast';
 
 export function useCrud<T extends { id: string }>(
   service: BaseCrudService<T>,
@@ -16,13 +17,17 @@ export function useCrud<T extends { id: string }>(
     lastDoc: null,
     total: 0,
   });
+  const { error: showError } = useToast();
+
+  const initialPaginationStr = JSON.stringify(initialPagination || null);
 
   const fetchData = useCallback(async (pageOptions?: PaginationOptions) => {
     setLoading(true);
     setError(null);
     try {
-      if (pageOptions || initialPagination) {
-        const result = await service.paginate(pageOptions || initialPagination || {}, constraints);
+      const parsedPagination = initialPaginationStr !== 'null' ? JSON.parse(initialPaginationStr) : undefined;
+      if (pageOptions || parsedPagination) {
+        const result = await service.paginate(pageOptions || parsedPagination || {}, constraints);
         setData(result.data);
         setPaginationInfo({ lastDoc: result.lastDoc, total: result.total });
       } else {
@@ -30,12 +35,13 @@ export function useCrud<T extends { id: string }>(
         setData(result);
         setPaginationInfo({ lastDoc: null, total: result.length });
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err as AppError);
+      showError(err.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
-  }, [service, constraints, initialPagination]);
+  }, [service, constraints, initialPaginationStr]);
 
   useEffect(() => {
     fetchData();

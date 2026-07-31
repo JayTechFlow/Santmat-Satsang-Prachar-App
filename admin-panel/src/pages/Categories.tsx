@@ -141,35 +141,19 @@ export function Categories() {
     clearSelection();
   };
 
-  const getTypeBadgeStyle = (itemType: string) => {
-    const key = (itemType || '').toLowerCase();
-    const badgeMap: Record<string, React.CSSProperties> = {
-      audio: { backgroundColor: '#FFF2E8', color: 'var(--primary)', border: '1px solid rgba(232, 116, 18, 0.25)' },
-      book: { backgroundColor: '#DCFCE7', color: 'var(--success)', border: '1px solid rgba(22, 163, 74, 0.25)' },
-      prayer: { backgroundColor: '#F3E8FF', color: '#8B5CF6', border: '1px solid rgba(139, 92, 246, 0.25)' },
-    };
-
-    const defaultStyle: React.CSSProperties = { backgroundColor: 'var(--background)', color: 'var(--text-body)', border: '1px solid var(--border)' };
-
-    return {
-      display: 'inline-flex', alignItems: 'center', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-input)',
-      fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize' as const, ...(badgeMap[key] || defaultStyle),
-    };
-  };
-
   const columns: Column<any>[] = [
     {
       key: 'name',
       header: 'Category Name',
       render: (item) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', paddingLeft: `${item.level * 24}px` }}>
-          {item.level > 0 && <span style={{ color: 'var(--border)', paddingRight: '4px' }}>└─</span>}
-          <Tag size={16} style={{ color: item.status === 'archived' ? 'var(--text-muted)' : 'var(--primary)' }} />
-          <span style={{ fontWeight: 600, color: item.status === 'archived' ? 'var(--text-muted)' : 'var(--text-heading)' }}>
+        <div className="flex items-center gap-2" style={{ paddingLeft: `${item.level * 24}px` }}>
+          {item.level > 0 && <span className="text-muted pr-1">└─</span>}
+          <Tag size={16} className={item.status === 'archived' ? 'text-muted' : 'text-primary'} />
+          <span className={`font-semibold ${item.status === 'archived' ? 'text-muted' : 'text-heading'}`}>
             {item.name}
           </span>
           {item.featured && (
-            <span style={{ fontSize: '10px', backgroundColor: 'var(--warning)', color: 'white', padding: '2px 6px', borderRadius: '4px' }}>Featured</span>
+            <span className="badge badge-warning">Featured</span>
           )}
         </div>
       )
@@ -177,23 +161,23 @@ export function Categories() {
     {
       key: 'type',
       header: 'Applies To',
-      render: (item) => <span style={getTypeBadgeStyle(item.type)}>{item.type}</span>
+      render: (item) => <span className={`badge badge-${item.type === 'audio' ? 'primary' : item.type === 'book' ? 'success' : 'info'}`}>{item.type}</span>
     },
     {
       key: 'slug',
       header: 'Slug',
-      render: (item) => <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>{item.slug}</span>
+      render: (item) => <span className="text-muted" style={{ fontFamily: 'monospace' }}>{item.slug}</span>
     },
     {
       key: 'sortOrder',
       header: 'Order',
-      render: (item) => <span style={{ color: 'var(--text-muted)' }}>{item.sortOrder}</span>
+      render: (item) => <span className="text-muted">{item.sortOrder}</span>
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (item) => (
-        <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
+        <div className="flex justify-end gap-2">
           {item.status === 'active' ? (
             <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveCategory(item.id, true); }} title="Archive">
               <Archive size={18} />
@@ -206,7 +190,7 @@ export function Categories() {
           <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
             <Edit2 size={18} />
           </button>
-          <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+          <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
             <Trash2 size={18} />
           </button>
         </div>
@@ -217,11 +201,11 @@ export function Categories() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+    <div className="pb-8 max-w-7xl mx-auto">
+      <div className="page-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Categories</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <h1 className="page-title mb-1">Categories</h1>
+          <p className="text-muted text-sm">
             Manage category taxonomy and content mappings
           </p>
         </div>
@@ -230,7 +214,7 @@ export function Categories() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-16)', marginBottom: 'var(--space-24)' }}>
+      <div className="flex flex-wrap gap-4 mb-6">
         <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search categories..." />
         <FilterBar
           options={[{ label: 'Active', value: 'active' }, { label: 'Archived', value: 'archived' }]}
@@ -246,7 +230,7 @@ export function Categories() {
         />
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
         {tableData.length > 0 ? (
@@ -261,7 +245,7 @@ export function Categories() {
             onClearSelection={clearSelection}
           />
         ) : !loading && (
-          <div style={{ padding: 'var(--space-48) 0' }}>
+          <div className="py-12">
             <EmptyState 
               title="No Categories Found" 
               message="Get started by adding your first category or adjusting your filters." 
@@ -279,13 +263,13 @@ export function Categories() {
       />
 
       {isModalOpen && (
-        <div className="modal-backdrop" onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-center justify-center z-50 p-4" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="card w-full max-w-lg shadow-float" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                <FolderTree size={20} color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <div className="flex items-center gap-2">
+                <FolderTree size={20} className="text-primary" />
+                <h2 className="text-heading font-semibold text-xl m-0">
                   {editingId ? 'Edit Category' : 'Add Category'}
                 </h2>
               </div>
@@ -333,8 +317,8 @@ export function Categories() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)' }}>
-                <div className="form-group">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="form-group mb-0">
                   <label className="form-label">Applies To (Type)</label>
                   <select className="form-select" value={type} onChange={e => setType(e.target.value)} disabled={isLoading}>
                     <option value="audio">Audio</option>
@@ -342,7 +326,7 @@ export function Categories() {
                     <option value="prayer">Prayer</option>
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="form-group mb-0">
                   <label className="form-label">Sort Order</label>
                   <input 
                     type="number" 
@@ -354,8 +338,8 @@ export function Categories() {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+              <div className="form-group mb-0 mt-4">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input 
                     type="checkbox" 
                     checked={featured} 
@@ -366,7 +350,7 @@ export function Categories() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>
                   Cancel
                 </button>

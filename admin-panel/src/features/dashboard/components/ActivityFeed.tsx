@@ -7,24 +7,25 @@ interface ActivityFeedProps {
 
 export function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
-    <div className="card" style={{ height: '100%' }}>
-      <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-        <h3 style={{ fontSize: '1.125rem' }}>Recent Activity</h3>
-        <Clock size={20} color="var(--text-muted)" />
+    <div className="card h-full">
+      <div className="card-header">
+        <h3 className="card-title">Recent Activity</h3>
+        <Clock size={20} className="text-muted" />
       </div>
       
+      
       {activities.length === 0 ? (
-        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <div className="text-center text-muted" style={{ padding: '2rem' }}>
           No recent activity found.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="flex-col gap-4">
           {activities.map((item) => (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
+            <div key={item.id} className="flex items-center gap-4 pb-4 border-b">
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)' }}></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>{item.title}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem', textTransform: 'capitalize' }}>
+              <div className="flex-1">
+                <div className="font-medium text-sm">{item.title}</div>
+                <div className="text-xs text-muted mt-1 capitalize">
                   {item.type.replace('_', ' ')} • {new Date(item.timestamp).toLocaleDateString()}
                 </div>
               </div>

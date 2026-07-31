@@ -160,11 +160,11 @@ export function Banners() {
       key: 'image',
       header: 'Banner',
       render: (item) => (
-        <div style={{ width: '120px', height: '60px', borderRadius: 'var(--radius-input)', overflow: 'hidden', border: '1px solid var(--border)', backgroundColor: 'var(--background)' }}>
+        <div className="w-[120px] h-[60px] rounded-md overflow-hidden border border-border bg-background" style={{ width: '120px', height: '60px' }}>
           {item.imageUrl ? (
-            <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
+            <div className="flex items-center justify-center h-full text-muted">
               <ImageIcon size={16} />
             </div>
           )}
@@ -176,8 +176,8 @@ export function Banners() {
       header: 'Details',
       render: (item) => (
         <div>
-          <div style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{item.title}</div>
-          {item.subtitle && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.subtitle}</div>}
+          <div className="font-semibold text-heading">{item.title}</div>
+          {item.subtitle && <div className="text-xs text-muted">{item.subtitle}</div>}
         </div>
       )
     },
@@ -189,7 +189,7 @@ export function Banners() {
     {
       key: 'priority',
       header: 'Priority',
-      render: (item) => <span style={{ color: 'var(--text-muted)' }}>{item.priority}</span>
+      render: (item) => <span className="text-muted">{item.priority}</span>
     },
     {
       key: 'actions',
@@ -197,7 +197,7 @@ export function Banners() {
       render: (item) => {
         const effectiveStatus = getEffectiveStatus(item);
         return (
-          <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
+          <div className="flex gap-2 justify-end">
             {effectiveStatus !== 'archived' ? (
               <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBanner(item.id, true); }} title="Archive">
                 <Archive size={18} />
@@ -210,7 +210,7 @@ export function Banners() {
             <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
               <Trash2 size={18} />
             </button>
           </div>
@@ -222,18 +222,18 @@ export function Banners() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+    <div className="pb-8 max-w-7xl mx-auto">
+      <div className="page-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Hero Banners</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Manage home app banners and promotional graphics</p>
+          <h1 className="page-title mb-1">Hero Banners</h1>
+          <p className="text-muted text-sm">Manage home app banners and promotional graphics</p>
         </div>
         <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
           <Plus size={18} /> Add Banner
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-16)', marginBottom: 'var(--space-24)' }}>
+      <div className="flex flex-wrap gap-4 mb-6">
         <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search banners..." />
         <FilterBar
           options={[
@@ -248,7 +248,7 @@ export function Banners() {
         />
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
         {items.length > 0 ? (
@@ -263,12 +263,12 @@ export function Banners() {
               onSelectAll={selectAll}
               onClearSelection={clearSelection}
             />
-            <div style={{ padding: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
+            <div className="p-4 border-t">
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
           </>
         ) : !loading && (
-          <div style={{ padding: 'var(--space-48) 0' }}>
+          <div className="py-12">
             <EmptyState 
               title="No Banners Found" 
               message="Get started by adding your first promotional banner." 
@@ -286,13 +286,13 @@ export function Banners() {
       />
 
       {isModalOpen && (
-        <div className="modal-backdrop" style={{ alignItems: 'flex-start', overflowY: 'auto' }} onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="modal-content" style={{ marginTop: '5vh', marginBottom: '5vh', maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="card w-full max-w-2xl my-8 p-8 shadow-float" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                <ImageIcon size={20} color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <div className="flex items-center gap-2">
+                <ImageIcon size={20} className="text-primary" />
+                <h2 className="text-heading font-semibold text-xl m-0">
                   {editingId ? 'Edit Banner' : 'Add Banner'}
                 </h2>
               </div>
@@ -313,8 +313,8 @@ export function Banners() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Banner Title <span style={{ color: 'var(--danger)' }}>*</span></label>
+              <div className="form-group mb-4">
+                <label className="form-label">Banner Title <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-input" 
@@ -325,7 +325,7 @@ export function Banners() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)' }}>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="form-group">
                   <label className="form-label">Status</label>
                   <select className="form-select" value={status} onChange={e => setStatus(e.target.value as any)} disabled={isLoading}>
@@ -334,7 +334,7 @@ export function Banners() {
                     <option value="published">Published</option>
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="form-group mb-0">
                   <label className="form-label">Priority (Sort Order)</label>
                   <input 
                     type="number" 
@@ -347,8 +347,8 @@ export function Banners() {
               </div>
 
               {status === 'scheduled' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)', padding: 'var(--space-16)', backgroundColor: 'var(--background)', borderRadius: 'var(--radius-input)', marginBottom: 'var(--space-16)' }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
+                <div className="grid grid-cols-2 gap-4 p-4 bg-background rounded-md mb-4">
+                  <div className="form-group mb-0">
                     <label className="form-label">Start Date & Time</label>
                     <input 
                       type="datetime-local" 
@@ -359,7 +359,7 @@ export function Banners() {
                       disabled={isLoading}
                     />
                   </div>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
+                  <div className="form-group mb-0">
                     <label className="form-label">End Date & Time</label>
                     <input 
                       type="datetime-local" 
@@ -373,7 +373,7 @@ export function Banners() {
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>
                   Cancel
                 </button>

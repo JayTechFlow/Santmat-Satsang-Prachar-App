@@ -7,6 +7,7 @@ import { auth } from './firebase/config';
 import { Layout } from './components/Layout';
 
 import { lazy, Suspense } from 'react';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
@@ -43,32 +44,34 @@ function App() {
   }
 
   return (
-    <ToastProvider>
-      <Router>
-        <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>Loading page...</div>}>
-          <Routes>
-            <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-            
-            <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
-              <Route index element={<Dashboard />} />
-              <Route path="suvichar" element={<Suvichar />} />
-              <Route path="banners" element={<Banners />} />
-              <Route path="audio" element={<Audio />} />
-              <Route path="stuti-vinati" element={<StutiVinati />} />
-              <Route path="books" element={<Books />} />
-              <Route path="notifications" element={<Notifications />} />
-              <Route path="categories" element={<Categories />} />
-              <Route path="users" element={<Users />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="playlist" element={<Playlist />} />
-              <Route path="support" element={<Support />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </Router>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <Router>
+          <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>Loading page...</div>}>
+            <Routes>
+              <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+              
+              <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
+                <Route index element={<Dashboard />} />
+                <Route path="suvichar" element={<Suvichar />} />
+                <Route path="banners" element={<Banners />} />
+                <Route path="audio" element={<Audio />} />
+                <Route path="stuti-vinati" element={<StutiVinati />} />
+                <Route path="books" element={<Books />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="categories" element={<Categories />} />
+                <Route path="users" element={<Users />} />
+                <Route path="reports" element={<Reports />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="playlist" element={<Playlist />} />
+                <Route path="support" element={<Support />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </Router>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }
 

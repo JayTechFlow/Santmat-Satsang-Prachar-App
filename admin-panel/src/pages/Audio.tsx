@@ -120,10 +120,10 @@ export function Audio() {
   return (
     <div>
       {/* Header Section */}
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+      <div className="page-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: 'var(--space-8)' }}>Bhajan & Audio Management</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <h1 className="page-title mb-2">Bhajan & Audio Management</h1>
+          <p className="text-muted text-sm">
             Upload, organize, and manage spiritual audio tracks and bhajans
           </p>
         </div>
@@ -133,7 +133,7 @@ export function Audio() {
       </div>
 
       {/* Main Table Card */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden', minHeight: '300px', position: 'relative' }}>
+      <div className="card p-0 overflow-hidden relative" style={{ minHeight: '300px' }}>
         {isLoading ? (
           <LoadingOverlay message="Loading..." />
         ) : items.length === 0 ? (
@@ -155,11 +155,11 @@ export function Audio() {
                   <img
                     src={item.thumbnailUrl}
                     alt={item.title}
-                    style={{ width: '52px', height: '52px', objectFit: 'cover', borderRadius: 'var(--radius-input)', border: '1px solid var(--border)' }}
+                    className="w-13 h-13 object-cover rounded-md border"
                   />
                 ) : (
-                  <div style={{ width: '52px', height: '52px', backgroundColor: 'var(--background)', borderRadius: 'var(--radius-input)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Music size={22} color="var(--primary)" />
+                  <div className="w-13 h-13 bg-background rounded-md border flex items-center justify-center">
+                    <Music size={22} className="text-primary" />
                   </div>
                 )
               },
@@ -168,11 +168,11 @@ export function Audio() {
                 header: 'Title',
                 sortable: true,
                 render: (item) => (
-                  <div style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
+                  <div className="font-semibold text-heading">
                     <div>{item.title}</div>
                     {item.audioUrl && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <FileAudio size={12} color="var(--primary)" /> Audio attached
+                      <div className="text-xs text-muted font-normal mt-1 flex items-center gap-1">
+                        <FileAudio size={12} className="text-primary" /> Audio attached
                       </div>
                     )}
                   </div>
@@ -182,8 +182,8 @@ export function Audio() {
                 key: 'description',
                 header: 'Description',
                 render: (item) => (
-                  <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', maxWidth: '300px' }}>
-                    {item.description || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No description</span>}
+                  <div className="text-body text-sm max-w-xs">
+                    {item.description || <span className="text-muted italic">No description</span>}
                   </div>
                 )
               },
@@ -191,18 +191,16 @@ export function Audio() {
                 key: 'actions',
                 header: 'Actions',
                 render: (item) => (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-8)' }}>
+                  <div className="flex justify-end gap-2">
                     <button
-                      className="btn btn-outline"
-                      style={{ padding: 'var(--space-8) var(--space-8)', fontSize: '0.875rem' }}
+                      className="btn-icon"
                       onClick={() => openEdit(item)}
                       title="Edit bhajan"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
-                      className="btn btn-outline"
-                      style={{ padding: 'var(--space-8) var(--space-8)', fontSize: '0.875rem', color: 'var(--danger)', borderColor: 'rgba(220, 38, 38, 0.2)' }}
+                      className="btn-icon danger"
                       onClick={() => setDeleteId(item.id)}
                       title="Delete bhajan"
                     >
@@ -217,7 +215,7 @@ export function Audio() {
       </div>
 
       {totalPages > 1 && (
-        <div style={{ marginTop: 'var(--space-24)' }}>
+        <div className="mt-6">
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
@@ -261,40 +259,16 @@ export function Audio() {
 
       {/* Modal Dialog */}
       {isModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 50,
-          padding: 'var(--space-16)',
-        }}>
-          <div className="card" style={{
-            width: '100%',
-            maxWidth: '560px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            marginBottom: 0,
-            boxShadow: 'var(--shadow-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-card)',
-            padding: 'var(--space-32)',
-          }}>
+        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-center justify-center z-50 p-4">
+          <div className="card w-full max-w-xl max-h-90vh overflow-y-auto mb-0 p-8 shadow-float">
             {/* Modal Header */}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <h2 className="text-heading font-semibold" style={{ fontSize: '1.25rem' }}>
                 {editingId ? 'Edit Bhajan' : 'Add New Bhajan'}
               </h2>
               <button
                 type="button"
-                className="btn btn-outline"
-                style={{ border: 'none', padding: 'var(--space-8)', borderRadius: 'var(--radius-input)' }}
+                className="btn-icon"
                 onClick={handleCloseModal}
               >
                 <X size={20} />
@@ -365,7 +339,7 @@ export function Audio() {
               </div>
 
               {/* Modal Footer Actions */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)', paddingTop: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button type="button" className="btn btn-outline" onClick={handleCloseModal}>
                   Cancel
                 </button>

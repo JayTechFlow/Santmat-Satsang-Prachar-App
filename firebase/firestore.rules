@@ -39,6 +39,9 @@ service cloud.firestore {
     match /featured_content/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /audio_categories/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /book_categories/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /categories/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /suvichar/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /roles/{docId} { allow read, write: if isAdmin(); }
     match /audio/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /stuti_vinati/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
     match /books/{docId} { allow read: if isAuthenticated(); allow write: if isAdmin(); }

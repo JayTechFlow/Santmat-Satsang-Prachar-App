@@ -1,5 +1,5 @@
-
-import { Trash2, Archive, CheckCircle, X } from 'lucide-react';
+import React from 'react';
+import { X, Trash2, CheckCircle, Archive } from 'lucide-react';
 
 export interface BulkActionBarProps {
   selectedCount: number;
@@ -7,94 +7,62 @@ export interface BulkActionBarProps {
   onDelete?: () => void;
   onPublish?: () => void;
   onArchive?: () => void;
-  customActions?: { label: string; icon?: React.ReactNode; onClick: () => void; }[];
+  customActions?: { label: string; icon: React.ReactNode; onClick: () => void | Promise<void> }[];
 }
 
-export function BulkActionBar({ 
-  selectedCount, 
-  onClearSelection, 
-  onDelete, 
-  onPublish, 
-  onArchive,
-  customActions 
-}: BulkActionBarProps) {
+export const BulkActionBar: React.FC<BulkActionBarProps> = ({
+  selectedCount,
+  onClearSelection,
+  onDelete,
+  onPublish,
+  onArchive
+}) => {
   if (selectedCount === 0) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: 'var(--space-24)',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      backgroundColor: 'var(--surface)',
-      border: '1px solid var(--border)',
-      boxShadow: 'var(--shadow-card)',
-      borderRadius: 'var(--radius-card)',
-      padding: 'var(--space-12) var(--space-24)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 'var(--space-24)',
-      zIndex: 100,
+    <div className="fixed bottom-0 left-0 right-0 bg-surface border-t shadow-float z-50 transform transition-transform" style={{ 
+      transform: selectedCount > 0 ? 'translateY(0)' : 'translateY(100%)',
+      padding: 'var(--space-16) var(--space-32)',
+      marginLeft: 'var(--sidebar-width)',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
-        <span style={{ 
-          backgroundColor: 'var(--primary)', 
-          color: 'white', 
-          borderRadius: '50%', 
-          width: '24px', 
-          height: '24px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          fontSize: '12px', 
-          fontWeight: 'bold' 
-        }}>
-          {selectedCount}
-        </span>
-        <span style={{ fontWeight: 600 }}>items selected</span>
+      <div className="flex-between max-w-7xl mx-auto">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center bg-primary-light text-primary rounded-full w-8 h-8 font-bold text-sm">
+            {selectedCount}
+          </div>
+          <span className="font-medium text-heading">Items Selected</span>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {onPublish && (
+            <button className="btn btn-outline" onClick={onPublish}>
+              <CheckCircle size={16} /> Publish
+            </button>
+          )}
+          {onArchive && (
+            <button className="btn btn-outline" onClick={onArchive}>
+              <Archive size={16} /> Archive
+            </button>
+          )}
+          <button 
+            className="btn btn-ghost text-muted"
+            onClick={onClearSelection}
+          >
+            <X size={18} />
+            Clear Selection
+          </button>
+          
+          {onDelete && (
+            <button 
+              className="btn btn-danger"
+              onClick={onDelete}
+            >
+              <Trash2 size={18} />
+              Delete Selected
+            </button>
+          )}
+        </div>
       </div>
-
-      <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border)' }} />
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-        {onPublish && (
-          <button className="btn btn-outline" onClick={onPublish} style={{ padding: 'var(--space-8) var(--space-12)' }}>
-            <CheckCircle size={16} style={{ marginRight: '4px' }} /> Publish
-          </button>
-        )}
-        {onArchive && (
-          <button className="btn btn-outline" onClick={onArchive} style={{ padding: 'var(--space-8) var(--space-12)' }}>
-            <Archive size={16} style={{ marginRight: '4px' }} /> Archive
-          </button>
-        )}
-        {onDelete && (
-          <button className="btn btn-outline" onClick={onDelete} style={{ padding: 'var(--space-8) var(--space-12)', color: 'var(--danger)', borderColor: 'var(--danger)' }}>
-            <Trash2 size={16} style={{ marginRight: '4px' }} /> Delete
-          </button>
-        )}
-        {customActions?.map((action, idx) => (
-          <button key={idx} className="btn btn-outline" onClick={action.onClick} style={{ padding: 'var(--space-8) var(--space-12)' }}>
-            {action.icon && <span style={{ marginRight: '4px', display: 'flex' }}>{action.icon}</span>} {action.label}
-          </button>
-        ))}
-      </div>
-
-      <button 
-        type="button" 
-        onClick={onClearSelection}
-        style={{ 
-          background: 'none', 
-          border: 'none', 
-          cursor: 'pointer', 
-          padding: '4px',
-          color: 'var(--text-muted)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <X size={20} />
-      </button>
     </div>
   );
-}
+};

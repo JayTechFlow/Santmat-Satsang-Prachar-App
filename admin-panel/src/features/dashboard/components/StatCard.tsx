@@ -11,15 +11,15 @@ export function StatCard({ stat }: StatCardProps) {
 
   return (
     <Link to={stat.path} style={{ textDecoration: 'none' }}>
-      <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', cursor: 'pointer', transition: 'var(--transition-fast)', padding: '1.5rem' }}>
-        <div style={{ backgroundColor: `${stat.color}15`, color: stat.color, padding: '1rem', borderRadius: 'var(--radius-input)' }}>
+      <div className="card flex items-center gap-6 cursor-pointer" style={{ transition: 'var(--transition-fast)' }}>
+        <div className="rounded-md" style={{ backgroundColor: `${stat.color}15`, color: stat.color, padding: '1rem' }}>
           <IconComponent size={28} />
         </div>
         <div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>
+          <div className="font-semibold text-sm text-muted mb-2">
             {stat.label}
           </div>
-          <div style={{ color: 'var(--text-heading)', fontSize: '1.75rem', fontWeight: 700 }}>
+          <div className="font-bold text-heading" style={{ fontSize: '1.75rem' }}>
             {stat.value}
           </div>
         </div>

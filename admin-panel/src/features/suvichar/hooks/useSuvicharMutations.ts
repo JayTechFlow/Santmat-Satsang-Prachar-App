@@ -8,37 +8,41 @@ export function useSuvicharMutations(onSuccessCallback?: () => void) {
   const mutations = useCrudMutations<SuvicharDTO>(suvicharService);
 
   const handleCreate = async (data: Omit<SuvicharDTO, 'id'>) => {
-    const result = await mutations.create(data as SuvicharDTO);
-    if (result) {
+    let result = null;
+    try {
+      result = await mutations.create(data as SuvicharDTO);
+      if (result) {
       success('Suvichar created successfully');
       if (onSuccessCallback) onSuccessCallback();
-    } else if (mutations.error) {
-      showError(mutations.error.message);
+    }
+    } catch (err: any) {
+      showError(err.message || 'Error occurred');
     }
     return result;
   };
 
   const handleUpdate = async (id: string, data: Partial<SuvicharDTO>) => {
-    await mutations.update(id, data);
-    // useCrudMutations.update returns void on success
-    if (!mutations.error) {
+    try {
+      await mutations.update(id, data);
+      
       success('Suvichar updated successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
 
   const handleDelete = async (id: string) => {
-    await mutations.delete(id);
-    if (!mutations.error) {
+    try {
+      await mutations.delete(id);
+      
       success('Suvichar deleted successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };

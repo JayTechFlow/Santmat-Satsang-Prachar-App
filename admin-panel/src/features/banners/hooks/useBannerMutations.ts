@@ -8,36 +8,41 @@ export function useBannerMutations(onSuccessCallback?: () => void) {
   const mutations = useCrudMutations<BannerDTO>(bannerService);
 
   const handleCreate = async (data: Omit<BannerDTO, 'id'>) => {
-    const result = await mutations.create(data as BannerDTO);
-    if (result) {
+    let result = null;
+    try {
+      result = await mutations.create(data as BannerDTO);
+      if (result) {
       success('Banner created successfully');
       if (onSuccessCallback) onSuccessCallback();
-    } else if (mutations.error) {
-      showError(mutations.error.message);
+    }
+    } catch (err: any) {
+      showError(err.message || 'Error occurred');
     }
     return result;
   };
 
   const handleUpdate = async (id: string, data: Partial<BannerDTO>) => {
-    await mutations.update(id, data);
-    if (!mutations.error) {
+    try {
+      await mutations.update(id, data);
+      
       success('Banner updated successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
 
   const handleDelete = async (id: string) => {
-    await mutations.delete(id);
-    if (!mutations.error) {
+    try {
+      await mutations.delete(id);
+      
       success('Banner deleted successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };

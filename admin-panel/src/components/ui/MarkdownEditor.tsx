@@ -32,13 +32,17 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
   useEffect(() => {
     const draftKey = `md-editor-draft-${id}`;
+    let innerTimer: ReturnType<typeof setTimeout>;
     if (value) {
       const timer = setTimeout(() => {
         localStorage.setItem(draftKey, value);
         setDraftSaved(true);
-        setTimeout(() => setDraftSaved(false), 2000);
+        innerTimer = setTimeout(() => setDraftSaved(false), 2000);
       }, 1000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        if (innerTimer) clearTimeout(innerTimer);
+      };
     }
   }, [value, id]);
 

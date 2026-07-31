@@ -24,7 +24,7 @@ export function useCrudMutations<T extends { id: string }>(service: BaseCrudServ
       return result;
     } catch (err) {
       setError(err as AppError);
-      return null;
+      throw err;
     } finally {
       setLoading(false);
     }

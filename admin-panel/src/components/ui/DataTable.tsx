@@ -21,7 +21,43 @@ export interface DataTableProps<T> {
   onClearSelection?: () => void;
 }
 
-export function DataTable<T>({ 
+const DataTableRow = React.memo(<T extends any>({ 
+  item, 
+  columns, 
+  id, 
+  isSelected, 
+  selectable, 
+  onToggleSelection 
+}: {
+  item: T;
+  columns: Column<T>[];
+  id: string;
+  isSelected: boolean;
+  selectable: boolean;
+  onToggleSelection?: (id: string) => void;
+}) => {
+  return (
+    <tr className={isSelected ? 'bg-surface-hover' : ''}>
+      {selectable && (
+        <td className={`sticky left-0 z-5 ${isSelected ? 'bg-surface-hover' : 'bg-surface'}`} style={{ width: '40px' }}>
+          <input 
+            type="checkbox" 
+            checked={isSelected}
+            onChange={() => onToggleSelection && onToggleSelection(id)}
+            className="cursor-pointer"
+          />
+        </td>
+      )}
+      {columns.map((col) => (
+        <td key={col.key as string}>
+          {col.render ? col.render(item) : String((item as any)[col.key] || '')}
+        </td>
+      ))}
+    </tr>
+  );
+}) as <T extends any>(props: { item: T; columns: Column<T>[]; id: string; isSelected: boolean; selectable: boolean; onToggleSelection?: (id: string) => void }) => JSX.Element;
+
+const DataTableComponent = <T extends any>({ 
   data, 
   columns, 
   keyExtractor, 
@@ -31,22 +67,18 @@ export function DataTable<T>({
   onToggleSelection,
   onSelectAll,
   onClearSelection
-}: DataTableProps<T>) {
+}: DataTableProps<T>) => {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  const handleSort = (key: string) => {
-    let newDirection: 'asc' | 'desc' = 'asc';
-    if (sortKey === key) {
-      newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-    }
-    setSortKey(key);
-    setSortDirection(newDirection);
-    
-    if (onSort) {
-      onSort(key, newDirection);
-    }
-  };
+  const handleSort = React.useCallback((key: string) => {
+    setSortKey(prevKey => {
+      const newDirection = prevKey === key && sortDirection === 'asc' ? 'desc' : 'asc';
+      setSortDirection(newDirection);
+      if (onSort) onSort(key, newDirection);
+      return key;
+    });
+  }, [sortDirection, onSort]);
 
   // If no external onSort is provided, we sort locally
   const sortedData = React.useMemo(() => {
@@ -66,7 +98,7 @@ export function DataTable<T>({
   const allSelected = data.length > 0 && selectedIds.length === data.length;
   const someSelected = selectedIds.length > 0 && selectedIds.length < data.length;
 
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAll = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       if (onSelectAll) {
         onSelectAll(data.map(keyExtractor));
@@ -76,34 +108,34 @@ export function DataTable<T>({
         onClearSelection();
       }
     }
-  };
+  }, [data, keyExtractor, onSelectAll, onClearSelection]);
 
   return (
-    <div className="table-container" style={{ position: 'relative', overflowX: 'auto', maxHeight: '100%', overflowY: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'var(--surface)' }}>
+    <div className="table-container relative overflow-x-auto overflow-y-auto" style={{ maxHeight: '100%' }}>
+      <table className="w-full">
+        <thead className="sticky top-0 z-10 bg-surface">
           <tr>
             {selectable && (
-              <th style={{ width: '40px', padding: 'var(--space-16) var(--space-24)', position: 'sticky', left: 0, zIndex: 11, backgroundColor: 'var(--surface)' }}>
+              <th className="sticky left-0 z-11 bg-background" style={{ width: '40px' }}>
                 <input 
                   type="checkbox" 
                   checked={allSelected} 
                   ref={input => { if (input) input.indeterminate = someSelected; }}
                   onChange={handleSelectAll}
-                  style={{ cursor: 'pointer' }}
+                  className="cursor-pointer"
                 />
               </th>
             )}
             {columns.map((col) => (
               <th 
                 key={col.key as string}
-                style={{ cursor: col.sortable ? 'pointer' : 'default', userSelect: 'none', padding: 'var(--space-16) var(--space-24)' }}
+                className={col.sortable ? "cursor-pointer select-none" : "select-none"}
                 onClick={() => col.sortable && handleSort(col.key as string)}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+                <div className="flex items-center gap-2">
                   {col.header}
                   {col.sortable && (
-                    <span style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-muted">
                       {sortKey === col.key ? (
                         sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />
                       ) : (
@@ -121,23 +153,15 @@ export function DataTable<T>({
             const id = keyExtractor(item);
             const isSelected = selectedIds.includes(id);
             return (
-              <tr key={id} style={{ backgroundColor: isSelected ? 'var(--background)' : 'transparent' }}>
-                {selectable && (
-                  <td style={{ width: '40px', padding: 'var(--space-16) var(--space-24)', position: 'sticky', left: 0, zIndex: 5, backgroundColor: isSelected ? 'var(--background)' : 'var(--surface)' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={isSelected}
-                      onChange={() => onToggleSelection && onToggleSelection(id)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                  </td>
-                )}
-                {columns.map((col) => (
-                  <td key={col.key as string} style={{ padding: 'var(--space-16) var(--space-24)' }}>
-                    {col.render ? col.render(item) : String((item as any)[col.key] || '')}
-                  </td>
-                ))}
-              </tr>
+              <DataTableRow 
+                key={id}
+                item={item}
+                columns={columns}
+                id={id}
+                isSelected={isSelected}
+                selectable={selectable}
+                onToggleSelection={onToggleSelection}
+              />
             );
           })}
         </tbody>
@@ -145,3 +169,5 @@ export function DataTable<T>({
     </div>
   );
 }
+
+export const DataTable = React.memo(DataTableComponent) as typeof DataTableComponent;

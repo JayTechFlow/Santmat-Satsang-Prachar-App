@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2, Edit2, X, Quote, Sparkles } from 'lucide-react';
 
 // Core & UI
@@ -91,7 +91,7 @@ export function Suvichar() {
     clearSelection();
   };
 
-  const columns: Column<SuvicharDTO>[] = [
+  const columns: Column<SuvicharDTO>[] = React.useMemo(() => [
     {
       key: 'title',
       header: 'Title',
@@ -134,7 +134,7 @@ export function Suvichar() {
         </div>
       )
     }
-  ];
+  ], []);
 
   const isLoading = loading || mutating || isProcessing;
 

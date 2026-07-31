@@ -34,14 +34,15 @@ export function useBanners() {
     return _constraints;
   }, [searchTerm, sortOrder, statusFilter]);
 
-  const { data, loading, error, refresh, pagination } = useCrud<BannerDTO>(
+  const { data: rawData, loading, error, refresh, pagination } = useCrud<BannerDTO>(
     bannerService,
-    constraints,
-    { limit: itemsPerPage }
+    constraints
   );
 
+  const paginatedData = rawData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return {
-    data,
+    data: paginatedData,
     loading,
     error,
     refetch: refresh,

@@ -36,8 +36,8 @@ export function Dashboard() {
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+    <div className="flex-col gap-6">
+      <div className="flex justify-end">
         <FilterBar 
           options={[
             { value: '7days', label: 'Last 7 Days' },
@@ -49,25 +49,25 @@ export function Dashboard() {
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-24)', marginBottom: 'var(--space-24)' }}>
+      <div className="flex gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
         {data.stats.map((stat, index) => (
           <StatCard key={index} stat={stat} />
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--space-24)', marginBottom: 'var(--space-24)' }}>
+      <div className="flex gap-6" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr' }}>
         <AnalyticsChart data={data.analytics} />
         <ActivityFeed activities={data.activities} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 'var(--space-24)' }}>
+      <div className="flex gap-6" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr' }}>
         <TopBhajansList bhajans={data.topBhajans} />
         <div className="card">
-           <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-             <h3 style={{ fontSize: '1.125rem' }}>Content Distribution</h3>
-             <Tags size={20} color="var(--text-muted)" />
+           <div className="card-header">
+             <h3 className="card-title">Content Distribution</h3>
+             <Tags size={20} className="text-muted" />
            </div>
-           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', backgroundColor: 'var(--background)', borderRadius: 'var(--radius-input)', color: 'var(--text-muted)' }}>
+           <div className="flex items-center justify-center bg-background rounded-md text-muted" style={{ height: '200px', backgroundColor: 'var(--background)', borderRadius: 'var(--radius-md)' }}>
               [Pie Chart Visualization Placeholder]
            </div>
         </div>

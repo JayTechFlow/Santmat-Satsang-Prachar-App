@@ -148,42 +148,39 @@ export function Users() {
   };
 
   const columns: Column<UserDTO>[] = [
-    {
       key: 'profile',
       header: 'User Profile',
       render: (item) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
+        <div className="flex items-center gap-3">
           <UserAvatar avatarUrl={item.avatarUrl} fullName={item.fullName} size={40} />
           <div>
-            <div style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{item.fullName}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.email}</div>
+            <div className="font-semibold text-heading">{item.fullName}</div>
+            <div className="text-xs text-muted">{item.email}</div>
           </div>
         </div>
       )
     },
-    {
       key: 'role',
       header: 'Role & Dept',
       render: (item) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: '0.875rem', color: 'var(--text-heading)' }}>
-            {item.designation || 'Staff'} {item.roleIds?.includes('super_admin') && <Shield size={12} color="var(--primary)" style={{ display: 'inline', marginLeft: '4px' }}/>}
+        <div className="flex flex-col gap-1">
+          <div className="text-sm text-heading flex items-center">
+            {item.designation || 'Staff'} {item.roleIds?.includes('super_admin') && <Shield size={12} className="text-primary ml-1 inline" />}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          <div className="text-xs text-muted">
             {item.department || 'General'}
           </div>
         </div>
       )
     },
-    {
       key: 'security',
       header: 'Security',
       render: (item) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: item.emailVerified ? 'var(--success)' : 'var(--text-muted)' }}>
+        <div className="flex flex-col gap-1 text-xs">
+          <div className={`flex items-center gap-1 ${item.emailVerified ? 'text-success' : 'text-muted'}`}>
             <CheckCircle size={12} /> {item.emailVerified ? 'Email Verified' : 'Unverified Email'}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: item.twoFactorEnabled ? 'var(--success)' : 'var(--text-muted)' }}>
+          <div className={`flex items-center gap-1 ${item.twoFactorEnabled ? 'text-success' : 'text-muted'}`}>
             <Shield size={12} /> {item.twoFactorEnabled ? '2FA Enabled' : '2FA Disabled'}
           </div>
         </div>
@@ -194,16 +191,15 @@ export function Users() {
       header: 'Status',
       render: (item) => <UserStatusBadge status={item.status} />
     },
-    {
       key: 'actions',
       header: 'Actions',
       render: (item) => {
         return (
-          <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
+          <div className="flex gap-2 justify-end">
             <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit User">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete User">
+            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete User">
               <Trash2 size={18} />
             </button>
           </div>
@@ -215,11 +211,11 @@ export function Users() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+    <div className="pb-8 max-w-7xl mx-auto">
+      <div className="page-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>User Management</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <h1 className="page-title mb-1">User Management</h1>
+          <p className="text-muted text-sm">
             Manage staff accounts, RBAC roles, and system access
           </p>
         </div>
@@ -228,7 +224,7 @@ export function Users() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-16)', marginBottom: 'var(--space-24)', flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap gap-4 mb-6">
         <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search by name..." />
         <FilterBar
           options={[
@@ -253,7 +249,7 @@ export function Users() {
         />
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
         {items.length > 0 ? (
@@ -268,12 +264,12 @@ export function Users() {
               onSelectAll={selectAll}
               onClearSelection={clearSelection}
             />
-            <div style={{ padding: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
+            <div className="p-4 border-t">
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
           </>
         ) : !loading && (
-          <div style={{ padding: 'var(--space-48) 0' }}>
+          <div className="py-12">
             <EmptyState 
               title="No Users Found" 
               message="No staff accounts match the current filters." 
@@ -302,13 +298,13 @@ export function Users() {
       />
 
       {isModalOpen && (
-        <div className="modal-backdrop" style={{ alignItems: 'flex-start', overflowY: 'auto' }} onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="modal-content" style={{ marginTop: '5vh', marginBottom: '5vh', maxWidth: '800px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="card w-full max-w-4xl my-8 p-8 shadow-float" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                <UsersIcon size={20} color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <div className="flex items-center gap-2">
+                <UsersIcon size={20} className="text-primary" />
+                <h2 className="text-heading font-semibold text-xl m-0">
                   {editingId ? 'Edit User Profile' : 'Add New User'}
                 </h2>
               </div>
@@ -318,10 +314,10 @@ export function Users() {
             </div>
             
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 'var(--space-24)' }}>
+              <div className="grid grid-cols-[1fr_2fr] gap-6">
                 {/* Left Column - Avatar & Status */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-                  <div className="form-group" style={{ textAlign: 'center' }}>
+                <div className="flex flex-col gap-4">
+                  <div className="form-group mb-0 text-center">
                     <label className="form-label">Profile Photo</label>
                     <ImageUpload 
                       folder="avatars"
@@ -332,7 +328,7 @@ export function Users() {
                     />
                   </div>
                   
-                  <div className="form-group">
+                  <div className="form-group mb-0">
                     <label className="form-label">Account Status</label>
                     <select className="form-select" value={status} onChange={e => setStatus(e.target.value as UserStatus)} disabled={isLoading}>
                       <option value="active">Active</option>
@@ -342,32 +338,32 @@ export function Users() {
                     </select>
                   </div>
 
-                  <div className="form-group">
+                  <div className="form-group mb-0">
                     <label className="form-label">Security Settings</label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '8px' }}>
+                    <label className="flex items-center gap-2 cursor-pointer mb-2">
                       <input 
                         type="checkbox" 
                         checked={emailVerified} 
                         onChange={e => setEmailVerified(e.target.checked)} 
                         disabled={isLoading}
                       />
-                      <span style={{ fontSize: '0.875rem' }}>Email Verified</span>
+                      <span className="text-sm">Email Verified</span>
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input 
                         type="checkbox" 
                         checked={twoFactorEnabled} 
                         onChange={e => setTwoFactorEnabled(e.target.checked)} 
                         disabled={isLoading}
                       />
-                      <span style={{ fontSize: '0.875rem' }}>Require 2FA</span>
+                      <span className="text-sm">Require 2FA</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Right Column - Information */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-                  <div className="form-group">
+                <div className="flex flex-col gap-4">
+                  <div className="form-group mb-0">
                     <label className="form-label">Full Name <span style={{ color: 'var(--danger)' }}>*</span></label>
                     <input 
                       type="text" 
@@ -379,9 +375,9 @@ export function Users() {
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)' }}>
-                    <div className="form-group">
-                      <label className="form-label">Email Address <span style={{ color: 'var(--danger)' }}>*</span></label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="form-group mb-0">
+                      <label className="form-label">Email Address <span className="text-danger">*</span></label>
                       <input 
                         type="email" 
                         className="form-input" 
@@ -391,7 +387,7 @@ export function Users() {
                         disabled={isLoading}
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group mb-0">
                       <label className="form-label">Phone Number</label>
                       <input 
                         type="tel" 
@@ -403,8 +399,8 @@ export function Users() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)' }}>
-                    <div className="form-group">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="form-group mb-0">
                       <label className="form-label">Employee ID</label>
                       <input 
                         type="text" 
@@ -414,7 +410,7 @@ export function Users() {
                         disabled={isLoading}
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group mb-0">
                       <label className="form-label">System Role</label>
                       <select 
                         className="form-select" 
@@ -432,8 +428,8 @@ export function Users() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-16)' }}>
-                    <div className="form-group">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="form-group mb-0">
                       <label className="form-label">Designation</label>
                       <input 
                         type="text" 
@@ -443,7 +439,7 @@ export function Users() {
                         disabled={isLoading}
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group mb-0">
                       <label className="form-label">Department</label>
                       <input 
                         type="text" 
@@ -457,7 +453,7 @@ export function Users() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>
                   Cancel
                 </button>

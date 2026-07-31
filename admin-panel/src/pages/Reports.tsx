@@ -2,9 +2,9 @@ import { ComingSoon } from '../components/ui/ComingSoon';
 
 export function Reports() {
   return (
-    <div style={{ padding: 'var(--space-32)' }}>
-      <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Reports & Analytics</h1>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-32)' }}>
+    <div className="p-8">
+      <h1 className="page-title mb-1">Reports & Analytics</h1>
+      <p className="text-muted text-sm mb-8">
         View system usage, engagement, and operational metrics.
       </p>
       

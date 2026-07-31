@@ -8,36 +8,41 @@ export function useBookMutations(onSuccessCallback?: () => void) {
   const mutations = useCrudMutations<BookDTO>(bookService);
 
   const handleCreate = async (data: Omit<BookDTO, 'id'>) => {
-    const result = await mutations.create(data as BookDTO);
-    if (result) {
+    let result = null;
+    try {
+      result = await mutations.create(data as BookDTO);
+      if (result) {
       success('Book created successfully');
       if (onSuccessCallback) onSuccessCallback();
-    } else if (mutations.error) {
-      showError(mutations.error.message);
+    }
+    } catch (err: any) {
+      showError(err.message || 'Error occurred');
     }
     return result;
   };
 
   const handleUpdate = async (id: string, data: Partial<BookDTO>) => {
-    await mutations.update(id, data);
-    if (!mutations.error) {
+    try {
+      await mutations.update(id, data);
+      
       success('Book updated successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
 
   const handleDelete = async (id: string) => {
-    await mutations.delete(id);
-    if (!mutations.error) {
+    try {
+      await mutations.delete(id);
+      
       success('Book deleted successfully');
       if (onSuccessCallback) onSuccessCallback();
       return true;
-    } else {
-      showError(mutations.error.message);
+        } catch (err: any) {
+      showError(err.message || 'Error occurred');
       return false;
     }
   };
