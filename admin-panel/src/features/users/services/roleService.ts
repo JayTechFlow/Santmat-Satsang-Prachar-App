@@ -3,7 +3,7 @@ import { roleRepository, RoleRepository } from '../repositories/roleRepository';
 import { required } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { RoleDTO } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 
 export class RoleService extends BaseCrudService<RoleDTO> {
   private _repo: RoleRepository;
@@ -14,7 +14,7 @@ export class RoleService extends BaseCrudService<RoleDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   protected override async validateCreate(item: Partial<RoleDTO>): Promise<void> {

@@ -1,28 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-import '../../data/datasources/book_data_source.dart';
-import '../../data/datasources/mock_book_data_source.dart';
-import '../../data/datasources/firestore_book_data_source.dart';
-import '../../data/repositories/book_repository_impl.dart';
-import '../../domain/repositories/book_repository.dart';
 import '../../domain/usecases/book_usecases.dart';
 import '../../domain/entities/book_entity.dart';
 import '../../domain/entities/book_category_entity.dart';
 import '../../domain/entities/book_bookmark_entity.dart';
 import '../../domain/entities/reading_progress_entity.dart';
 import 'books_state.dart';
-
-final bookDataSourceProvider = Provider<BookDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockBookDataSource();
-  }
-  return FirestoreBookDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final bookRepositoryProvider = Provider<BookRepository>((ref) {
-  return BookRepositoryImpl(ref.watch(bookDataSourceProvider));
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getLatestBooksUseCaseProvider = Provider(
   (ref) => GetLatestBooksUseCase(ref.watch(bookRepositoryProvider)),

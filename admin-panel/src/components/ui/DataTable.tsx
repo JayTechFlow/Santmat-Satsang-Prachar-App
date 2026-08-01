@@ -55,7 +55,7 @@ const DataTableRow = React.memo(<T extends any>({
       ))}
     </tr>
   );
-}) as <T extends any>(props: { item: T; columns: Column<T>[]; id: string; isSelected: boolean; selectable: boolean; onToggleSelection?: (id: string) => void }) => JSX.Element;
+}) as <T extends any>(props: { item: T; columns: Column<T>[]; id: string; isSelected: boolean; selectable: boolean; onToggleSelection?: (id: string) => void }) => React.JSX.Element;
 
 const DataTableComponent = <T extends any>({ 
   data, 

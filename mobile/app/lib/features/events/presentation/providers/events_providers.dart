@@ -1,26 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-import '../../data/datasources/event_data_source.dart';
-import '../../data/datasources/mock_event_data_source.dart';
-import '../../data/datasources/firestore_event_data_source.dart';
-import '../../data/repositories/event_repository_impl.dart';
-import '../../domain/repositories/event_repository.dart';
 import '../../domain/usecases/event_usecases.dart';
 import '../../domain/entities/event_entity.dart';
 import '../../domain/entities/event_registration_entity.dart';
 import 'events_state.dart';
-
-final eventDataSourceProvider = Provider<EventDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockEventDataSource();
-  }
-  return FirestoreEventDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final eventRepositoryProvider = Provider<EventRepository>((ref) {
-  return EventRepositoryImpl(ref.watch(eventDataSourceProvider));
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getUpcomingEventsUseCaseProvider = Provider(
   (ref) => GetUpcomingEventsUseCase(ref.watch(eventRepositoryProvider)),

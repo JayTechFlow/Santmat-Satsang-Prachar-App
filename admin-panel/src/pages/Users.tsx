@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2, Edit2, X, Users as UsersIcon, Shield, Ban, CheckCircle } from 'lucide-react';
 
 import { useUsers } from '../features/users/hooks/useUsers';
@@ -147,7 +147,8 @@ export function Users() {
     clearSelection();
   };
 
-  const columns: Column<UserDTO>[] = [
+  const columns: Column<UserDTO>[] = React.useMemo(() => [
+    {
       key: 'profile',
       header: 'User Profile',
       render: (item) => (
@@ -160,6 +161,7 @@ export function Users() {
         </div>
       )
     },
+    {
       key: 'role',
       header: 'Role & Dept',
       render: (item) => (
@@ -173,6 +175,7 @@ export function Users() {
         </div>
       )
     },
+    {
       key: 'security',
       header: 'Security',
       render: (item) => (
@@ -191,6 +194,7 @@ export function Users() {
       header: 'Status',
       render: (item) => <UserStatusBadge status={item.status} />
     },
+    {
       key: 'actions',
       header: 'Actions',
       render: (item) => {
@@ -206,7 +210,7 @@ export function Users() {
         );
       }
     }
-  ];
+  ], []);
 
   const isLoading = loading || mutating || isProcessing;
 

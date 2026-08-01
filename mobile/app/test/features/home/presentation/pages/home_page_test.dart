@@ -11,6 +11,7 @@ import 'package:santmat_satsang_prachar/features/home/presentation/providers/hom
 import 'package:santmat_satsang_prachar/features/home/data/datasources/mock_home_data_source.dart';
 
 import 'package:santmat_satsang_prachar/features/authentication/domain/entities/user_entity.dart';
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 class MockAuthStateNotifier extends Notifier<AsyncValue<SessionModel>>
     implements AuthStateNotifier {

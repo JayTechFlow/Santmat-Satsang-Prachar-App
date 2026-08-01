@@ -5,8 +5,9 @@ import '../../domain/entities/session_model.dart';
 import '../../domain/entities/user_entity.dart'; // Added for mock user
 import 'auth_providers.dart';
 import 'dart:developer' as developer;
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
-const bool _bypassAuth = bool.fromEnvironment('BYPASS_AUTH', defaultValue: true);
+const bool _bypassAuth = bool.fromEnvironment('BYPASS_AUTH', defaultValue: false);
 bool get _shouldBypassAuth => kDebugMode && _bypassAuth;
 
 class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {

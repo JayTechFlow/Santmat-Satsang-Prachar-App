@@ -1,27 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/datasources/mock_notification_data_source.dart';
-import '../../data/repositories/notification_repository_impl.dart';
-import '../../domain/repositories/notification_repository.dart';
 import '../../domain/usecases/notification_usecases.dart';
 import '../../domain/entities/notification_preference_entity.dart';
 import '../../domain/entities/notification_filter_entity.dart';
 import 'notifications_state.dart';
 
-import '../../data/datasources/firestore_notification_data_source.dart';
-import '../../data/datasources/notification_data_source.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-
-final notificationDataSourceProvider = Provider<NotificationDataSource>((ref) {
-  final env = ref.watch(environmentConfigurationProvider);
-  if (env.isDev) {
-    return MockNotificationDataSource();
-  }
-  return FirestoreNotificationDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
-  return NotificationRepositoryImpl(ref.watch(notificationDataSourceProvider));
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getNotificationsUseCaseProvider = Provider(
   (ref) => GetNotificationsUseCase(ref.watch(notificationRepositoryProvider)),

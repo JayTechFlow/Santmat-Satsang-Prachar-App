@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { ActivityItemDTO } from '../types';
 import { Clock } from 'lucide-react';
 
@@ -5,7 +6,7 @@ interface ActivityFeedProps {
   activities: ActivityItemDTO[];
 }
 
-export function ActivityFeed({ activities }: ActivityFeedProps) {
+export const ActivityFeed = memo(function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
     <div className="card h-full">
       <div className="card-header">
@@ -35,4 +36,4 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
       )}
     </div>
   );
-}
+});

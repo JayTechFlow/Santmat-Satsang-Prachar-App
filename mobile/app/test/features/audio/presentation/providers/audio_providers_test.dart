@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/audio/presentation/providers/audio_providers.dart';
 import 'package:santmat_satsang_prachar/features/audio/data/datasources/mock_audio_data_source.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/playback_state_entity.dart';
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 void main() {
   test('AudioHomeNotifier loads data correctly', () async {

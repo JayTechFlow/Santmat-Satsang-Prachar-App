@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import type { ChartDataDTO } from '../types';
 import { Activity } from 'lucide-react';
 
@@ -5,8 +6,8 @@ interface AnalyticsChartProps {
   data: ChartDataDTO[];
 }
 
-export function AnalyticsChart({ data }: AnalyticsChartProps) {
-  const maxVal = Math.max(...data.map(d => d.value), 1);
+export const AnalyticsChart = memo(function AnalyticsChart({ data }: AnalyticsChartProps) {
+  const maxVal = useMemo(() => Math.max(...data.map(d => d.value), 1), [data]);
   
   return (
     <div className="card h-full">
@@ -27,4 +28,4 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
       </div>
     </div>
   );
-}
+});

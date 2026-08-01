@@ -1,7 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/datasources/mock_donation_data_source.dart';
-import '../../data/repositories/donation_repository_impl.dart';
-import '../../domain/repositories/donation_repository.dart';
 import '../../domain/usecases/donation_usecases.dart';
 import '../../domain/entities/donation_filter_entity.dart';
 import '../../domain/entities/donation_campaign_entity.dart';
@@ -9,21 +6,7 @@ import '../../domain/entities/donation_history_entity.dart';
 import '../../domain/entities/donation_preference_entity.dart';
 import 'donations_state.dart';
 
-import '../../data/datasources/firestore_donation_data_source.dart';
-import '../../data/datasources/donation_data_source.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-
-final donationDataSourceProvider = Provider<DonationDataSource>((ref) {
-  final env = ref.watch(environmentConfigurationProvider);
-  if (env.isDev) {
-    return MockDonationDataSource();
-  }
-  return FirestoreDonationDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final donationRepositoryProvider = Provider<DonationRepository>((ref) {
-  return DonationRepositoryImpl(ref.watch(donationDataSourceProvider));
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getDonationCampaignsUseCaseProvider = Provider(
   (ref) => GetDonationCampaignsUseCase(ref.watch(donationRepositoryProvider)),

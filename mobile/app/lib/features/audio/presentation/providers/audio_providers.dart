@@ -1,9 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-import '../../data/datasources/audio_data_source.dart';
-import '../../data/datasources/firestore_audio_data_source.dart';
-import '../../data/repositories/audio_repository_impl.dart';
-import '../../domain/repositories/audio_repository.dart';
 import '../../domain/usecases/audio_usecases.dart';
 import '../../domain/entities/audio_entity.dart';
 import '../../domain/entities/playback_state_entity.dart';
@@ -11,14 +6,7 @@ import '../../domain/entities/favorite_audio_entity.dart';
 import '../../domain/entities/audio_category_entity.dart';
 import '../../domain/entities/recently_played_entity.dart';
 import 'audio_state.dart';
-
-final audioDataSourceProvider = Provider<AudioDataSource>((ref) {
-  return FirestoreAudioDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final audioRepositoryProvider = Provider<AudioRepository>((ref) {
-  return AudioRepositoryImpl(ref.watch(audioDataSourceProvider));
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getLatestAudioUseCaseProvider = Provider(
   (ref) => GetLatestAudioUseCase(ref.watch(audioRepositoryProvider)),

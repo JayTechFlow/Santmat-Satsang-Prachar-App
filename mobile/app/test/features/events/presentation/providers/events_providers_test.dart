@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/events/presentation/providers/events_providers.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/mock_event_data_source.dart';
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 void main() {
   test('EventsNotifier loads data correctly', () async {

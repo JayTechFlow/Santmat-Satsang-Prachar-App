@@ -3,7 +3,7 @@ import { bannerRepository, BannerRepository } from '../repositories/bannerReposi
 import { required, maxLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { BannerDTO, BannerStatus } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 import { storageService } from '../../../core/storage';
 
 export class BannerService extends BaseCrudService<BannerDTO> {
@@ -15,7 +15,7 @@ export class BannerService extends BaseCrudService<BannerDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   protected override async validateCreate(item: Partial<BannerDTO>): Promise<void> {

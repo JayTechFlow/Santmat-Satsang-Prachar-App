@@ -13,8 +13,7 @@ import {
   HelpCircle,
   LogOut
 } from 'lucide-react';
-import { auth } from '../firebase/config';
-import { signOut } from 'firebase/auth';
+import { useAuth } from '../hooks/useAuth';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -34,10 +33,11 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const location = useLocation();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await logout();
     } catch (error) {
       console.error("Error signing out", error);
     }

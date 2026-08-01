@@ -4,7 +4,7 @@ import { roleRepository } from '../repositories/roleRepository';
 import { required, maxLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { UserDTO } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 import { storageService } from '../../../core/storage';
 
 export class UserService extends BaseCrudService<UserDTO> {
@@ -16,7 +16,7 @@ export class UserService extends BaseCrudService<UserDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   private async checkRoles(roleIds: string[]): Promise<void> {

@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { BaseCrudService } from '../services/BaseCrudService';
 import { AppError } from '../errors/AppError';
 import type { PaginationOptions, PaginatedResult } from '../repositories/BaseRepository';
-import { QueryConstraint } from 'firebase/firestore';
+import type { CustomQueryOptions } from '../repositories/BaseRepository';
 import { useToast } from '../../hooks/useToast';
 
 export function useCrud<T extends { id: string }>(
   service: BaseCrudService<T>,
-  constraints: QueryConstraint[] = [],
+  queryOptions: CustomQueryOptions = {},
   initialPagination?: PaginationOptions
 ) {
   const [data, setData] = useState<T[]>([]);
@@ -27,11 +27,11 @@ export function useCrud<T extends { id: string }>(
     try {
       const parsedPagination = initialPaginationStr !== 'null' ? JSON.parse(initialPaginationStr) : undefined;
       if (pageOptions || parsedPagination) {
-        const result = await service.paginate(pageOptions || parsedPagination || {}, constraints);
+        const result = await service.paginate(pageOptions || parsedPagination || {}, queryOptions);
         setData(result.data);
         setPaginationInfo({ lastDoc: result.lastDoc, total: result.total });
       } else {
-        const result = await service.getAll(constraints);
+        const result = await service.getAll(queryOptions);
         setData(result);
         setPaginationInfo({ lastDoc: null, total: result.length });
       }
@@ -41,7 +41,7 @@ export function useCrud<T extends { id: string }>(
     } finally {
       setLoading(false);
     }
-  }, [service, constraints, initialPaginationStr]);
+  }, [service, JSON.stringify(queryOptions), initialPaginationStr, showError]);
 
   useEffect(() => {
     fetchData();

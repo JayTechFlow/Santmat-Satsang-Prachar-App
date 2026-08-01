@@ -47,10 +47,22 @@ export function useBhajanMutations(onSuccessCallback?: () => void) {
     }
   };
 
+  const handleBulkDelete = async (ids: string[]) => {
+    try {
+      for (const id of ids) {
+        await mutations.delete(id);
+      }
+      return true;
+    } catch (err: any) {
+      return false;
+    }
+  };
+
   return {
     createBhajan: handleCreate,
     updateBhajan: handleUpdate,
     deleteBhajan: handleDelete,
+    bulkDeleteBhajans: handleBulkDelete,
     loading: mutations.loading,
     error: mutations.error,
   };

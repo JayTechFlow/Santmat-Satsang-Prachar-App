@@ -11,8 +11,40 @@ import {
   limit,
   startAfter,
   getCountFromServer,
+  where
 } from 'firebase/firestore';
 import type { Firestore, DocumentData, QueryDocumentSnapshot, QueryConstraint } from 'firebase/firestore';
+
+export interface QueryFilter {
+  field: string;
+  operator: '==' | '<' | '<=' | '>' | '>=' | 'array-contains' | 'in' | 'array-contains-any' | 'not-in' | '!=';
+  value: any;
+}
+
+export interface QuerySort {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
+export interface CustomQueryOptions {
+  filters?: QueryFilter[];
+  sorts?: QuerySort[];
+  limit?: number;
+}
+
+export function buildQueryConstraints(options: CustomQueryOptions = {}): QueryConstraint[] {
+  const constraints: QueryConstraint[] = [];
+  if (options.filters) {
+    options.filters.forEach(f => constraints.push(where(f.field, f.operator, f.value)));
+  }
+  if (options.sorts) {
+    options.sorts.forEach(s => constraints.push(orderBy(s.field, s.direction)));
+  }
+  if (options.limit) {
+    constraints.push(limit(options.limit));
+  }
+  return constraints;
+}
 
 export interface PaginationOptions {
   limit?: number;
@@ -23,7 +55,7 @@ export interface PaginationOptions {
 
 export interface PaginatedResult<T> {
   data: T[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  lastDoc: any | null;
   total: number;
 }
 
@@ -44,7 +76,8 @@ export class BaseRepository<T extends { id: string }> {
     return doc(this.db, this.collectionName, id);
   }
 
-  public async getAll(constraints: QueryConstraint[] = []): Promise<T[]> {
+  public async getAll(options: CustomQueryOptions = {}): Promise<T[]> {
+    const constraints = buildQueryConstraints(options);
     const q = query(this.collectionRef, ...constraints);
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as T));
@@ -74,7 +107,8 @@ export class BaseRepository<T extends { id: string }> {
     await deleteDoc(this.docRef(id));
   }
 
-  public async count(constraints: QueryConstraint[] = []): Promise<number> {
+  public async count(options: CustomQueryOptions = {}): Promise<number> {
+    const constraints = buildQueryConstraints(options);
     const q = query(this.collectionRef, ...constraints);
     const snapshot = await getCountFromServer(q);
     return snapshot.data().count;
@@ -82,8 +116,9 @@ export class BaseRepository<T extends { id: string }> {
 
   public async paginate(
     options: PaginationOptions,
-    constraints: QueryConstraint[] = []
+    queryOptions: CustomQueryOptions = {}
   ): Promise<PaginatedResult<T>> {
+    const constraints = buildQueryConstraints(queryOptions);
     const queryConstraints: QueryConstraint[] = [...constraints];
 
     if (options.orderByField) {
@@ -105,7 +140,7 @@ export class BaseRepository<T extends { id: string }> {
     const lastDoc = querySnapshot.docs.length > 0 ? querySnapshot.docs[querySnapshot.docs.length - 1] : null;
 
     // Optional: Get total count based on basic constraints if needed
-    const total = await this.count(constraints);
+    const total = await this.count(queryOptions);
 
     return { data, lastDoc, total };
   }

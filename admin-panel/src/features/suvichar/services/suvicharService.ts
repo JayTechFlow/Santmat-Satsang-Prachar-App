@@ -3,7 +3,7 @@ import { suvicharRepository } from '../repositories/suvicharRepository';
 import { required, maxLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { SuvicharDTO } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 
 export class SuvicharService extends BaseCrudService<SuvicharDTO> {
   constructor() {
@@ -11,7 +11,7 @@ export class SuvicharService extends BaseCrudService<SuvicharDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   protected override async validateCreate(item: Partial<SuvicharDTO>): Promise<void> {

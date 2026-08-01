@@ -1,46 +1,19 @@
-import { useState, useCallback } from 'react';
-import { useCrud } from '../../../core/hooks/useCrud';
+
+import { useList } from '../../../core/hooks/useList';
 import { bhajanService } from '../services/bhajanService';
 import type { BhajanDTO } from '../types';
-import { QueryConstraint, orderBy, where } from 'firebase/firestore';
+import type { QueryFilter } from '../../../core/repositories/BaseRepository';
 
 export function useBhajans() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
-  const buildConstraints = useCallback(() => {
-    const constraints: QueryConstraint[] = [];
-    constraints.push(orderBy('createdAt', sortOrder));
+  const additionalFilters: QueryFilter[] = [];
 
-    if (searchTerm) {
-      constraints.push(where('title', '>=', searchTerm));
-      constraints.push(where('title', '<=', searchTerm + '\uf8ff'));
-    }
-
-    return constraints;
-  }, [searchTerm, sortOrder]);
-
-  const { data: rawData, loading, error, refresh, pagination } = useCrud<BhajanDTO>(
-    bhajanService,
-    buildConstraints()
-  );
-
-  const paginatedData = rawData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const list = useList<BhajanDTO>(bhajanService, {
+    additionalFilters,
+    searchField: 'title'
+  });
 
   return {
-    data: paginatedData,
-    loading,
-    error,
-    refetch: refresh,
-    searchTerm,
-    setSearchTerm,
-    sortOrder,
-    setSortOrder,
-    currentPage,
-    setCurrentPage,
-    goToPage: setCurrentPage,
-    totalPages: Math.ceil((pagination.total || 0) / itemsPerPage) || 1,
+    ...list,
   };
 }

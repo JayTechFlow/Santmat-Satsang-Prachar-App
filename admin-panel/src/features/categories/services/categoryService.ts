@@ -3,8 +3,7 @@ import { categoryRepository, CategoryRepository } from '../repositories/category
 import { required, maxLength, minLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { CategoryDTO } from '../types';
-import { auth, db } from '../../../firebase/config';
-import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+import { authService } from '../../../core/services/authService';
 
 export class CategoryService extends BaseCrudService<CategoryDTO> {
   private _repo: CategoryRepository;
@@ -15,7 +14,7 @@ export class CategoryService extends BaseCrudService<CategoryDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   // To prevent null/undefined parentId issues in Firestore queries, we enforce empty string for root
@@ -117,9 +116,8 @@ export class CategoryService extends BaseCrudService<CategoryDTO> {
     // 2. Check for content references (books, bhajans, etc.)
     const contentCollections = ['books', 'bhajans'];
     for (const coll of contentCollections) {
-      const q = query(collection(db, coll), where('categoryId', '==', id));
-      const snapshot = await getCountFromServer(q);
-      if (snapshot.data().count > 0) {
+      const isReferenced = await this._repo.isReferencedInCollection(coll, id);
+      if (isReferenced) {
         throw new AppError('VALIDATION_ERROR', `Cannot delete this category because it is still referenced by items in ${coll}.`);
       }
     }

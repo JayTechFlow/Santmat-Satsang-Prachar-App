@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/satsang/presentation/providers/satsang_providers.dart';
 import 'package:santmat_satsang_prachar/features/satsang/data/datasources/mock_satsang_data_source.dart';
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 void main() {
   test('SatsangHomeNotifier loads data correctly', () async {

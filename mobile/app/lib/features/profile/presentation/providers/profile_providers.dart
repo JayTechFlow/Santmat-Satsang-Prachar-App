@@ -1,33 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-import '../../../authentication/presentation/providers/auth_providers.dart';
-import '../../data/datasources/profile_data_source.dart';
-import '../../data/datasources/mock_profile_data_source.dart';
-import '../../data/datasources/firestore_profile_data_source.dart';
-import '../../data/repositories/profile_repository_impl.dart';
-import '../../domain/repositories/profile_repository.dart';
 import '../../domain/usecases/profile_usecases.dart';
 import 'profile_notifier.dart';
 import 'profile_state.dart';
-
-final profileDataSourceProvider = Provider<ProfileDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockProfileDataSource();
-  }
-  return FirestoreProfileDataSource(
-    ref.watch(firestoreServiceProvider),
-    firebaseAuth: FirebaseAuth.instance,
-  );
-});
-
-final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepositoryImpl(
-    ref.watch(profileDataSourceProvider),
-    ref.watch(authRepositoryProvider),
-  );
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getProfileUseCaseProvider = Provider<GetProfileUseCase>((ref) {
   return GetProfileUseCase(ref.watch(profileRepositoryProvider));

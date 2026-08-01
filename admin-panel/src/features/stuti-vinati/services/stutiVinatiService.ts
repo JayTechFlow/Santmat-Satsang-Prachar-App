@@ -4,7 +4,7 @@ import { categoryRepository } from '../../categories/repositories/categoryReposi
 import { required, maxLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { StutiVinatiDTO } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 import { storageService } from '../../../core/storage';
 
 export class StutiVinatiService extends BaseCrudService<StutiVinatiDTO> {
@@ -16,7 +16,7 @@ export class StutiVinatiService extends BaseCrudService<StutiVinatiDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   private async checkCategory(categoryId?: string): Promise<void> {

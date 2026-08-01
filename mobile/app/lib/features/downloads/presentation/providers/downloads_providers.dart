@@ -1,27 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/datasources/mock_download_data_source.dart';
-import '../../data/repositories/download_repository_impl.dart';
-import '../../domain/repositories/download_repository.dart';
 import '../../domain/usecases/download_usecases.dart';
 import '../../domain/entities/download_filter_entity.dart';
 import '../../domain/entities/storage_statistics_entity.dart';
 import 'downloads_state.dart';
 
-import '../../data/datasources/firestore_download_data_source.dart';
-import '../../data/datasources/download_data_source.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-
-final downloadDataSourceProvider = Provider<DownloadDataSource>((ref) {
-  final env = ref.watch(environmentConfigurationProvider);
-  if (env.isDev) {
-    return MockDownloadDataSource();
-  }
-  return FirestoreDownloadDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final downloadRepositoryProvider = Provider<DownloadRepository>((ref) {
-  return DownloadRepositoryImpl(ref.watch(downloadDataSourceProvider));
-});
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 final getDownloadsUseCaseProvider = Provider(
   (ref) => GetDownloadsUseCase(ref.watch(downloadRepositoryProvider)),

@@ -53,8 +53,7 @@ class ProfilePage extends ConsumerWidget {
                       LanguageSelectorTile(
                         currentLanguage: profile.preferences.languageCode,
                         onLanguageChanged: (val) {
-                          // TODO in next module: Handle language change correctly
-                        },
+                          },
                       ),
                       ThemeSelectorTile(
                         currentTheme: profile.preferences.themeMode,

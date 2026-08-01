@@ -3,7 +3,7 @@ import { bhajanRepository, BhajanRepository } from '../repositories/bhajanReposi
 import { required, maxLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { BhajanDTO } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 import { storageService } from '../../../core/storage';
 
 export class BhajanService extends BaseCrudService<BhajanDTO> {
@@ -15,7 +15,7 @@ export class BhajanService extends BaseCrudService<BhajanDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   protected override async validateCreate(item: Partial<BhajanDTO>): Promise<void> {

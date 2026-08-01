@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { BhajanDTO } from '../types';
 import { Music } from 'lucide-react';
 
@@ -5,7 +6,7 @@ interface TopBhajansListProps {
   bhajans: BhajanDTO[];
 }
 
-export function TopBhajansList({ bhajans }: TopBhajansListProps) {
+export const TopBhajansList = memo(function TopBhajansList({ bhajans }: TopBhajansListProps) {
   return (
     <div className="card h-full">
       <div className="card-header">
@@ -34,4 +35,4 @@ export function TopBhajansList({ bhajans }: TopBhajansListProps) {
       )}
     </div>
   );
-}
+});

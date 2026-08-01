@@ -68,13 +68,7 @@ class PreferencesHomePage extends ConsumerWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/settings/reading'),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.download),
-                  title: const Text('Downloads'),
-                  subtitle: const Text('Quality, network, and storage'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/settings/downloads'),
-                ),
+
                 const Divider(),
                 Padding(
                   padding: AppSpacing.p16,

@@ -1,25 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/storage/storage_service.dart';
-import '../../data/datasources/firebase_auth_datasource.dart';
-import '../../data/repositories/auth_repository_impl.dart';
-import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/auth_usecases.dart';
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
-final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
-  return FirebaseAuth.instance;
-});
-
-final authDataSourceProvider = Provider<FirebaseAuthDataSource>((ref) {
-  return FirebaseAuthDataSource(ref.watch(firebaseAuthProvider));
-});
-
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepositoryImpl(
-    ref.watch(authDataSourceProvider),
-    ref.watch(sharedPreferencesProvider),
-  );
-});
 
 final checkSessionUseCaseProvider = Provider<CheckSessionUseCase>((ref) {
   return CheckSessionUseCase(ref.watch(authRepositoryProvider));

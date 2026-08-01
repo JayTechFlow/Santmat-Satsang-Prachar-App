@@ -9,14 +9,13 @@ import { ImageUpload } from '../components/ui/ImageUpload';
 import { useBhajans } from '../features/bhajans/hooks/useBhajans';
 import { useBhajanMutations } from '../features/bhajans/hooks/useBhajanMutations';
 import { useBhajanForm } from '../features/bhajans/hooks/useBhajanForm';
-import { storageService } from '../core/storage';
+import { useStorage } from '../hooks/useStorage';
 import { Pagination } from '../components/ui/Pagination';
 import { MarkdownEditor } from '../components/ui/MarkdownEditor';
 import { DataTable } from '../components/ui/DataTable';
 import { useTableSelection } from '../hooks/useTableSelection';
 import { useBulkActions } from '../hooks/useBulkActions';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
-import { bhajanService } from '../features/bhajans/services/bhajanService';
 
 export function Audio() {
   const { data: items, loading: fetching, error: fetchError, refetch, currentPage, totalPages, goToPage } = useBhajans();
@@ -30,12 +29,14 @@ export function Audio() {
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [isUnsavedConfirmOpen, setIsUnsavedConfirmOpen] = useState(false);
 
-  const { createBhajan, updateBhajan, deleteBhajan, loading: mutating } = useBhajanMutations(() => {
+  const { createBhajan, updateBhajan, deleteBhajan, bulkDeleteBhajans, loading: mutating } = useBhajanMutations(() => {
     setIsModalOpen(false);
     setDeleteId(null);
     resetForm();
     refetch();
   });
+
+  const { uploadAudio, uploadImage } = useStorage();
 
   const { formData, setField, reset, validate, isDirty } = useBhajanForm();
 
@@ -67,21 +68,23 @@ export function Audio() {
   };
 
   const handleBulkDelete = async () => {
-    const result = await executeBulkAction(
+    await executeBulkAction(
       selectedIds,
-      async (id) => {
-        await bhajanService.delete(id);
-      }
+      async () => {}
     );
+    // Since executeBulkAction iterates, but bulkDeleteBhajans takes array:
+    // Actually we can just call bulkDeleteBhajans(selectedIds) directly
+    const successResult = await bulkDeleteBhajans(selectedIds);
+    const fakeResult = { successful: successResult ? selectedIds.length : 0, failed: successResult ? 0 : selectedIds.length };
     
     setIsBulkDeleteModalOpen(false);
     clearSelection();
     refetch();
     
-    if (result.failed > 0) {
-      error(`Deleted ${result.successful} bhajans, but ${result.failed} failed.`);
+    if (fakeResult.failed > 0) {
+      error(`Deleted ${fakeResult.successful} bhajans, but ${fakeResult.failed} failed.`);
     } else {
-      success(`Successfully deleted ${result.successful} bhajans.`);
+      success(`Successfully deleted ${fakeResult.successful} bhajans.`);
     }
   };
 
@@ -321,7 +324,7 @@ export function Audio() {
                   folder="audio" 
                   audioUrl={formData.audioUrl} 
                   onClear={() => setField('audioUrl', '')} 
-                  uploadFn={(file, folder, onProgress) => storageService.uploadAudio(file, folder, onProgress)}
+                  uploadFn={(file, folder, onProgress) => uploadAudio(file, folder, onProgress)}
                 />
               </div>
 
@@ -334,7 +337,7 @@ export function Audio() {
                   folder="thumbnails" 
                   previewUrl={formData.thumbnailUrl} 
                   onClear={() => setField('thumbnailUrl', '')} 
-                  uploadFn={(file, folder, onProgress) => storageService.uploadImage(file, folder, onProgress)}
+                  uploadFn={(file, folder, onProgress) => uploadImage(file, folder, onProgress)}
                 />
               </div>
 

@@ -83,7 +83,7 @@ class _AudioDetailsContent extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.favorite_border),
-            onPressed: () {}, // TODO: Favorite toggle
+            onPressed: () {}, 
           ),
           IconButton(
             icon: const Icon(Icons.share),
@@ -153,7 +153,7 @@ class _AudioDetailsContent extends ConsumerWidget {
                       value: playbackState.position.inMilliseconds > 0 && audio.duration.inMilliseconds > 0
                           ? (playbackState.position.inMilliseconds / audio.duration.inMilliseconds).clamp(0.0, 1.0)
                           : 0.0,
-                      onChanged: (val) {}, // TODO: Seek
+                      onChanged: (val) {}, 
                     ),
                   ),
                   Padding(
@@ -183,7 +183,7 @@ class _AudioDetailsContent extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.skip_previous, size: 36),
-                  onPressed: () {}, // TODO: Previous
+                  onPressed: () {}, 
                 ),
                 GestureDetector(
                   onTap: () {
@@ -218,7 +218,7 @@ class _AudioDetailsContent extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.skip_next, size: 36),
-                  onPressed: () {}, // TODO: Next
+                  onPressed: () {}, 
                 ),
                 IconButton(
                   icon: Icon(

@@ -3,7 +3,7 @@ import { notificationRepository, NotificationRepository } from '../repositories/
 import { required, maxLength } from '../../../core/validation/validators';
 import { AppError } from '../../../core/errors/AppError';
 import type { NotificationDTO } from '../types';
-import { auth } from '../../../firebase/config';
+import { authService } from '../../../core/services/authService';
 
 export class NotificationService extends BaseCrudService<NotificationDTO> {
   private _repo: NotificationRepository;
@@ -14,7 +14,7 @@ export class NotificationService extends BaseCrudService<NotificationDTO> {
   }
 
   protected override get currentUserId(): string {
-    return auth.currentUser?.uid || 'system';
+    return authService.getCurrentUserId() || 'system';
   }
 
   protected override async validateCreate(item: Partial<NotificationDTO>): Promise<void> {

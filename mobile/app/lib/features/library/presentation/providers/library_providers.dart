@@ -1,30 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/di/service_locator_registrations.dart';
-import '../../data/datasources/library_data_source.dart';
-import '../../data/datasources/mock_library_data_source.dart';
-import '../../data/datasources/firestore_library_data_source.dart';
-import '../../data/repositories/library_repository_impl.dart';
-import '../../domain/repositories/library_repository.dart';
 import '../../domain/usecases/library_usecases.dart';
 import '../../domain/entities/library_filter_entity.dart';
 import 'library_state.dart';
+import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
-final libraryDataSourceProvider = Provider<LibraryDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockLibraryDataSource();
-  }
-  return FirestoreLibraryDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final libraryRepositoryProvider = Provider<LibraryRepository>((ref) {
-  return LibraryRepositoryImpl(ref.watch(libraryDataSourceProvider));
-});
-
-final getBookmarksUseCaseProvider = Provider(
+final libraryGetBookmarksUseCaseProvider = Provider(
   (ref) => GetBookmarksUseCase(ref.watch(libraryRepositoryProvider)),
 );
-final getFavoritesUseCaseProvider = Provider(
+final libraryGetFavoritesUseCaseProvider = Provider(
   (ref) => GetFavoritesUseCase(ref.watch(libraryRepositoryProvider)),
 );
 final getHistoryUseCaseProvider = Provider(
@@ -72,10 +55,10 @@ class LibraryNotifier extends Notifier<LibraryState> {
 
     try {
       final bookmarksRes = await ref
-          .read(getBookmarksUseCaseProvider)
+          .read(libraryGetBookmarksUseCaseProvider)
           .call(state.filter);
       final favoritesRes = await ref
-          .read(getFavoritesUseCaseProvider)
+          .read(libraryGetFavoritesUseCaseProvider)
           .call(state.filter);
       final historyRes = await ref
           .read(getHistoryUseCaseProvider)

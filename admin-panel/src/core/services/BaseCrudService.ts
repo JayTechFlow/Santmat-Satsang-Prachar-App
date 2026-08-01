@@ -1,7 +1,7 @@
 import type { PaginationOptions, PaginatedResult } from '../repositories/BaseRepository';
 import type { BaseRepository } from '../repositories/BaseRepository';
 import { mapError } from '../errors/errorMapper';
-import { QueryConstraint } from 'firebase/firestore';
+import type { CustomQueryOptions } from '../repositories/BaseRepository';
 
 export interface AuditFields {
   createdAt?: string;
@@ -55,9 +55,9 @@ export class BaseCrudService<T extends { id: string }> {
     };
   }
 
-  public async getAll(constraints: QueryConstraint[] = []): Promise<T[]> {
+  public async getAll(options: CustomQueryOptions = {}): Promise<T[]> {
     try {
-      return await this.repository.getAll(constraints);
+      return await this.repository.getAll(options);
     } catch (error) {
       throw mapError(error);
     }
@@ -101,9 +101,9 @@ export class BaseCrudService<T extends { id: string }> {
     }
   }
 
-  public async count(constraints: QueryConstraint[] = []): Promise<number> {
+  public async count(options: CustomQueryOptions = {}): Promise<number> {
     try {
-      return await this.repository.count(constraints);
+      return await this.repository.count(options);
     } catch (error) {
       throw mapError(error);
     }
@@ -111,10 +111,10 @@ export class BaseCrudService<T extends { id: string }> {
 
   public async paginate(
     options: PaginationOptions,
-    constraints: QueryConstraint[] = []
+    queryOptions: CustomQueryOptions = {}
   ): Promise<PaginatedResult<T>> {
     try {
-      return await this.repository.paginate(options, constraints);
+      return await this.repository.paginate(options, queryOptions);
     } catch (error) {
       throw mapError(error);
     }

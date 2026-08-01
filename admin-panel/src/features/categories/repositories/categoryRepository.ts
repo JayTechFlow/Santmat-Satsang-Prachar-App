@@ -1,7 +1,7 @@
 import { BaseRepository } from '../../../core/repositories/BaseRepository';
 import { db } from '../../../firebase/config';
 import type { CategoryDTO } from '../types';
-import { query, where, getCountFromServer } from 'firebase/firestore';
+import { query, where, getCountFromServer, collection } from 'firebase/firestore';
 
 export class CategoryRepository extends BaseRepository<CategoryDTO> {
   constructor() {
@@ -30,6 +30,12 @@ export class CategoryRepository extends BaseRepository<CategoryDTO> {
   // To check if a category has children before deletion
   public async hasChildren(categoryId: string): Promise<boolean> {
     const q = query(this.collectionRef, where('parentId', '==', categoryId));
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count > 0;
+  }
+
+  public async isReferencedInCollection(collectionName: string, categoryId: string): Promise<boolean> {
+    const q = query(collection(this.db, collectionName), where('categoryId', '==', categoryId));
     const snapshot = await getCountFromServer(q);
     return snapshot.data().count > 0;
   }

@@ -169,7 +169,7 @@ export function StutiVinati() {
     return flattenTree(tree);
   }, [categories]);
 
-  const columns: Column<StutiVinatiDTO>[] = [
+  const columns: Column<StutiVinatiDTO>[] = useMemo(() => [
     {
       key: 'image',
       header: 'Image',
@@ -233,7 +233,7 @@ export function StutiVinati() {
         );
       }
     }
-  ];
+  ], [categoryMap, archivePrayer]);
 
   const isLoading = loading || mutating || isProcessing || categoriesLoading;
 
