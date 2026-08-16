@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "santmat-satsang-prachar"
+  },
+  "targets": {
+    "santmat-satsang-prachar": {
+      "hosting": {
+        "admin": [
+          "santmat-satsang-prachar"
+        ]
+      }
+    }
   }
 }

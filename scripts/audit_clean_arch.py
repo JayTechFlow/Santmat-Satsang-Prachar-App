@@ -94,7 +94,7 @@ def get_layer(path):
     return None
 
 def main():
-    roots = ['/Users/jaymac/Documents/Santmat-Satsang-Prachar/mobile/app/lib', '/Users/jaymac/Documents/Santmat-Satsang-Prachar/admin-panel/src']
+    roots = ['/Users/jaymac/Documents/Santmat-Satsang-Prachar/apps/mobile/lib', '/Users/jaymac/Documents/Santmat-Satsang-Prachar/apps/web/src']
     
     all_findings = []
     

@@ -56,4 +56,4 @@ playwright-report/
 
 .DS_Store
 
-backend/firebase/functions/lib/
+firebase/functions/lib/

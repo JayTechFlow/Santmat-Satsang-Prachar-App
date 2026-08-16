@@ -293,8 +293,8 @@ service firebase.storage {
 
     match /prayers/{allPaths=**} {
       allow read: if true;
-      allow create: if isAdmin() && isNewFile() && isValidImage();
-      allow update: if isAdmin() && isValidImage();
+      allow create: if isAdmin() && isNewFile() && (isValidAudio() || isValidImage());
+      allow update: if isAdmin() && (isValidAudio() || isValidImage());
       allow delete: if isAdmin();
     }
 

@@ -1,0 +1,1 @@
+export { ProtectedRoute as AuthWrapper } from './ProtectedRoute';

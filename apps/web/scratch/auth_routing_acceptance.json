@@ -1,0 +1,114 @@
+{
+  "rootRedirectToLogin": true,
+  "adminProtectedRedirectToLogin": false,
+  "specificRouteRedirectToLogin": false,
+  "loginElementsVerified": {
+    "emailInput": true,
+    "passwordInput": true,
+    "loginButton": true,
+    "googleButton": true
+  },
+  "directProtectedUrlResults": [
+    {
+      "attemptedRoute": "/admin",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/users",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/playlists",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/notifications",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/banners",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/categories",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/reports",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/settings",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/support",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/books",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/search",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/stuti-vinati",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/add-bhajan",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    },
+    {
+      "attemptedRoute": "/admin/bhajan-list",
+      "landingUrl": "http://127.0.0.1:3003/login",
+      "redirectedToLogin": true,
+      "isBlackScreen": false,
+      "status": "PASS"
+    }
+  ],
+  "consoleErrorsCount": 0,
+  "blackScreensCount": 0,
+  "consoleErrors": []
+}
