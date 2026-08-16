@@ -14,5 +14,7 @@ export const sessionValidation = functions.https.onCall(async (data, context) =>
 
 export const roleResolution = functions.https.onCall(async (data, context) => {
     requireAuth(context);
-    return { status: "success", data: { role: context.auth?.token?.admin ? "admin" : "user" } };
+    const token = context.auth?.token;
+    const role = token?.role || 'mobile_user';
+    return { status: "success", data: { role } };
 });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../../shared/theme/app_spacing.dart';
 import '../../../../../shared/theme/app_radius.dart';
 import '../../../../../l10n/gen/app_localizations.dart';
@@ -63,7 +64,9 @@ class QuickActionsGrid extends StatelessWidget {
                   final action = actions[index];
                   return InkWell(
                     onTap: () {
-                      // context.go(action.route);
+                      if (action.route.isNotEmpty) {
+                        context.push(action.route);
+                      }
                     },
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     child: Column(

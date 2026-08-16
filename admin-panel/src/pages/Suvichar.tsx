@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, Edit2, X, Quote, Sparkles } from 'lucide-react';
 
+import './Suvichar.css';
+
 // Core & UI
 import { useSuvichar } from '../features/suvichar/hooks/useSuvichar';
 import { useSuvicharMutations } from '../features/suvichar/hooks/useSuvicharMutations';
@@ -13,16 +15,19 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { Pagination } from '../components/ui/Pagination';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
+import { ImageUpload } from '../components/ui/ImageUpload';
 
 export function Suvichar() {
-  const { 
-    data: items, 
-    loading, 
-    refetch, 
-    searchTerm, 
+  const {
+    data: items,
+    loading,
+    error,
+    refetch,
+    searchTerm,
     setSearchTerm,
     currentPage,
     setCurrentPage,
@@ -32,14 +37,14 @@ export function Suvichar() {
   const { createSuvichar, updateSuvichar, deleteSuvichar, loading: mutating } = useSuvicharMutations(refetch);
 
   // Table Selection & Bulk Actions
-  const { 
-    selectedIds, 
-    selectedCount, 
-    toggleSelection, 
-    selectAll, 
-    clearSelection 
+  const {
+    selectedIds,
+    selectedCount,
+    toggleSelection,
+    selectAll,
+    clearSelection
   } = useTableSelection<string>();
-  
+
   const { isProcessing, executeBulkAction } = useBulkActions();
 
   // Form State
@@ -49,17 +54,20 @@ export function Suvichar() {
   const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const resetForm = () => {
     setEditingId(null);
     setTitle('');
     setContent('');
+    setImageUrl('');
   };
 
   const openEdit = (item: SuvicharDTO) => {
     setEditingId(item.id);
     setTitle(item.title || '');
     setContent(item.content || '');
+    setImageUrl(item.imageUrl || '');
     setIsModalOpen(true);
   };
 
@@ -67,9 +75,9 @@ export function Suvichar() {
     e.preventDefault();
     let success = false;
     if (editingId) {
-      success = await updateSuvichar(editingId, { title, content });
+      success = await updateSuvichar(editingId, { title, content, imageUrl });
     } else {
-      const res = await createSuvichar({ title, content });
+      const res = await createSuvichar({ title, content, imageUrl });
       if (res) success = true;
     }
 
@@ -94,41 +102,39 @@ export function Suvichar() {
   const columns: Column<SuvicharDTO>[] = React.useMemo(() => [
     {
       key: 'title',
-      header: 'Title',
+      header: 'Author / Reference',
       sortable: true,
       render: (item) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-          <div style={{ 
-            width: '32px', 
-            height: '32px', 
-            borderRadius: 'var(--radius-input)', 
-            backgroundColor: '#FFF2E8', 
-            color: 'var(--primary)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            flexShrink: 0
-          }}>
-            <Sparkles size={16} />
-          </div>
-          <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{item.title}</span>
+        <div className="svc-title-cell">
+          {item.imageUrl ? (
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              className="svc-thumb"
+            />
+          ) : (
+            <div className="svc-thumb-placeholder">
+              <Sparkles size={16} />
+            </div>
+          )}
+          <span className="svc-title-text">{item.title}</span>
         </div>
       )
     },
     {
       key: 'content',
       header: 'Content',
-      render: (item) => <span style={{ color: 'var(--text-body)', lineHeight: 1.6 }}>{item.content}</span>
+      render: (item) => <span className="svc-content-text">{item.content}</span>
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (item) => (
-        <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
-          <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
+        <div className="svc-actions-cell">
+          <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} aria-label="Edit suvichar" title="Edit">
             <Edit2 size={18} />
           </button>
-          <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+          <button className="btn-icon svc-danger-icon" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} aria-label="Delete suvichar" title="Delete">
             <Trash2 size={18} />
           </button>
         </div>
@@ -139,25 +145,25 @@ export function Suvichar() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
+    <div className="svc-page mx-auto max-w-7xl">
       {/* Header Section */}
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+      <div className="page-header svc-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Today's Suvichar</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          <h1 className="page-title svc-header-title">Today's Suvichar</h1>
+          <p className="svc-header-description">
             Manage daily spiritual thoughts and inspirational quotes
           </p>
         </div>
-        <button 
-          className="btn btn-primary" 
+        <button
+          className="btn btn-primary"
           onClick={() => { resetForm(); setIsModalOpen(true); }}
         >
           <Plus size={18} /> Add New
         </button>
       </div>
 
-      <div style={{ marginBottom: 'var(--space-24)' }}>
-        <SearchBar 
+      <div className="svc-toolbar">
+        <SearchBar
           placeholder="Search suvichar by title..."
           value={searchTerm}
           onSearch={setSearchTerm}
@@ -165,10 +171,18 @@ export function Suvichar() {
       </div>
 
       {/* Main Table Card */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="card svc-card">
         {isLoading && <LoadingOverlay message="Processing..." />}
-        
-        {items.length > 0 ? (
+
+        {error && !loading ? (
+          <div className="svc-state-block">
+            <ErrorState
+              title="Failed to Load Suvichar"
+              message="An error occurred while fetching suvichar. Please try again."
+              onRetry={refetch}
+            />
+          </div>
+        ) : items.length > 0 ? (
           <>
             <DataTable<SuvicharDTO>
               data={items}
@@ -180,19 +194,19 @@ export function Suvichar() {
               onSelectAll={selectAll}
               onClearSelection={clearSelection}
             />
-            <div style={{ padding: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
-              <Pagination 
-                currentPage={currentPage} 
-                totalPages={totalPages} 
-                onPageChange={setCurrentPage} 
+            <div className="svc-pagination-footer">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
               />
             </div>
           </>
         ) : !loading && (
-          <div style={{ padding: 'var(--space-48) 0' }}>
-            <EmptyState 
-              title="No Suvichar Found" 
-              message={searchTerm ? "No suvichar matches your search." : "Add the first suvichar by clicking the 'Add New' button above."} 
+          <div className="svc-state-block">
+            <EmptyState
+              title="No Suvichar Found"
+              message={searchTerm ? "No suvichar matches your search." : "Add the first suvichar by clicking the 'Add New' button above."}
               icon={<Quote size={48} />}
             />
           </div>
@@ -200,7 +214,7 @@ export function Suvichar() {
       </div>
 
       {/* Bulk Action Bar */}
-      <BulkActionBar 
+      <BulkActionBar
         selectedCount={selectedCount}
         onClearSelection={clearSelection}
         onDelete={() => setBulkDeleteConfirm(true)}
@@ -208,50 +222,63 @@ export function Suvichar() {
 
       {/* Form Modal */}
       {isModalOpen && (
-        <div className="modal-backdrop" onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="card w-full max-w-4xl my-8 p-8 shadow-float" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                <Quote size={20} color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <div className="svc-modal-title-group">
+                <Quote size={20} className="svc-accent-icon" />
+                <h2 className="text-heading font-semibold text-xl m-0">
                   {editingId ? 'Edit' : 'Add'} Suvichar
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close dialog">
                 <X size={20} />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Title <span style={{ color: 'var(--danger)' }}>*</span></label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="e.g. Suvichar of the Day"
-                  value={title} 
-                  onChange={e => setTitle(e.target.value)} 
-                  required 
+                <label className="form-label">Today's Thought Image (Optional)</label>
+                <ImageUpload
+                  folder="suvichar"
+                  previewUrl={imageUrl}
+                  onUploadComplete={setImageUrl}
+                  onClear={() => setImageUrl('')}
+                  onFileSelect={() => {}}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="suvichar-title">Author / Reference (Title) <span className="text-danger">*</span></label>
+                <input
+                  id="suvichar-title"
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Param Sant Tulsi Sahib"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  required
                   disabled={isLoading}
                   maxLength={100}
                 />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Content <span style={{ color: 'var(--danger)' }}>*</span></label>
-                <textarea 
-                  className="form-textarea" 
-                  rows={5} 
+                <label className="form-label" htmlFor="suvichar-content">Content <span className="text-danger">*</span></label>
+                <textarea
+                  id="suvichar-content"
+                  className="form-textarea"
+                  rows={5}
                   placeholder="Enter the thought or quote..."
-                  value={content} 
-                  onChange={e => setContent(e.target.value)} 
-                  required 
+                  value={content}
+                  onChange={e => setContent(e.target.value)}
+                  required
                   disabled={isLoading}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+              <div className="svc-form-actions">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>
                   Cancel
                 </button>

@@ -33,7 +33,35 @@ class ThemeSelectorTile extends ConsumerWidget {
       title: l10n.theme,
       subtitle: getThemeName(),
       onTap: () {
-        // Show dialog or bottom sheet to select theme
+        showDialog(
+          context: context,
+          builder: (context) => SimpleDialog(
+            title: Text(l10n.theme),
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onThemeChanged('system');
+                },
+                child: Text(l10n.themeSystem),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onThemeChanged('light');
+                },
+                child: Text(l10n.themeLight),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onThemeChanged('dark');
+                },
+                child: Text(l10n.themeDark),
+              ),
+            ],
+          ),
+        );
       },
       trailing: const Icon(Icons.chevron_right),
     );

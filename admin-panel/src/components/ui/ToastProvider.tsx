@@ -22,9 +22,9 @@ const Toast = ({ toast, onClose }: { toast: ToastMessage; onClose: (id: string) 
 
   const getBgColor = () => {
     switch (toast.type) {
-      case 'success': return '#F0FDF4';
-      case 'error': return '#FEF2F2';
-      case 'info': return '#F0F9FF';
+      case 'success': return 'var(--success-light)';
+      case 'error': return 'var(--danger-light)';
+      case 'info': return 'var(--info-light)';
     }
   };
 
@@ -37,22 +37,27 @@ const Toast = ({ toast, onClose }: { toast: ToastMessage; onClose: (id: string) 
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 'var(--space-16)',
-      padding: 'var(--space-16)',
-      backgroundColor: getBgColor(),
-      borderLeft: `4px solid ${getBorderColor()}`,
-      borderRadius: 'var(--radius-input)',
-      boxShadow: 'var(--shadow-card)',
-      minWidth: '300px',
-      pointerEvents: 'auto',
-      marginBottom: 'var(--space-16)'
-    }}>
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--space-16)',
+        padding: 'var(--space-16)',
+        backgroundColor: getBgColor(),
+        borderLeft: `4px solid ${getBorderColor()}`,
+        borderRadius: 'var(--radius-input)',
+        boxShadow: 'var(--shadow-card)',
+        minWidth: '300px',
+        pointerEvents: 'auto',
+        marginBottom: 'var(--space-16)'
+      }}
+    >
       {getIcon()}
       <span style={{ flex: 1, color: 'var(--text-heading)', fontWeight: 600 }}>{toast.message}</span>
-      <button onClick={() => onClose(toast.id)} className="btn-icon">
+      <button onClick={() => onClose(toast.id)} className="btn-icon" aria-label="Dismiss">
         <X size={16} />
       </button>
     </div>
@@ -78,16 +83,21 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={{ showToast, success, error, info }}>
       {children}
-      <div style={{
-        position: 'fixed',
-        bottom: 'var(--space-32)',
-        right: 'var(--space-32)',
-        zIndex: 9999,
-        pointerEvents: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end'
-      }}>
+      <div
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: 'fixed',
+          bottom: 'var(--space-32)',
+          right: 'var(--space-32)',
+          zIndex: 9999,
+          pointerEvents: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end'
+        }}
+      >
         {toasts.map(toast => (
           <Toast key={toast.id} toast={toast} onClose={removeToast} />
         ))}

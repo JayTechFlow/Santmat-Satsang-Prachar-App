@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../providers/profile_providers.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../l10n/gen/app_localizations.dart';
-import '../widgets/loading_state_widget.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key});
@@ -64,8 +65,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         actions: [TextButton(onPressed: _saveProfile, child: Text(l10n.save))],
       ),
       body: profileState.when(
-        loading: () => const LoadingStateWidget(),
-        error: (error, _) => Center(child: Text(error.toString())),
+        loading: () => const SSPLoadingState(),
+        error: (error, _) => SSPErrorState(message: error.toString()),
         data: (profile) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.sp16),

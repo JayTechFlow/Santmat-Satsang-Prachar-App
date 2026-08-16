@@ -3,6 +3,9 @@ import { Plus, Trash2, Edit2, X, Image as ImageIcon, Archive, RefreshCw } from '
 
 import { useBanners } from '../features/banners/hooks/useBanners';
 import { useBannerMutations } from '../features/banners/hooks/useBannerMutations';
+import { useBhajans } from '../features/bhajans/hooks/useBhajans';
+import { useBooks } from '../features/books/hooks/useBooks';
+import { useCategories } from '../features/categories/hooks/useCategories';
 import { useTableSelection } from '../hooks/useTableSelection';
 import { useBulkActions } from '../hooks/useBulkActions';
 import type { BannerDTO, BannerStatus } from '../features/banners/types';
@@ -13,17 +16,20 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
 import { Pagination } from '../components/ui/Pagination';
 import { ImageUpload } from '../components/ui/ImageUpload';
-import { BannerStatusBadge } from '../features/banners/components/BannerStatusBadge';
+import { StatusBadge } from '../components/ui/Badge';
+import { CategorySelector } from '../features/categories/components/CategorySelector';
 
 export function Banners() {
   const {
     data: items,
     loading,
+    error,
     refetch,
     searchTerm,
     setSearchTerm,
@@ -33,6 +39,10 @@ export function Banners() {
     setCurrentPage,
     totalPages
   } = useBanners();
+
+  const { data: bhajans } = useBhajans();
+  const { data: books } = useBooks();
+  const { data: categories } = useCategories();
 
   const { createBanner, updateBanner, deleteBanner, archiveBanner, loading: mutating } = useBannerMutations(refetch);
 
@@ -160,7 +170,7 @@ export function Banners() {
       key: 'image',
       header: 'Banner',
       render: (item) => (
-        <div className="w-[120px] h-[60px] rounded-md overflow-hidden border border-border bg-background" style={{ width: '120px', height: '60px' }}>
+        <div className="rounded-md overflow-hidden border border-border bg-background" style={{ width: '120px', height: '60px' }}>
           {item.imageUrl ? (
             <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
           ) : (
@@ -184,7 +194,7 @@ export function Banners() {
     {
       key: 'status',
       header: 'Status',
-      render: (item) => <BannerStatusBadge banner={item} />
+      render: (item) => <StatusBadge status={getEffectiveStatus(item)} />
     },
     {
       key: 'priority',
@@ -199,18 +209,18 @@ export function Banners() {
         return (
           <div className="flex gap-2 justify-end">
             {effectiveStatus !== 'archived' ? (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBanner(item.id, true); }} title="Archive">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBanner(item.id, true); }} title="Archive" aria-label="Archive banner">
                 <Archive size={18} />
               </button>
             ) : (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBanner(item.id, false); }} title="Restore">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBanner(item.id, false); }} title="Restore" aria-label="Restore banner">
                 <RefreshCw size={18} />
               </button>
             )}
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit" aria-label="Edit banner">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete" aria-label="Delete banner">
               <Trash2 size={18} />
             </button>
           </div>
@@ -240,6 +250,7 @@ export function Banners() {
             { label: 'Draft', value: 'draft' },
             { label: 'Scheduled', value: 'scheduled' },
             { label: 'Published', value: 'published' },
+            { label: 'Expired', value: 'expired' },
             { label: 'Archived', value: 'archived' }
           ]}
           value={statusFilter}
@@ -251,7 +262,11 @@ export function Banners() {
       <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
-        {items.length > 0 ? (
+        {error && !loading ? (
+          <div className="py-12">
+            <ErrorState title="Failed to load banners" message={error.message} onRetry={refetch} />
+          </div>
+        ) : items.length > 0 ? (
           <>
             <DataTable<BannerDTO>
               data={items}
@@ -296,14 +311,14 @@ export function Banners() {
                   {editingId ? 'Edit Banner' : 'Add Banner'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Main Image (Desktop/Tablet) <span style={{ color: 'var(--danger)' }}>*</span></label>
+                <label className="form-label">Main Image (Desktop/Tablet) <span className="text-danger">*</span></label>
                 <ImageUpload 
                   folder="banners"
                   previewUrl={imageUrl}
@@ -314,8 +329,9 @@ export function Banners() {
               </div>
 
               <div className="form-group mb-4">
-                <label className="form-label">Banner Title <span className="text-danger">*</span></label>
+                <label className="form-label" htmlFor="banner-title">Banner Title <span className="text-danger">*</span></label>
                 <input 
+                  id="banner-title"
                   type="text" 
                   className="form-input" 
                   value={title} 
@@ -327,16 +343,17 @@ export function Banners() {
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="form-group">
-                  <label className="form-label">Status</label>
-                  <select className="form-select" value={status} onChange={e => setStatus(e.target.value as any)} disabled={isLoading}>
+                  <label className="form-label" htmlFor="banner-status">Status</label>
+                  <select id="banner-status" className="form-select" value={status} onChange={e => setStatus(e.target.value as any)} disabled={isLoading}>
                     <option value="draft">Draft</option>
                     <option value="scheduled">Scheduled (Date-bound)</option>
                     <option value="published">Published</option>
                   </select>
                 </div>
                 <div className="form-group mb-0">
-                  <label className="form-label">Priority (Sort Order)</label>
+                  <label className="form-label" htmlFor="banner-priority">Priority (Sort Order)</label>
                   <input 
+                    id="banner-priority"
                     type="number" 
                     className="form-input" 
                     value={priority} 
@@ -346,11 +363,70 @@ export function Banners() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="form-group mb-0">
+                  <label className="form-label" htmlFor="banner-action-type">Action Type</label>
+                  <select id="banner-action-type" className="form-select" value={actionType} onChange={e => setActionType(e.target.value as any)} disabled={isLoading}>
+                    <option value="none">None</option>
+                    <option value="link">External Link</option>
+                    <option value="internal">Internal Route</option>
+                    <option value="book">Book ID</option>
+                    <option value="bhajan">Bhajan ID</option>
+                    <option value="category">Category Slug</option>
+                  </select>
+                </div>
+                {actionType !== 'none' && (
+                  <div className="form-group mb-0">
+                    <label className="form-label" htmlFor="banner-action-target">Action Target (URL or ID) <span className="text-danger">*</span></label>
+                    {actionType === 'internal' ? (
+                      <select id="banner-action-target" className="form-select" value={actionTarget} onChange={e => setActionTarget(e.target.value)} required disabled={isLoading}>
+                        <option value="">Select Internal Route</option>
+                        <option value="/audio">Audio (/audio)</option>
+                        <option value="/stuti">Stuti Vinati (/stuti)</option>
+                        <option value="/books">Books (/books)</option>
+                        <option value="/satsang">Satsang (/satsang)</option>
+                        <option value="/events">Events (/events)</option>
+                        <option value="/donations">Donations (/donations)</option>
+                      </select>
+                    ) : actionType === 'category' ? (
+                      <CategorySelector 
+                        categories={categories}
+                        value={actionTarget}
+                        onChange={setActionTarget}
+                        disabled={isLoading}
+                      />
+                    ) : actionType === 'bhajan' ? (
+                      <select id="banner-action-target" className="form-select" value={actionTarget} onChange={e => setActionTarget(e.target.value)} required disabled={isLoading}>
+                        <option value="">Select Bhajan</option>
+                        {bhajans.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
+                      </select>
+                    ) : actionType === 'book' ? (
+                      <select id="banner-action-target" className="form-select" value={actionTarget} onChange={e => setActionTarget(e.target.value)} required disabled={isLoading}>
+                        <option value="">Select Book</option>
+                        {books.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
+                      </select>
+                    ) : (
+                      <input 
+                        id="banner-action-target"
+                        type="url" 
+                        className="form-input" 
+                        value={actionTarget} 
+                        onChange={e => setActionTarget(e.target.value)} 
+                        required 
+                        disabled={isLoading}
+                        placeholder="https://..."
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+
               {status === 'scheduled' && (
                 <div className="grid grid-cols-2 gap-4 p-4 bg-background rounded-md mb-4">
                   <div className="form-group mb-0">
-                    <label className="form-label">Start Date & Time</label>
+                    <label className="form-label" htmlFor="banner-start-date">Start Date & Time</label>
                     <input 
+                      id="banner-start-date"
                       type="datetime-local" 
                       className="form-input" 
                       value={startDate} 
@@ -360,8 +436,9 @@ export function Banners() {
                     />
                   </div>
                   <div className="form-group mb-0">
-                    <label className="form-label">End Date & Time</label>
+                    <label className="form-label" htmlFor="banner-end-date">End Date & Time</label>
                     <input 
+                      id="banner-end-date"
                       type="datetime-local" 
                       className="form-input" 
                       value={endDate} 

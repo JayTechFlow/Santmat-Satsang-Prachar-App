@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { authService } from './core/services/authService';
-
-// Layout & Components
+import { AdminPermissionProvider } from './core/auth/PermissionContext';
+import { AdminPanelRoutes, ProtectedRoute } from './core/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
-
 import { lazy, Suspense } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { ToastProvider } from './components/ui/ToastProvider';
+import { TooltipProvider } from './components/ui/Tooltip';
+import { LoadingOverlay } from './components/ui/LoadingOverlay';
+import { ThemeProvider } from './context/ThemeContext';
 
-// Pages
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
 const Suvichar = lazy(() => import('./pages/Suvichar').then(m => ({ default: m.Suvichar })));
@@ -24,53 +24,101 @@ const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.S
 const Playlist = lazy(() => import('./pages/Playlist').then(m => ({ default: m.Playlist })));
 const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Support })));
 
-import { ToastProvider } from './components/ui/ToastProvider';
-
 function App() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged((user: any) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>Loading...</div>;
-  }
-
   return (
-    <ErrorBoundary>
-      <ToastProvider>
-        <Router>
-          <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>Loading page...</div>}>
-            <Routes>
-              <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-              
-              <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
-                <Route index element={<Dashboard />} />
-                <Route path="suvichar" element={<Suvichar />} />
-                <Route path="banners" element={<Banners />} />
-                <Route path="audio" element={<Audio />} />
-                <Route path="stuti-vinati" element={<StutiVinati />} />
-                <Route path="books" element={<Books />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="categories" element={<Categories />} />
-                <Route path="users" element={<Users />} />
-                <Route path="reports" element={<Reports />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="playlist" element={<Playlist />} />
-                <Route path="support" element={<Support />} />
-                <Route path="*" element={<Navigate to="/" />} />
-              </Route>
-            </Routes>
-          </Suspense>
-        </Router>
-      </ToastProvider>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <ToastProvider>
+          <AdminPermissionProvider>
+            <TooltipProvider>
+              <Router>
+                <Suspense fallback={<LoadingOverlay message="Loading page..." />}>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    
+                    <Route 
+                      path="/" 
+                      element={
+                        <AdminPanelRoutes>
+                          <Layout />
+                        </AdminPanelRoutes>
+                      }
+                    >
+                      <Route index element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="suvichar" element={
+                        <ProtectedRoute>
+                          <Suvichar />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="banners" element={
+                        <ProtectedRoute>
+                          <Banners />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="audio" element={
+                        <ProtectedRoute>
+                          <Audio />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="stuti-vinati" element={
+                        <ProtectedRoute>
+                          <StutiVinati />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="books" element={
+                        <ProtectedRoute>
+                          <Books />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="notifications" element={
+                        <ProtectedRoute>
+                          <Notifications />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="categories" element={
+                        <ProtectedRoute>
+                          <Categories />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="users" element={
+                        <ProtectedRoute>
+                          <Users />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="reports" element={
+                        <ProtectedRoute>
+                          <Reports />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="settings" element={
+                        <ProtectedRoute>
+                          <Settings />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="playlist" element={
+                        <ProtectedRoute>
+                          <Playlist />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="support" element={
+                        <ProtectedRoute>
+                          <Support />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="*" element={<Navigate to="/" />} />
+                    </Route>
+                  </Routes>
+                </Suspense>
+              </Router>
+            </TooltipProvider>
+          </AdminPermissionProvider>
+        </ToastProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 

@@ -5,7 +5,7 @@ class FirestoreCollections {
   static const String audio = 'audio';
   static const String books = 'books';
   static const String bookCategories = 'book_categories';
-  static const String dailyQuotes = 'daily_quotes';
+  static const String dailyQuotes = 'suvichar';
   static const String events = 'events';
   static const String notifications = 'notifications';
   static const String donations = 'donations';
@@ -15,4 +15,6 @@ class FirestoreCollections {
   static const String searchIndex = 'search_index';
   static const String banners = 'banners';
   static const String quickActions = 'quick_actions';
+  static const String categories = 'categories';
+  static const String recommendations = 'recommendations';
 }

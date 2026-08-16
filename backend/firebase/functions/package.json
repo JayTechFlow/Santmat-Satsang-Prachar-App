@@ -3,7 +3,8 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "bootstrap:dev": "npm run build && node lib/bootstrap_cli.js",
+    "test": "npm run build && node --experimental-strip-types --test test/*.test.ts"
   },
   "engines": {
     "node": "20"

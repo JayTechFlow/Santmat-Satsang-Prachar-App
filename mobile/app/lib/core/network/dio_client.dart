@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
+import 'package:flutter/foundation.dart';
 import '../config/app_config.dart';
 import 'interceptors/auth_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
@@ -22,7 +23,7 @@ class DioClient {
       LoggingInterceptor(),
       RetryInterceptor(
         dio: dio,
-        logPrint: print, // Use custom logger in production
+        logPrint: kDebugMode ? print : (_) {},
         retries: 3,
         retryDelays: const [
           Duration(seconds: 1),

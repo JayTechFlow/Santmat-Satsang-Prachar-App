@@ -20,8 +20,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       justifyContent: 'center',
       padding: 'var(--space-48) var(--space-24)',
       textAlign: 'center',
-      backgroundColor: '#FEF2F2',
-      borderRadius: 'var(--radius-card)',
+      backgroundColor: 'var(--danger-light)',
+      borderRadius: 'var(--radius-lg)',
       border: '1px solid var(--danger)'
     }}>
       <div style={{ marginBottom: 'var(--space-16)' }}>

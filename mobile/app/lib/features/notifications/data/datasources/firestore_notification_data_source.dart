@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/firebase/firestore_collections.dart';
 import '../../../../core/services/firestore_service.dart';
@@ -9,8 +10,14 @@ import 'notification_data_source.dart';
 
 class FirestoreNotificationDataSource implements NotificationDataSource {
   final FirestoreService _firestoreService;
+  final FirebaseAuth _firebaseAuth;
 
-  FirestoreNotificationDataSource(this._firestoreService);
+  FirestoreNotificationDataSource(
+    this._firestoreService, {
+    FirebaseAuth? firebaseAuth,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
+  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
   @override
   Future<List<NotificationEntity>> getNotifications(
@@ -100,10 +107,27 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
 
   @override
   Future<NotificationPreferenceEntity> getNotificationPreferences() async {
+    if (_userId.isEmpty) {
+      return const NotificationPreferenceEntity(
+        generalNotifications: true,
+        satsangNotifications: true,
+        audioNotifications: true,
+        booksNotifications: true,
+        dailyQuotes: true,
+        events: true,
+        donationUpdates: false,
+        announcements: true,
+        sound: true,
+        vibration: true,
+        quietHoursEnabled: false,
+        quietHoursStart: '22:00',
+        quietHoursEnd: '06:00',
+      );
+    }
     try {
       final doc = await _firestoreService.getDocument(
         FirestoreCollections.preferences,
-        'notifications',
+        _userId,
       );
       if (!doc.exists) {
         return const NotificationPreferenceEntity(
@@ -123,20 +147,21 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
         );
       }
       final data = doc.data() as Map<String, dynamic>;
+      final notifData = data['notification'] as Map<String, dynamic>? ?? data;
       return NotificationPreferenceEntity(
-        generalNotifications: data['generalNotifications'] as bool? ?? true,
-        satsangNotifications: data['satsangNotifications'] as bool? ?? true,
-        audioNotifications: data['audioNotifications'] as bool? ?? true,
-        booksNotifications: data['booksNotifications'] as bool? ?? true,
-        dailyQuotes: data['dailyQuotes'] as bool? ?? true,
-        events: data['events'] as bool? ?? true,
-        donationUpdates: data['donationUpdates'] as bool? ?? false,
-        announcements: data['announcements'] as bool? ?? true,
-        sound: data['sound'] as bool? ?? true,
-        vibration: data['vibration'] as bool? ?? true,
-        quietHoursEnabled: data['quietHoursEnabled'] as bool? ?? false,
-        quietHoursStart: data['quietHoursStart'] as String? ?? '22:00',
-        quietHoursEnd: data['quietHoursEnd'] as String? ?? '06:00',
+        generalNotifications: notifData['generalNotifications'] as bool? ?? true,
+        satsangNotifications: notifData['satsangNotifications'] as bool? ?? true,
+        audioNotifications: notifData['audioNotifications'] as bool? ?? true,
+        booksNotifications: notifData['booksNotifications'] as bool? ?? true,
+        dailyQuotes: notifData['dailyQuotes'] as bool? ?? true,
+        events: notifData['events'] as bool? ?? true,
+        donationUpdates: notifData['donationUpdates'] as bool? ?? false,
+        announcements: notifData['announcements'] as bool? ?? true,
+        sound: notifData['sound'] as bool? ?? true,
+        vibration: notifData['vibration'] as bool? ?? true,
+        quietHoursEnabled: notifData['quietHoursEnabled'] as bool? ?? false,
+        quietHoursStart: notifData['quietHoursStart'] as String? ?? '22:00',
+        quietHoursEnd: notifData['quietHoursEnd'] as String? ?? '06:00',
       );
     } catch (e) {
       return const NotificationPreferenceEntity(
@@ -161,45 +186,30 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
   Future<void> updateNotificationPreferences(
     NotificationPreferenceEntity preferences,
   ) async {
+    if (_userId.isEmpty) return;
     final data = {
-      'generalNotifications': preferences.generalNotifications,
-      'satsangNotifications': preferences.satsangNotifications,
-      'audioNotifications': preferences.audioNotifications,
-      'booksNotifications': preferences.booksNotifications,
-      'dailyQuotes': preferences.dailyQuotes,
-      'events': preferences.events,
-      'donationUpdates': preferences.donationUpdates,
-      'announcements': preferences.announcements,
-      'sound': preferences.sound,
-      'vibration': preferences.vibration,
-      'quietHoursEnabled': preferences.quietHoursEnabled,
-      'quietHoursStart': preferences.quietHoursStart,
-      'quietHoursEnd': preferences.quietHoursEnd,
+      'notification': {
+        'generalNotifications': preferences.generalNotifications,
+        'satsangNotifications': preferences.satsangNotifications,
+        'audioNotifications': preferences.audioNotifications,
+        'booksNotifications': preferences.booksNotifications,
+        'dailyQuotes': preferences.dailyQuotes,
+        'events': preferences.events,
+        'donationUpdates': preferences.donationUpdates,
+        'announcements': preferences.announcements,
+        'sound': preferences.sound,
+        'vibration': preferences.vibration,
+        'quietHoursEnabled': preferences.quietHoursEnabled,
+        'quietHoursStart': preferences.quietHoursStart,
+        'quietHoursEnd': preferences.quietHoursEnd,
+      }
     };
 
-    // Check if it exists first
-    try {
-      final doc = await _firestoreService.getDocument(
-        FirestoreCollections.preferences,
-        'notifications',
-      );
-      if (doc.exists) {
-        await _firestoreService.updateDocument(
-          FirestoreCollections.preferences,
-          'notifications',
-          data,
-        );
-      } else {
-        await FirebaseFirestore.instance
-            .collection(FirestoreCollections.preferences)
-            .doc('notifications')
-            .set(data);
-      }
-    } catch (_) {
-      await FirebaseFirestore.instance
-          .collection(FirestoreCollections.preferences)
-          .doc('notifications')
-          .set(data);
-    }
+    await _firestoreService.setDocument(
+      FirestoreCollections.preferences,
+      _userId,
+      data,
+      merge: true,
+    );
   }
 }

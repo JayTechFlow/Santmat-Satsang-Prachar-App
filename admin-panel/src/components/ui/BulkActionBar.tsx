@@ -20,10 +20,9 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
   if (selectedCount === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-surface border-t shadow-float z-50 transform transition-transform" style={{ 
+    <div className="fixed bottom-0 left-0 right-0 bg-surface border-t shadow-float z-50 transform transition-transform bulk-action-bar" style={{ 
       transform: selectedCount > 0 ? 'translateY(0)' : 'translateY(100%)',
       padding: 'var(--space-16) var(--space-32)',
-      marginLeft: 'var(--sidebar-width)',
     }}>
       <div className="flex-between max-w-7xl mx-auto">
         <div className="flex items-center gap-4">

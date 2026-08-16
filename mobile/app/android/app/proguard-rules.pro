@@ -12,3 +12,7 @@
 # Firebase general
 -keep class com.google.firebase.** { *; }
 -keep class com.google.android.gms.** { *; }
+
+# Flutter Play Store deferred components (optional)
+-dontwarn com.google.android.play.core.**
+

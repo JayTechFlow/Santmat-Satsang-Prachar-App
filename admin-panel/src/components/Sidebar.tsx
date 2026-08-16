@@ -1,83 +1,141 @@
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Music,
-  BookOpen, 
-  Tags,
-  Users,
-  ListVideo,
-  Bell, 
-  Image as ImageIcon, 
-  BarChart,
-  Settings,
-  HelpCircle,
-  LogOut
-} from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { SidebarContent } from './navigation/SidebarContent';
+import { useTheme } from '../context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
-const NAV_ITEMS = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/banners', label: 'Banners', icon: ImageIcon },
-  { path: '/categories', label: 'Categories', icon: Tags },
-  { path: '/suvichar', label: 'Suvichar', icon: BookOpen },
-  { path: '/books', label: 'Books', icon: BookOpen },
-  { path: '/audio', label: 'Audio / Bhajans', icon: Music },
-  { path: '/stuti-vinati', label: 'Stuti & Vinati', icon: BookOpen },
-  { path: '/playlist', label: 'Playlists', icon: ListVideo },
-  { path: '/notifications', label: 'Notifications', icon: Bell },
-  { path: '/users', label: 'Users', icon: Users },
-  { path: '/reports', label: 'Reports', icon: BarChart },
-  { path: '/settings', label: 'App Settings', icon: Settings },
-  { path: '/support', label: 'Support', icon: HelpCircle },
-];
+interface SidebarProps {
+  collapsed: boolean;
+  mobileOpen: boolean;
+  onCloseMobile: () => void;
+  isTablet?: boolean;
+}
 
-export function Sidebar() {
-  const location = useLocation();
-  const { logout } = useAuth();
+export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) {
+  const { theme, toggledarkLight } = useTheme();
+  const sidebarRef = useRef<HTMLElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+  const navItemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error("Error signing out", error);
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const updateIsMobile = () => setIsMobile(mobileQuery.matches);
+    updateIsMobile();
+    mobileQuery.addEventListener('change', updateIsMobile);
+    return () => mobileQuery.removeEventListener('change', updateIsMobile);
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLElement>) => {
+      const links = navItemRefs.current.filter((ref): ref is HTMLAnchorElement => ref !== null);
+      if (links.length === 0) return;
+
+      const activeIndex = links.findIndex((link) => link === document.activeElement);
+      let nextIndex = activeIndex;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          nextIndex = (activeIndex + 1) % links.length;
+          links[nextIndex]?.focus();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          nextIndex = (activeIndex - 1 + links.length) % links.length;
+          links[nextIndex]?.focus();
+          break;
+        case 'Home':
+          e.preventDefault();
+          links[0]?.focus();
+          break;
+        case 'End':
+          e.preventDefault();
+          links[links.length - 1]?.focus();
+          break;
+        case 'Escape':
+          if (mobileOpen) {
+            onCloseMobile();
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    [mobileOpen, onCloseMobile]
+  );
+
+  useEffect(() => {
+    if (mobileOpen && isMobile) {
+      previousActiveElement.current = document.activeElement as HTMLElement;
+      document.body.style.overflow = 'hidden';
+      const focusableElements = sidebarRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstFocusable = focusableElements?.[0];
+      const lastFocusable = focusableElements?.[focusableElements.length - 1];
+
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable?.focus();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable?.focus();
+          }
+        }
+      };
+
+      document.addEventListener('keydown', handleTab);
+      firstFocusable?.focus();
+
+      return () => {
+        document.removeEventListener('keydown', handleTab);
+        document.body.style.overflow = '';
+        (previousActiveElement.current as HTMLElement)?.focus();
+      };
+    } else {
+      document.body.style.overflow = '';
     }
-  };
+  }, [mobileOpen, isMobile]);
 
-  return (
-    <aside className="sidebar">
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.25rem', color: 'var(--primary)', lineHeight: 1.2 }}>
-          Santmat Satsang Prachar
-        </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Admin Panel</p>
-      </div>
-      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem', overflowY: 'auto' }}>
-        {NAV_ITEMS.map(({ path, label, icon: Icon }) => (
-          <Link
-            key={path}
-            to={path}
-            className={`nav-link ${location.pathname === path ? 'active' : ''}`}
-          >
-            <Icon size={20} />
-            {label}
-          </Link>
-        ))}
-      </nav>
-      <button 
-        onClick={handleLogout} 
-        className="btn" 
-        style={{ 
-          marginTop: '1rem',
-          justifyContent: 'flex-start', 
-          padding: '0.75rem 1rem', 
-          background: 'transparent', 
-          color: 'var(--danger)',
-          width: '100%'
-        }}
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileOpen && isMobile) {
+        onCloseMobile();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [mobileOpen, onCloseMobile, isMobile]);
+
+  // Also close on tablet when clicking overlay (if needed in future)
+  const shouldShowOverlay = isMobile && mobileOpen;
+
+return (
+    <>
+      {shouldShowOverlay && (
+        <div className="sidebar-overlay" onClick={onCloseMobile} aria-hidden="true" />
+      )}
+      <aside
+        ref={sidebarRef}
+        className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''} ${shouldShowOverlay ? 'sidebar-open' : ''}`}
+        role="navigation"
+        aria-label="Main navigation"
+        onKeyDown={handleKeyDown}
       >
-        <LogOut size={20} />
-        Logout
-      </button>
-    </aside>
+        <div className="sidebar-inner">
+          <SidebarContent collapsed={collapsed} navItemRefs={navItemRefs} />
+
+          <div className="sidebar-theme-toggle" role="button" tabIndex={0} onClick={toggledarkLight} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}>
+            <span className="sr-only">{theme === 'dark' ? 'Light theme' : 'Dark theme'}</span>
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

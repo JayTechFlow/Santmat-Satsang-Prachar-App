@@ -32,7 +32,9 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
     final repository = ref.read(authRepositoryProvider);
 
     _authSubscription = repository.authStateChanges.listen((user) {
-      developer.log('8. Firebase authStateChanges emitted: user=${user?.id}');
+      if (kDebugMode) {
+        developer.log('8. Firebase authStateChanges emitted: user=${user?.id}');
+      }
       checkSession();
     });
 
@@ -47,7 +49,9 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
   Future<void> checkSession() async {
     if (_shouldBypassAuth) return;
     
-    developer.log('9. checkSession() entered');
+    if (kDebugMode) {
+      developer.log('9. checkSession() entered');
+    }
     // Idempotency: Don't set loading if we already have a valid session to avoid UI flicker
     if (!state.hasValue && !state.isLoading) {
       state = const AsyncValue.loading();
@@ -57,9 +61,11 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
     final result = await useCase.call();
     result.when(
       success: (session) {
-        developer.log(
-          '11. SessionModel values: isAuthenticated=${session.isAuthenticated}, isFirstLaunch=${session.isFirstLaunch}, user.uid=${session.user?.id}',
-        );
+        if (kDebugMode) {
+          developer.log(
+            '11. SessionModel values: isAuthenticated=${session.isAuthenticated}, isFirstLaunch=${session.isFirstLaunch}, user.uid=${session.user?.id}',
+          );
+        }
 
         // Idempotency: Only update state if the session actually changed
         final currentSession = state.value;
@@ -73,11 +79,15 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
         }
       },
       failure: (error) {
-        developer.log('11. SessionModel values: error=$error');
+        if (kDebugMode) {
+          developer.log('11. SessionModel values: error=$error');
+        }
         state = AsyncValue.error(error, StackTrace.current);
       },
     );
-    developer.log('10. checkSession() completed');
+    if (kDebugMode) {
+      developer.log('10. checkSession() completed');
+    }
   }
 
   Future<void> completeOnboarding() async {
@@ -89,7 +99,9 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
   }
 
   Future<void> signInWithGoogle() async {
-    developer.log('3. signInWithGoogle() entered');
+    if (kDebugMode) {
+      developer.log('3. signInWithGoogle() entered');
+    }
     state = const AsyncValue.loading();
     final useCase = ref.read(signInWithGoogleUseCaseProvider);
     final result = await useCase.call();
@@ -103,7 +115,9 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
   }
 
   Future<void> signInAnonymously() async {
-    developer.log('2. signInAnonymously() entered');
+    if (kDebugMode) {
+      developer.log('2. signInAnonymously() entered');
+    }
     state = const AsyncValue.loading();
     final useCase = ref.read(signInAnonymouslyUseCaseProvider);
     final result = await useCase.call();
@@ -118,7 +132,9 @@ class AuthStateNotifier extends Notifier<AsyncValue<SessionModel>> {
 
   Future<void> signOut() async {
     if (_shouldBypassAuth) {
-      developer.log('AUTH BYPASS ENABLED: Skipping signOut');
+      if (kDebugMode) {
+        developer.log('AUTH BYPASS ENABLED: Skipping signOut');
+      }
       return;
     }
     state = const AsyncValue.loading();

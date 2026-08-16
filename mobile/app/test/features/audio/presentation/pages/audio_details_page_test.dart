@@ -34,7 +34,7 @@ void main() {
       ProviderScope(
         overrides: [
           audioDetailsProvider('test_audio_1').overrideWith((ref) => mockAudio),
-          playbackStateProvider.overrideWith(() => PlaybackNotifier()),
+          audioPlayerProvider.overrideWithValue(null),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

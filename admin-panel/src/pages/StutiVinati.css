@@ -1,0 +1,101 @@
+/* ============================================================
+   StutiVinati (R5.4) - page-scoped, design-token driven styles
+   ============================================================ */
+
+.stv-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+/* Content preview cell */
+.stv-content-preview {
+  color: var(--text-body);
+  font-size: var(--text-base);
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Table action cell */
+.stv-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  justify-content: flex-end;
+}
+
+.stv-actions .btn-icon {
+  flex-shrink: 0;
+}
+
+.stv-icon-danger {
+  color: var(--danger);
+}
+
+.stv-icon-danger:hover {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+
+/* Toolbar category filter */
+.stv-category-filter {
+  width: 200px;
+}
+
+/* Modal overlay (replaces modal-backdrop + inline overrides) */
+.stv-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-16);
+  overflow-y: auto;
+}
+
+.stv-modal-content {
+  max-width: 800px;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+}
+
+.stv-modal-content-sm {
+  max-width: 400px;
+}
+
+.stv-modal-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-heading);
+}
+
+/* Featured checkbox row */
+.stv-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  cursor: pointer;
+  min-height: var(--btn-height-lg);
+}
+
+/* Create/Edit modal footer */
+.stv-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-16);
+  margin-top: var(--space-32);
+}
+
+/* Bulk category modal footer */
+.stv-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+}

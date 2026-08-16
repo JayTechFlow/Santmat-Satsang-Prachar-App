@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Plus, Trash2, Edit2, X, BookOpen, Archive, RefreshCw, Folder } from 'lucide-react';
+import './StutiVinati.css';
 
 import { useStutiVinati } from '../features/stuti-vinati/hooks/useStutiVinati';
 import { useStutiVinatiMutations } from '../features/stuti-vinati/hooks/useStutiVinatiMutations';
@@ -13,13 +14,15 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
 import { Pagination } from '../components/ui/Pagination';
 import { ImageUpload } from '../components/ui/ImageUpload';
+import { AudioUpload } from '../components/ui/AudioUpload';
 import { MarkdownEditor } from '../components/ui/MarkdownEditor';
-import { PrayerStatusBadge } from '../features/stuti-vinati/components/PrayerStatusBadge';
+import { StatusBadge } from '../components/ui/Badge';
 import { PrayerPreview } from '../features/stuti-vinati/components/PrayerPreview';
 import { CategorySelector } from '../features/categories/components/CategorySelector';
 import { buildCategoryTree, flattenTree } from '../features/categories/utils/tree';
@@ -28,6 +31,7 @@ export function StutiVinati() {
   const {
     data: items,
     loading,
+    error,
     refetch,
     searchTerm,
     setSearchTerm,
@@ -69,7 +73,9 @@ export function StutiVinati() {
   const [translation, setTranslation] = useState('');
   const [transliteration, setTransliteration] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [audioUrl, setAudioUrl] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [type, setType] = useState('morning');
   const [publishStatus, setPublishStatus] = useState<PublishStatus>('draft');
   const [featured, setFeatured] = useState(false);
   const [tagsInput, setTagsInput] = useState('');
@@ -82,7 +88,9 @@ export function StutiVinati() {
     setTranslation('');
     setTransliteration('');
     setImageUrl('');
+    setAudioUrl('');
     setCategoryId('');
+    setType('morning');
     setPublishStatus('draft');
     setFeatured(false);
     setTagsInput('');
@@ -96,7 +104,9 @@ export function StutiVinati() {
     setTranslation(item.translation || '');
     setTransliteration(item.transliteration || '');
     setImageUrl(item.imageUrl || '');
+    setAudioUrl(item.audioUrl || '');
     setCategoryId(item.categoryId || '');
+    setType(item.type || 'morning');
     setPublishStatus(item.publishStatus || 'draft');
     setFeatured(item.featured || false);
     setTagsInput(item.tags?.join(', ') || '');
@@ -105,6 +115,14 @@ export function StutiVinati() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Admin Validation: Enforce Exactly ONE Morning, ONE Evening
+    const hasDuplicate = items.some(item => item.type === type && item.id !== editingId);
+    if (hasDuplicate) {
+      alert(`A ${type} stuti already exists. You can only have one ${type} stuti.`);
+      return;
+    }
+
     const payload = {
       title,
       content,
@@ -112,7 +130,9 @@ export function StutiVinati() {
       translation,
       transliteration,
       imageUrl,
+      audioUrl,
       categoryId,
+      type,
       publishStatus,
       featured,
       tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
@@ -182,8 +202,8 @@ export function StutiVinati() {
       header: 'Title',
       render: (item) => (
         <div>
-          <div style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{item.title}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          <div className="font-semibold text-heading">{item.title}</div>
+          <div className="text-xs text-muted">
             Category: {categoryMap.get(item.categoryId!) || 'Unknown'}
           </div>
         </div>
@@ -192,13 +212,13 @@ export function StutiVinati() {
     {
       key: 'order',
       header: 'Order',
-      render: (item) => <span style={{ color: 'var(--text-muted)' }}>{item.readingOrder}</span>
+      render: (item) => <span className="text-muted">{item.readingOrder}</span>
     },
     {
       key: 'preview',
       header: 'Content Preview',
       render: (item) => (
-        <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div className="stv-content-preview">
           {item.content ? item.content.replace(/[#*`_>]/g, '') : '-'}
         </div>
       )
@@ -206,27 +226,27 @@ export function StutiVinati() {
     {
       key: 'status',
       header: 'Status',
-      render: (item) => <PrayerStatusBadge status={item.publishStatus} />
+      render: (item) => <StatusBadge status={item.publishStatus} />
     },
     {
       key: 'actions',
       header: 'Actions',
       render: (item) => {
         return (
-          <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
+          <div className="stv-actions">
             {item.publishStatus !== 'archived' ? (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archivePrayer(item.id, true); }} title="Archive">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archivePrayer(item.id, true); }} title="Archive" aria-label="Archive prayer">
                 <Archive size={18} />
               </button>
             ) : (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archivePrayer(item.id, false); }} title="Restore">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archivePrayer(item.id, false); }} title="Restore" aria-label="Restore prayer">
                 <RefreshCw size={18} />
               </button>
             )}
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit" aria-label="Edit prayer">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+            <button className="btn-icon stv-icon-danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete" aria-label="Delete prayer">
               <Trash2 size={18} />
             </button>
           </div>
@@ -238,20 +258,21 @@ export function StutiVinati() {
   const isLoading = loading || mutating || isProcessing || categoriesLoading;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '100px' }}>
-      <div className="flex-between" style={{ marginBottom: 'var(--space-32)' }}>
+    <div className="stv-page">
+      <div className="page-header">
         <div>
-          <h1 className="page-title" style={{ marginBottom: '0.25rem' }}>Stuti & Vinati</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Manage devotional prayers, stutis, and vinatis</p>
+          <h1 className="page-title">Stuti & Vinati</h1>
+          <p className="text-muted text-sm">Manage devotional prayers, stutis, and vinatis</p>
         </div>
         <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
           <Plus size={18} /> Add Prayer
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-16)', marginBottom: 'var(--space-24)', flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap gap-4 mb-6">
         <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search prayers..." />
         <FilterBar
+          label="Filter by status"
           options={[
             { label: 'Draft', value: 'draft' },
             { label: 'Published', value: 'published' },
@@ -261,25 +282,36 @@ export function StutiVinati() {
           onChange={(val) => setStatusFilter(val as any)}
           placeholder="All Statuses"
         />
-        <select 
-          className="form-select" 
-          style={{ width: '200px' }}
-          value={categoryFilter}
-          onChange={e => setCategoryFilter(e.target.value)}
-        >
-          <option value="all">All Categories</option>
-          {flatCategories.map(cat => (
-            <option key={cat.id} value={cat.id}>
-              {'\u00A0'.repeat(cat.level * 4)}{cat.name}
-            </option>
-          ))}
-        </select>
+        <div className="stv-category-filter">
+          <label htmlFor="stv-category-filter" className="visually-hidden">Filter by category</label>
+          <select 
+            id="stv-category-filter"
+            className="form-select" 
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+          >
+            <option value="all">All Categories</option>
+            {flatCategories.map(cat => (
+              <option key={cat.id} value={cat.id}>
+                {'\u00A0'.repeat(cat.level * 4)}{cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
-        {items.length > 0 ? (
+        {error ? (
+          <div className="py-12">
+            <ErrorState 
+              title="Failed to Load Prayers" 
+              message={error.message || 'An error occurred while loading prayers. Please try again.'} 
+              onRetry={refetch}
+            />
+          </div>
+        ) : items.length > 0 ? (
           <>
             <DataTable<StutiVinatiDTO>
               data={items}
@@ -291,12 +323,12 @@ export function StutiVinati() {
               onSelectAll={selectAll}
               onClearSelection={clearSelection}
             />
-            <div style={{ padding: 'var(--space-16)', borderTop: '1px solid var(--border)' }}>
+            <div className="p-4 border-t">
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
           </>
         ) : !loading && (
-          <div style={{ padding: 'var(--space-48) 0' }}>
+          <div className="py-12">
             <EmptyState 
               title="No Prayers Found" 
               message="Get started by adding your first devotional prayer." 
@@ -321,27 +353,27 @@ export function StutiVinati() {
       />
 
       {isModalOpen && (
-        <div className="modal-backdrop" style={{ alignItems: 'flex-start', overflowY: 'auto' }} onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="modal-content" style={{ marginTop: '5vh', marginBottom: '5vh', maxWidth: '800px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="stv-modal-backdrop" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="modal-content stv-modal-content" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)', paddingBottom: 'var(--space-16)', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+            <div className="flex-between mb-6 pb-4 border-b">
+              <div className="flex items-center gap-2">
                 <BookOpen size={20} color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+                <h2 className="stv-modal-title">
                   {editingId ? 'Edit Prayer' : 'Add Prayer'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
             
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 'var(--space-24)' }}>
+              <div className="grid grid-cols-[1fr_2fr] gap-6">
                 {/* Left Column - Metadata */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+                <div className="flex flex-col gap-4">
                   <div className="form-group">
-                    <label className="form-label">Prayer Image (Optional)</label>
+                    <span className="form-label">Prayer Image (Thumbnail)</span>
                     <ImageUpload 
                       folder="prayers"
                       previewUrl={imageUrl}
@@ -350,10 +382,29 @@ export function StutiVinati() {
                       onFileSelect={() => {}}
                     />
                   </div>
+
+                  <div className="form-group">
+                    <span className="form-label">Audio File (Required for Morning/Evening Cards)</span>
+                    <AudioUpload 
+                      folder="audio/prayers"
+                      audioUrl={audioUrl}
+                      onUploadComplete={setAudioUrl}
+                      onClear={() => setAudioUrl('')}
+                      onFileSelect={() => {}}
+                    />
+                  </div>
                   
                   <div className="form-group">
-                    <label className="form-label">Status</label>
-                    <select className="form-select" value={publishStatus} onChange={e => setPublishStatus(e.target.value as any)} disabled={isLoading}>
+                    <label className="form-label" htmlFor="stv-type">Type</label>
+                    <select id="stv-type" className="form-select" value={type} onChange={e => setType(e.target.value)} disabled={isLoading}>
+                      <option value="morning">Morning Stuti (☀️ प्रातःकालीन)</option>
+                      <option value="evening">Evening Stuti (🌙 संध्याकालीन)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="stv-status">Status</label>
+                    <select id="stv-status" className="form-select" value={publishStatus} onChange={e => setPublishStatus(e.target.value as any)} disabled={isLoading}>
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
                       <option value="archived">Archived</option>
@@ -361,8 +412,9 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Reading Order <span style={{ color: 'var(--danger)' }}>*</span></label>
+                    <label className="form-label" htmlFor="stv-reading-order">Reading Order <span className="text-danger">*</span></label>
                     <input 
+                      id="stv-reading-order"
                       type="number" 
                       className="form-input" 
                       value={readingOrder} 
@@ -373,7 +425,7 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Category</label>
+                    <span className="form-label">Category</span>
                     <CategorySelector
                       categories={categories}
                       value={categoryId}
@@ -383,8 +435,9 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Tags (comma separated)</label>
+                    <label className="form-label" htmlFor="stv-tags">Tags (comma separated)</label>
                     <input 
+                      id="stv-tags"
                       type="text" 
                       className="form-input" 
                       value={tagsInput} 
@@ -394,8 +447,9 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <label className="stv-checkbox-label" htmlFor="stv-featured">
                       <input 
+                        id="stv-featured"
                         type="checkbox" 
                         checked={featured} 
                         onChange={e => setFeatured(e.target.checked)} 
@@ -407,10 +461,11 @@ export function StutiVinati() {
                 </div>
 
                 {/* Right Column - Text Data */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+                <div className="flex flex-col gap-4">
                   <div className="form-group">
-                    <label className="form-label">Title <span style={{ color: 'var(--danger)' }}>*</span></label>
+                    <label className="form-label" htmlFor="stv-title">Title <span className="text-danger">*</span></label>
                     <input 
+                      id="stv-title"
                       type="text" 
                       className="form-input" 
                       value={title} 
@@ -421,7 +476,7 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Prayer Content (Markdown) <span style={{ color: 'var(--danger)' }}>*</span></label>
+                    <span className="form-label">Prayer Content (Markdown) <span className="text-danger">*</span></span>
                     <MarkdownEditor 
                       value={content}
                       onChange={setContent}
@@ -432,8 +487,9 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Translation (Optional)</label>
+                    <label className="form-label" htmlFor="stv-translation">Translation (Optional)</label>
                     <textarea 
+                      id="stv-translation"
                       className="form-textarea" 
                       rows={3}
                       value={translation} 
@@ -443,8 +499,9 @@ export function StutiVinati() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Transliteration (Optional)</label>
+                    <label className="form-label" htmlFor="stv-transliteration">Transliteration (Optional)</label>
                     <textarea 
+                      id="stv-transliteration"
                       className="form-textarea" 
                       rows={3}
                       value={transliteration} 
@@ -455,7 +512,7 @@ export function StutiVinati() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-32)' }}>
+              <div className="stv-form-footer">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>
                   Cancel
                 </button>
@@ -470,23 +527,23 @@ export function StutiVinati() {
 
       {/* Bulk Category Modal */}
       {bulkCategoryConfirm && (
-        <div className="modal-backdrop">
-          <div className="modal-content" style={{ maxWidth: '400px' }}>
-            <div className="flex-between" style={{ marginBottom: 'var(--space-24)' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Assign Category</h2>
-              <button className="btn-icon" onClick={() => setBulkCategoryConfirm(false)}>
+        <div className="stv-modal-backdrop">
+          <div className="modal-content stv-modal-content stv-modal-content-sm">
+            <div className="flex-between mb-6">
+              <h2 className="stv-modal-title">Assign Category</h2>
+              <button className="btn-icon" onClick={() => setBulkCategoryConfirm(false)} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
             <div className="form-group">
-              <label className="form-label">Select Category for {selectedCount} prayers</label>
+              <span className="form-label">Select Category for {selectedCount} prayers</span>
               <CategorySelector
                 categories={categories}
                 value={bulkCategoryId}
                 onChange={setBulkCategoryId}
               />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-16)', marginTop: 'var(--space-24)' }}>
+            <div className="stv-modal-actions">
               <button className="btn btn-outline" onClick={() => setBulkCategoryConfirm(false)}>Cancel</button>
               <button 
                 className="btn btn-primary" 

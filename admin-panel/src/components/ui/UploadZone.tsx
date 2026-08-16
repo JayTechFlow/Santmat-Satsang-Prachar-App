@@ -68,7 +68,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
           borderRadius: 'var(--radius-card)',
           padding: 'var(--space-40) var(--space-24)',
           textAlign: 'center',
-          backgroundColor: isDragActive ? '#FFF2E8' : 'var(--surface)',
+          backgroundColor: isDragActive ? 'var(--primary-light)' : 'var(--surface)',
           transition: 'all var(--transition-fast)',
           cursor: 'pointer',
           position: 'relative'

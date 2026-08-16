@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../providers/home_providers.dart';
 import '../widgets/daily_quote_card.dart';
-
-import '../widgets/error_state_widget.dart';
 import '../widgets/featured_banner_carousel.dart';
-import '../widgets/featured_books_section.dart';
-import '../widgets/home_app_bar.dart';
 import '../widgets/latest_audio_section.dart';
-import '../widgets/latest_satsang_section.dart';
-import '../widgets/loading_state_widget.dart';
 import '../widgets/quick_actions_grid.dart';
-import '../widgets/upcoming_events_section.dart';
+import '../widgets/notification_icon.dart';
+import '../widgets/profile_avatar.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
+import '../../../../shared/design_system/components/ssp_icon_button.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../l10n/gen/app_localizations.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -24,20 +25,46 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: homeState.maybeWhen(
-        data: (data) => HomeAppBar(
-          notificationCount: data.notificationCount,
-          profileInitial: 'U', // Update when user profile feature is available
+        data: (data) => SSPAppBar(
+          title: AppLocalizations.of(context)!.appTitle,
+          actions: [
+            SSPIconButton(
+              icon: const Icon(Icons.search_rounded),
+              semanticLabel: 'Search',
+              onPressed: () => context.push('/search'),
+            ),
+            NotificationIcon(count: data.notificationCount),
+            const SizedBox(width: 8),
+            ProfileAvatar(
+              fallbackInitial: 'U', // Update when user profile feature is available
+              onTap: () => context.push('/settings'),
+            ),
+            const SizedBox(width: 16),
+          ],
         ),
-        orElse: () => const HomeAppBar(
-          notificationCount: 0,
-          profileInitial: '',
+        orElse: () => SSPAppBar(
+          title: AppLocalizations.of(context)!.appTitle,
+          actions: [
+            SSPIconButton(
+              icon: const Icon(Icons.search_rounded),
+              semanticLabel: 'Search',
+              onPressed: () => context.push('/search'),
+            ),
+            NotificationIcon(count: 0),
+            const SizedBox(width: 8),
+            ProfileAvatar(
+              fallbackInitial: '',
+              onTap: () => context.push('/settings'),
+            ),
+            const SizedBox(width: 16),
+          ],
         ),
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(homeStateProvider.notifier).refreshDashboard(),
         child: homeState.when(
-          loading: () => const LoadingStateWidget(),
-          error: (err, stack) => ErrorStateWidget(
+          loading: () => const SSPLoadingState(),
+          error: (err, stack) => SSPErrorState(
             message: err.toString(),
             onRetry: () => ref.read(homeStateProvider.notifier).refreshDashboard(),
           ),
@@ -59,12 +86,6 @@ class HomePage extends ConsumerWidget {
                         DailyQuoteCard(quote: data.dailyQuote!),
                       if (data.latestAudios.isNotEmpty)
                         LatestAudioSection(audios: data.latestAudios),
-                      if (data.latestSatsangs.isNotEmpty)
-                        LatestSatsangSection(satsangs: data.latestSatsangs),
-                      if (data.upcomingEvents.isNotEmpty)
-                        UpcomingEventsSection(events: data.upcomingEvents),
-                      if (data.featuredBooks.isNotEmpty)
-                        FeaturedBooksSection(books: data.featuredBooks),
                       const SizedBox(height: 32),
                     ],
                   ),

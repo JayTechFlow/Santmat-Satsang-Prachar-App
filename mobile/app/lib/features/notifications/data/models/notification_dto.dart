@@ -6,17 +6,27 @@ import '../../domain/entities/notification_action_entity.dart';
 class NotificationDto {
   static NotificationEntity fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    final categoryData = data['category'] as Map<String, dynamic>? ?? {};
+    final categoryRaw = data['category'];
+    NotificationCategoryEntity categoryEntity;
+    
+    if (categoryRaw is String) {
+      categoryEntity = NotificationCategoryEntity(id: categoryRaw, name: categoryRaw);
+    } else if (categoryRaw is Map<String, dynamic>) {
+      categoryEntity = NotificationCategoryEntity(
+        id: categoryRaw['id'] as String? ?? '',
+        name: categoryRaw['name'] as String? ?? '',
+      );
+    } else {
+      categoryEntity = NotificationCategoryEntity(id: 'Updates', name: 'Updates');
+    }
+
     final actionData = data['action'] as Map<String, dynamic>?;
 
     return NotificationEntity(
       id: doc.id,
       title: data['title'] as String? ?? '',
       body: data['body'] as String? ?? '',
-      category: NotificationCategoryEntity(
-        id: categoryData['id'] as String? ?? '',
-        name: categoryData['name'] as String? ?? '',
-      ),
+      category: categoryEntity,
       priority: data['priority'] as String? ?? 'normal',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isRead: data['isRead'] as bool? ?? false,

@@ -13,6 +13,7 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
@@ -22,6 +23,7 @@ export function Categories() {
   const {
     data: items,
     loading,
+    error,
     refetch,
     searchTerm,
     setSearchTerm,
@@ -57,6 +59,10 @@ export function Categories() {
   const [sortOrder, setSortOrder] = useState<number>(0);
   const [status, setStatus] = useState<'active' | 'archived'>('active');
   const [featured, setFeatured] = useState(false);
+  const [showOnHome, setShowOnHome] = useState(false);
+  const [homeOrder, setHomeOrder] = useState<number>(0);
+  const [route, setRoute] = useState('');
+  const [icon, setIcon] = useState('');
 
   // Derive flat tree for the table
   const tableData = useMemo(() => {
@@ -74,6 +80,10 @@ export function Categories() {
     setSortOrder(0);
     setStatus('active');
     setFeatured(false);
+    setShowOnHome(false);
+    setHomeOrder(0);
+    setRoute('');
+    setIcon('');
   };
 
   const openEdit = (item: CategoryDTO) => {
@@ -86,6 +96,10 @@ export function Categories() {
     setSortOrder(item.sortOrder || 0);
     setStatus(item.status || 'active');
     setFeatured(item.featured || false);
+    setShowOnHome(item.showOnHome || false);
+    setHomeOrder(item.homeOrder || 0);
+    setRoute(item.route || '');
+    setIcon(item.icon || '');
     setIsModalOpen(true);
   };
 
@@ -106,7 +120,11 @@ export function Categories() {
       parentId: parentId || '',
       sortOrder,
       status,
-      featured
+      featured,
+      showOnHome,
+      homeOrder,
+      route,
+      icon
     };
 
     let success = false;
@@ -166,7 +184,7 @@ export function Categories() {
     {
       key: 'slug',
       header: 'Slug',
-      render: (item) => <span className="text-muted" style={{ fontFamily: 'monospace' }}>{item.slug}</span>
+      render: (item) => <span className="text-muted font-mono">{item.slug}</span>
     },
     {
       key: 'sortOrder',
@@ -179,18 +197,18 @@ export function Categories() {
       render: (item) => (
         <div className="flex justify-end gap-2">
           {item.status === 'active' ? (
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveCategory(item.id, true); }} title="Archive">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveCategory(item.id, true); }} title="Archive" aria-label="Archive category">
               <Archive size={18} />
             </button>
           ) : (
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveCategory(item.id, false); }} title="Restore">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveCategory(item.id, false); }} title="Restore" aria-label="Restore category">
               <RefreshCw size={18} />
             </button>
           )}
-          <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
+          <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit" aria-label="Edit category">
             <Edit2 size={18} />
           </button>
-          <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+          <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete" aria-label="Delete category">
             <Trash2 size={18} />
           </button>
         </div>
@@ -233,7 +251,11 @@ export function Categories() {
       <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
-        {tableData.length > 0 ? (
+        {error && !loading ? (
+          <div className="py-12">
+            <ErrorState title="Failed to load categories" message={error.message} onRetry={refetch} />
+          </div>
+        ) : tableData.length > 0 ? (
           <DataTable<any>
             data={tableData}
             columns={columns}
@@ -273,16 +295,17 @@ export function Categories() {
                   {editingId ? 'Edit Category' : 'Add Category'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Category Name <span style={{ color: 'var(--danger)' }}>*</span></label>
+                <label className="form-label" htmlFor="category-name">Category Name <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
+                  id="category-name"
                   className="form-input" 
                   value={name} 
                   onChange={e => generateSlug(e.target.value)} 
@@ -293,9 +316,10 @@ export function Categories() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Slug <span style={{ color: 'var(--danger)' }}>*</span></label>
+                <label className="form-label" htmlFor="category-slug">Slug <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
+                  id="category-slug"
                   className="form-input" 
                   value={slug} 
                   onChange={e => setSlug(e.target.value)} 
@@ -305,8 +329,8 @@ export function Categories() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Parent Category</label>
+              <div className="form-group" role="group" aria-labelledby="category-parent-label">
+                <label className="form-label" id="category-parent-label">Parent Category</label>
                 <CategorySelector
                   categories={items}
                   value={parentId}
@@ -319,17 +343,18 @@ export function Categories() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="form-group mb-0">
-                  <label className="form-label">Applies To (Type)</label>
-                  <select className="form-select" value={type} onChange={e => setType(e.target.value)} disabled={isLoading}>
+                  <label className="form-label" htmlFor="category-type">Applies To (Type)</label>
+                  <select id="category-type" className="form-select" value={type} onChange={e => setType(e.target.value)} disabled={isLoading}>
                     <option value="audio">Audio</option>
                     <option value="book">Book</option>
                     <option value="prayer">Prayer</option>
                   </select>
                 </div>
                 <div className="form-group mb-0">
-                  <label className="form-label">Sort Order</label>
+                  <label className="form-label" htmlFor="category-sort-order">Sort Order</label>
                   <input 
                     type="number" 
+                    id="category-sort-order"
                     className="form-input" 
                     value={sortOrder} 
                     onChange={e => setSortOrder(Number(e.target.value))} 
@@ -338,17 +363,81 @@ export function Categories() {
                 </div>
               </div>
 
-              <div className="form-group mb-0 mt-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={featured} 
-                    onChange={e => setFeatured(e.target.checked)} 
-                    disabled={isLoading}
-                  />
-                  Featured Category
-                </label>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="form-group mb-0">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={featured} 
+                      onChange={e => setFeatured(e.target.checked)} 
+                      disabled={isLoading}
+                    />
+                    Featured Category
+                  </label>
+                </div>
+                <div className="form-group mb-0">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={showOnHome} 
+                      onChange={e => setShowOnHome(e.target.checked)} 
+                      disabled={isLoading}
+                    />
+                    Show on Home (Quick Action)
+                  </label>
+                </div>
               </div>
+
+              {showOnHome && (
+                <div className="grid grid-cols-3 gap-4 mt-4 p-4 border rounded bg-base">
+                  <div className="form-group mb-0">
+                    <label className="form-label" htmlFor="category-home-order">Home Order</label>
+                    <input 
+                      type="number" 
+                      id="category-home-order"
+                      className="form-input" 
+                      value={homeOrder} 
+                      onChange={e => setHomeOrder(Number(e.target.value))} 
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div className="form-group mb-0">
+                    <label className="form-label" htmlFor="category-route">Route</label>
+                    <select 
+                      id="category-route"
+                      className="form-select" 
+                      value={route} 
+                      onChange={e => setRoute(e.target.value)} 
+                      disabled={isLoading}
+                    >
+                      <option value="">Select a Route</option>
+                      <option value="/audio">Audio (/audio)</option>
+                      <option value="/stuti">Stuti Vinati (/stuti)</option>
+                      <option value="/books">Books (/books)</option>
+                      <option value="/satsang">Satsang (/satsang)</option>
+                      <option value="/events">Events (/events)</option>
+                      <option value="/donations">Donations (/donations)</option>
+                    </select>
+                  </div>
+                  <div className="form-group mb-0">
+                    <label className="form-label" htmlFor="category-icon">Icon Name</label>
+                    <select 
+                      id="category-icon"
+                      className="form-select" 
+                      value={icon} 
+                      onChange={e => setIcon(e.target.value)} 
+                      disabled={isLoading}
+                    >
+                      <option value="">Select an Icon</option>
+                      <option value="headphones">Headphones</option>
+                      <option value="menu_book">Book</option>
+                      <option value="volunteer_activism">Heart / Volunteer</option>
+                      <option value="live_tv">Live TV</option>
+                      <option value="star">Star</option>
+                    </select>
+                  </div>
+                </div>
+              )}
 
               <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)} disabled={isLoading}>

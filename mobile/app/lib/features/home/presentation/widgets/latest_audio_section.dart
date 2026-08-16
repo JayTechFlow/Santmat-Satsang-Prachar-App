@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../../shared/theme/app_spacing.dart';
-import '../../../../../shared/theme/app_radius.dart';
-import '../../../../../l10n/gen/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../shared/design_system/components/ssp_audio_tile.dart';
+import '../../../../shared/design_system/components/ssp_section_header.dart';
+import '../../../../l10n/gen/app_localizations.dart';
 import '../../domain/entities/latest_audio_entity.dart';
 
 class LatestAudioSection extends StatelessWidget {
@@ -14,28 +15,14 @@ class LatestAudioSection extends StatelessWidget {
     if (audios.isEmpty) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sp16,
-            vertical: AppSpacing.sp8,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.latestAudios,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton(onPressed: () {}, child: Text(l10n.seeAll)),
-            ],
-          ),
+        SSPSectionHeader(
+          title: l10n.latestAudios,
+          actionText: l10n.seeAll,
+          onAction: () => context.push('/audio'),
         ),
         ListView.builder(
           shrinkWrap: true,
@@ -43,27 +30,17 @@ class LatestAudioSection extends StatelessWidget {
           itemCount: audios.length,
           itemBuilder: (context, index) {
             final audio = audios[index];
-            return ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(AppSpacing.sp8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Icon(
-                  Icons.music_note,
-                  color: theme.colorScheme.onTertiaryContainer,
-                ),
-              ),
-              title: Text(
-                audio.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(audio.speaker),
-              trailing: const Icon(Icons.play_circle_outline),
-              onTap: () {},
+            return SSPAudioTile(
+              title: audio.title,
+              subtitle: audio.speaker,
+              durationText: audio.duration.inMinutes > 0
+                  ? '${audio.duration.inMinutes}:${(audio.duration.inSeconds % 60).toString().padLeft(2, '0')}'
+                  : null,
+              artwork: null,
+              onTap: () => context.push('/audio/details/${audio.id}'),
+              onPlayPause: () {
+                // TODO: Implement play/pause from home
+              },
             );
           },
         ),

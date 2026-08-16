@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/firebase/firestore_collections.dart';
 import '../../../../core/services/firestore_service.dart';
@@ -11,16 +12,21 @@ import 'library_data_source.dart';
 
 class FirestoreLibraryDataSource implements LibraryDataSource {
   final FirestoreService _firestoreService;
-  // Hardcoded for mock user until auth is implemented
-  final String _userId = 'mock_user_id';
+  final FirebaseAuth _firebaseAuth;
 
-  FirestoreLibraryDataSource(this._firestoreService);
+  FirestoreLibraryDataSource(
+    this._firestoreService, {
+    FirebaseAuth? firebaseAuth,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
+  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
   String get _libraryPath =>
       '${FirestoreCollections.users}/$_userId/${FirestoreCollections.library}';
 
   @override
   Future<List<BookmarkEntity>> getBookmarks(LibraryFilterEntity filter) async {
+    if (_userId.isEmpty) return [];
     final snapshot = await _firestoreService.getCollection(_libraryPath);
     var bookmarks = snapshot.docs
         .where(
@@ -40,6 +46,7 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
 
   @override
   Future<List<FavoriteEntity>> getFavorites(LibraryFilterEntity filter) async {
+    if (_userId.isEmpty) return [];
     final snapshot = await _firestoreService.getCollection(_libraryPath);
     var favorites = snapshot.docs
         .where(
@@ -58,6 +65,7 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
 
   @override
   Future<List<HistoryEntity>> getHistory(LibraryFilterEntity filter) async {
+    if (_userId.isEmpty) return [];
     final snapshot = await _firestoreService.getCollection(_libraryPath);
     var history = snapshot.docs
         .where(
@@ -77,6 +85,7 @@ class FirestoreLibraryDataSource implements LibraryDataSource {
 
   @override
   Future<List<RecentActivityEntity>> getRecentActivities() async {
+    if (_userId.isEmpty) return [];
     final history = await getHistory(const LibraryFilterEntity());
     return history
         .take(5)

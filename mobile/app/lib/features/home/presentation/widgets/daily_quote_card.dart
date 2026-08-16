@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/gen/app_localizations.dart';
 import '../../../../../shared/theme/app_spacing.dart';
 import '../../../../../shared/theme/app_radius.dart';
+import '../../../../../shared/widgets/ssp_image.dart';
 import '../../domain/entities/daily_quote_entity.dart';
 
 class DailyQuoteCard extends StatelessWidget {
@@ -44,6 +45,18 @@ class DailyQuoteCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.sp8),
+          if (quote.imageUrl != null && quote.imageUrl!.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              child: SSPImage(
+                quote.imageUrl!,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sp12),
+          ],
           Text(
             '"${quote.quoteText}"',
             style: theme.textTheme.bodyLarge?.copyWith(

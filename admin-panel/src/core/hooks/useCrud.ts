@@ -19,6 +19,7 @@ export function useCrud<T extends { id: string }>(
   });
   const { error: showError } = useToast();
 
+  const queryOptionsStr = JSON.stringify(queryOptions || {});
   const initialPaginationStr = JSON.stringify(initialPagination || null);
 
   const fetchData = useCallback(async (pageOptions?: PaginationOptions) => {
@@ -26,12 +27,13 @@ export function useCrud<T extends { id: string }>(
     setError(null);
     try {
       const parsedPagination = initialPaginationStr !== 'null' ? JSON.parse(initialPaginationStr) : undefined;
+      const parsedQueryOptions = JSON.parse(queryOptionsStr);
       if (pageOptions || parsedPagination) {
-        const result = await service.paginate(pageOptions || parsedPagination || {}, queryOptions);
+        const result = await service.paginate(pageOptions || parsedPagination || {}, parsedQueryOptions);
         setData(result.data);
         setPaginationInfo({ lastDoc: result.lastDoc, total: result.total });
       } else {
-        const result = await service.getAll(queryOptions);
+        const result = await service.getAll(parsedQueryOptions);
         setData(result);
         setPaginationInfo({ lastDoc: null, total: result.length });
       }
@@ -41,11 +43,48 @@ export function useCrud<T extends { id: string }>(
     } finally {
       setLoading(false);
     }
-  }, [service, JSON.stringify(queryOptions), initialPaginationStr, showError]);
+  }, [service, queryOptionsStr, initialPaginationStr, showError]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let isSubscribed = true;
+    setLoading(true);
+    setError(null);
+    const parsedPagination = initialPaginationStr !== 'null' ? JSON.parse(initialPaginationStr) : undefined;
+    const parsedQueryOptions = JSON.parse(queryOptionsStr);
+    
+    const runFetch = async () => {
+      try {
+        if (parsedPagination) {
+          const result = await service.paginate(parsedPagination, parsedQueryOptions);
+          if (isSubscribed) {
+            setData(result.data);
+            setPaginationInfo({ lastDoc: result.lastDoc, total: result.total });
+          }
+        } else {
+          const result = await service.getAll(parsedQueryOptions);
+          if (isSubscribed) {
+            setData(result);
+            setPaginationInfo({ lastDoc: null, total: result.length });
+          }
+        }
+      } catch (err: any) {
+        if (isSubscribed) {
+          setError(err as AppError);
+          showError(err.message || 'Failed to load data');
+        }
+      } finally {
+        if (isSubscribed) {
+          setLoading(false);
+        }
+      }
+    };
+
+    runFetch();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [service, queryOptionsStr, initialPaginationStr, showError]);
 
   const refresh = () => fetchData();
 

@@ -17,7 +17,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
       padding: 'var(--space-16)',
       backgroundColor: 'var(--surface)',
       border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-input)',
+      borderRadius: 'var(--radius-md)',
       marginTop: 'var(--space-8)'
     }}>
       <div className="flex-between" style={{ marginBottom: 'var(--space-8)' }}>
@@ -32,8 +32,8 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
       <div style={{
         width: '100%',
         height: '8px',
-        backgroundColor: '#E8E8E8',
-        borderRadius: '4px',
+        backgroundColor: 'var(--border)',
+        borderRadius: 'var(--radius-full)',
         overflow: 'hidden',
         marginBottom: onCancel ? 'var(--space-8)' : 0
       }}>
@@ -41,7 +41,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
           height: '100%',
           width: `${progress}%`,
           backgroundColor: 'var(--primary)',
-          transition: 'width 0.2s ease'
+          transition: 'width var(--transition-fast) var(--easing-standard)'
         }} />
       </div>
 

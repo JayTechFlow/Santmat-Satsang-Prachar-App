@@ -8,20 +8,29 @@ interface AnalyticsChartProps {
 
 export const AnalyticsChart = memo(function AnalyticsChart({ data }: AnalyticsChartProps) {
   const maxVal = useMemo(() => Math.max(...data.map(d => d.value), 1), [data]);
-  
+
   return (
     <div className="card h-full">
       <div className="card-header">
-        <h3 className="card-title">Analytics Overview</h3>
-        <Activity size={20} className="text-muted" />
+        <h3 className="card-title">Recent Content Activity</h3>
+        <Activity size={20} className="text-muted" aria-hidden="true" />
       </div>
-      <div className="bg-background rounded-md flex items-end justify-center gap-2 pb-4" style={{ height: '300px', padding: '1rem', justifyContent: 'space-around' }}>
+      <div
+        className="analytics-chart"
+        role="img"
+        aria-label={`Bar chart of content activity: ${data.map((d) => `${d.date}: ${d.value}`).join(', ')}`}
+      >
         {data.map((item, idx) => {
           const heightPercent = (item.value / maxVal) * 100;
           return (
-            <div key={idx} className="flex-col items-center flex-1 h-full justify-center" style={{ justifyContent: 'flex-end' }}>
-              <div className="w-full bg-primary" style={{ opacity: 0.8, borderRadius: '4px 4px 0 0', height: `${heightPercent}%`, minHeight: '4px', transition: 'height 0.3s' }}></div>
-              <span className="text-xs text-muted mt-2">{item.date}</span>
+            <div key={idx} className="analytics-column">
+              <div className="analytics-bar-track">
+                <div
+                  className="analytics-bar-fill"
+                  style={{ height: `${heightPercent}%` }}
+                />
+              </div>
+              <span className="analytics-bar-label">{item.date}</span>
             </div>
           );
         })}

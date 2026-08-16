@@ -17,16 +17,11 @@ class NotificationIcon extends StatelessWidget {
               right: 0,
               top: 0,
               child: Container(
-                padding: const EdgeInsets.all(2),
+                width: 8,
+                height: 8,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.error,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
-                child: Text(
-                  count > 99 ? '99+' : count.toString(),
-                  style: const TextStyle(color: Colors.white, fontSize: 8),
-                  textAlign: TextAlign.center,
+                  shape: BoxShape.circle,
                 ),
               ),
             ),

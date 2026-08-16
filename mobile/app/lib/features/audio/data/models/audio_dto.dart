@@ -58,7 +58,7 @@ class AudioDto {
       thumbnailUrl: data['thumbnailUrl'] as String? ?? '',
       artworkUrl: data['artworkUrl'] as String? ?? '',
       releaseDate:
-          (data['releaseDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       playCount: data['playCount'] as int? ?? 0,
       favoriteCount: data['favoriteCount'] as int? ?? 0,
       isFeatured: data['isFeatured'] as bool? ?? false,

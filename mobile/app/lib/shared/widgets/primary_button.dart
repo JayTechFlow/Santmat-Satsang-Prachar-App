@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/ssp_primary_button.dart';
 
+/// Legacy PrimaryButton adapter delegating to the canonical [SSPPrimaryButton].
 class PrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -14,15 +16,11 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      child: isLoading
-          ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(text),
+    return SSPPrimaryButton.text(
+      text: text,
+      onPressed: onPressed,
+      isLoading: isLoading,
     );
   }
 }
+

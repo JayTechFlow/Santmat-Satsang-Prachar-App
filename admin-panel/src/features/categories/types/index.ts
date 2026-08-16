@@ -12,6 +12,9 @@ export interface CategoryDTO {
   status: 'active' | 'archived';
   featured: boolean;
   color?: string;
+  showOnHome?: boolean;
+  homeOrder?: number;
+  route?: string;
 }
 
 export type CategoryViewModel = EntityWithAudit<CategoryDTO>;

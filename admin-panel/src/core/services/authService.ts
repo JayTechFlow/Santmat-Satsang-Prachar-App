@@ -5,6 +5,9 @@ export const authService = {
   login: async (email: string, password: string) => {
     return authRepository.login(email, password);
   },
+  signInWithGoogle: async () => {
+    return authRepository.signInWithGoogle();
+  },
   logout: async () => {
     return authRepository.logout();
   },

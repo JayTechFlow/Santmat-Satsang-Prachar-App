@@ -12,5 +12,6 @@ abstract class SearchDataSource {
   Future<void> saveRecentSearch(String query);
   Future<void> deleteRecentSearch(String query);
   Future<void> clearRecentSearches();
+  Future<List<String>> getPopularSearches();
   Future<List<SearchSuggestionEntity>> getSearchSuggestions(String query);
 }

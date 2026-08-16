@@ -46,3 +46,9 @@ class GetSearchSuggestionsUseCase {
   Future<Result<List<SearchSuggestionEntity>>> call(String query) =>
       repository.getSearchSuggestions(query);
 }
+
+class GetPopularSearchesUseCase {
+  final SearchRepository repository;
+  GetPopularSearchesUseCase(this.repository);
+  Future<Result<List<String>>> call() => repository.getPopularSearches();
+}

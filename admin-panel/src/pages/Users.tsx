@@ -12,18 +12,21 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
 import { Pagination } from '../components/ui/Pagination';
 import { ImageUpload } from '../components/ui/ImageUpload';
-import { UserStatusBadge } from '../features/users/components/UserStatusBadge';
+import { StatusBadge } from '../components/ui/Badge';
 import { UserAvatar } from '../features/users/components/UserAvatar';
+import { usePermissions, PermissionGate, DeveloperOnly } from '../core/auth/PermissionContext';
 
 export function Users() {
   const {
     data: items,
     loading,
+    error,
     refetch,
     searchTerm,
     setSearchTerm,
@@ -37,6 +40,7 @@ export function Users() {
   } = useUsers();
 
   const { createUser, updateUser, deleteUser, changeStatus, loading: mutating } = useUserMutations(refetch);
+  usePermissions();
 
   const {
     selectedIds,
@@ -167,7 +171,7 @@ export function Users() {
       render: (item) => (
         <div className="flex flex-col gap-1">
           <div className="text-sm text-heading flex items-center">
-            {item.designation || 'Staff'} {item.roleIds?.includes('super_admin') && <Shield size={12} className="text-primary ml-1 inline" />}
+            {item.designation || 'Staff'} {item.roleIds?.includes('developer_super_admin') && <Shield size={12} className="text-primary ml-1 inline" />}
           </div>
           <div className="text-xs text-muted">
             {item.department || 'General'}
@@ -192,7 +196,7 @@ export function Users() {
     {
       key: 'status',
       header: 'Status',
-      render: (item) => <UserStatusBadge status={item.status} />
+      render: (item) => <StatusBadge status={item.status} />
     },
     {
       key: 'actions',
@@ -200,12 +204,16 @@ export function Users() {
       render: (item) => {
         return (
           <div className="flex gap-2 justify-end">
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit User">
-              <Edit2 size={18} />
-            </button>
-            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete User">
-              <Trash2 size={18} />
-            </button>
+            <PermissionGate permission="users.update" fallback={null}>
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit User" aria-label="Edit user">
+                <Edit2 size={18} />
+              </button>
+            </PermissionGate>
+            <PermissionGate permission="users.delete" fallback={null}>
+              <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete User" aria-label="Delete user">
+                <Trash2 size={18} />
+              </button>
+            </PermissionGate>
           </div>
         );
       }
@@ -223,9 +231,11 @@ export function Users() {
             Manage staff accounts, RBAC roles, and system access
           </p>
         </div>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-          <Plus size={18} /> Add User
-        </button>
+        <PermissionGate permission="users.create" fallback={null}>
+          <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
+            <Plus size={18} /> Add User
+          </button>
+        </PermissionGate>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
@@ -272,6 +282,10 @@ export function Users() {
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
           </>
+        ) : !loading && error ? (
+          <div className="py-12">
+            <ErrorState title="Failed to load users" message={error.message} onRetry={refetch} />
+          </div>
         ) : !loading && (
           <div className="py-12">
             <EmptyState 
@@ -283,23 +297,25 @@ export function Users() {
         )}
       </div>
 
-      <BulkActionBar 
-        selectedCount={selectedCount}
-        onClearSelection={clearSelection}
-        onDelete={() => setBulkDeleteConfirm(true)}
-        customActions={[
-          {
-            label: 'Suspend',
-            icon: <Ban size={16} />,
-            onClick: () => handleBulkStatusChange('suspended')
-          },
-          {
-            label: 'Activate',
-            icon: <CheckCircle size={16} />,
-            onClick: () => handleBulkStatusChange('active')
-          }
-        ]}
-      />
+      <PermissionGate permission="users.delete" fallback={null}>
+        <BulkActionBar 
+          selectedCount={selectedCount}
+          onClearSelection={clearSelection}
+          onDelete={() => setBulkDeleteConfirm(true)}
+          customActions={[
+            {
+              label: 'Suspend',
+              icon: <Ban size={16} />,
+              onClick: () => handleBulkStatusChange('suspended')
+            },
+            {
+              label: 'Activate',
+              icon: <CheckCircle size={16} />,
+              onClick: () => handleBulkStatusChange('active')
+            }
+          ]}
+        />
+      </PermissionGate>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
@@ -312,7 +328,7 @@ export function Users() {
                   {editingId ? 'Edit User Profile' : 'Add New User'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
@@ -333,8 +349,8 @@ export function Users() {
                   </div>
                   
                   <div className="form-group mb-0">
-                    <label className="form-label">Account Status</label>
-                    <select className="form-select" value={status} onChange={e => setStatus(e.target.value as UserStatus)} disabled={isLoading}>
+                    <label className="form-label" htmlFor="user-status">Account Status</label>
+                    <select className="form-select" id="user-status" value={status} onChange={e => setStatus(e.target.value as UserStatus)} disabled={isLoading}>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                       <option value="suspended">Suspended</option>
@@ -368,10 +384,11 @@ export function Users() {
                 {/* Right Column - Information */}
                 <div className="flex flex-col gap-4">
                   <div className="form-group mb-0">
-                    <label className="form-label">Full Name <span style={{ color: 'var(--danger)' }}>*</span></label>
+                    <label className="form-label" htmlFor="user-full-name">Full Name <span className="text-danger">*</span></label>
                     <input 
                       type="text" 
                       className="form-input" 
+                      id="user-full-name"
                       value={fullName} 
                       onChange={e => setFullName(e.target.value)} 
                       required 
@@ -381,10 +398,11 @@ export function Users() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="form-group mb-0">
-                      <label className="form-label">Email Address <span className="text-danger">*</span></label>
+                      <label className="form-label" htmlFor="user-email">Email Address <span className="text-danger">*</span></label>
                       <input 
                         type="email" 
                         className="form-input" 
+                        id="user-email"
                         value={email} 
                         onChange={e => setEmail(e.target.value)} 
                         required 
@@ -392,10 +410,11 @@ export function Users() {
                       />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label">Phone Number</label>
+                      <label className="form-label" htmlFor="user-phone">Phone Number</label>
                       <input 
                         type="tel" 
                         className="form-input" 
+                        id="user-phone"
                         value={phone} 
                         onChange={e => setPhone(e.target.value)} 
                         disabled={isLoading}
@@ -405,49 +424,70 @@ export function Users() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="form-group mb-0">
-                      <label className="form-label">Employee ID</label>
+                      <label className="form-label" htmlFor="user-employee-id">Employee ID</label>
                       <input 
                         type="text" 
                         className="form-input" 
+                        id="user-employee-id"
                         value={employeeId} 
                         onChange={e => setEmployeeId(e.target.value)} 
                         disabled={isLoading}
                       />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label">System Role</label>
-                      <select 
-                        className="form-select" 
-                        value={roleIds[0] || ''} 
-                        onChange={e => setRoleIds([e.target.value])} 
-                        disabled={isLoading}
-                      >
-                        <option value="">No Role Assigned</option>
-                        <option value="super_admin">Super Admin</option>
-                        <option value="admin">Admin</option>
-                        <option value="content_manager">Content Manager</option>
-                        <option value="editor">Editor</option>
-                        <option value="viewer">Viewer</option>
-                      </select>
+                      <label className="form-label" htmlFor="user-system-role">System Role</label>
+                      <PermissionGate permission="users.assign_role" fallback={null}>
+                        <DeveloperOnly>
+                          <select 
+                            className="form-select" 
+                            id="user-system-role"
+                            value={roleIds[0] || ''} 
+                            onChange={e => setRoleIds([e.target.value])} 
+                            disabled={isLoading}
+                          >
+                            <option value="">No Role Assigned</option>
+                            <option value="developer_super_admin">Developer Super Admin</option>
+                            <option value="client_super_admin">Client Super Admin</option>
+                            <option value="mobile_user">Mobile User</option>
+                          </select>
+                        </DeveloperOnly>
+                      </PermissionGate>
+                      <PermissionGate permission="users.assign_role" fallback={null}>
+                        <PermissionGate roles={['client_super_admin']} fallback={null}>
+                          <select 
+                            className="form-select" 
+                            id="user-system-role"
+                            value={roleIds[0] || ''} 
+                            onChange={e => setRoleIds([e.target.value])} 
+                            disabled={isLoading}
+                          >
+                            <option value="">No Role Assigned</option>
+                            <option value="client_super_admin">Client Super Admin</option>
+                            <option value="mobile_user">Mobile User</option>
+                          </select>
+                        </PermissionGate>
+                      </PermissionGate>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="form-group mb-0">
-                      <label className="form-label">Designation</label>
+                      <label className="form-label" htmlFor="user-designation">Designation</label>
                       <input 
                         type="text" 
                         className="form-input" 
+                        id="user-designation"
                         value={designation} 
                         onChange={e => setDesignation(e.target.value)} 
                         disabled={isLoading}
                       />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label">Department</label>
+                      <label className="form-label" htmlFor="user-department">Department</label>
                       <input 
                         type="text" 
                         className="form-input" 
+                        id="user-department"
                         value={department} 
                         onChange={e => setDepartment(e.target.value)} 
                         disabled={isLoading}

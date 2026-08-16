@@ -4,6 +4,7 @@ import { useToast } from '../hooks/useToast';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { AudioUpload } from '../components/ui/AudioUpload';
 import { ImageUpload } from '../components/ui/ImageUpload';
 import { useBhajans } from '../features/bhajans/hooks/useBhajans';
@@ -14,7 +15,6 @@ import { Pagination } from '../components/ui/Pagination';
 import { MarkdownEditor } from '../components/ui/MarkdownEditor';
 import { DataTable } from '../components/ui/DataTable';
 import { useTableSelection } from '../hooks/useTableSelection';
-import { useBulkActions } from '../hooks/useBulkActions';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
 
 export function Audio() {
@@ -25,7 +25,6 @@ export function Audio() {
   const { error, success } = useToast();
 
   const { selectedIds, selectedCount, toggleSelection, selectAll, clearSelection } = useTableSelection<string>();
-  const { executeBulkAction } = useBulkActions();
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [isUnsavedConfirmOpen, setIsUnsavedConfirmOpen] = useState(false);
 
@@ -68,23 +67,17 @@ export function Audio() {
   };
 
   const handleBulkDelete = async () => {
-    await executeBulkAction(
-      selectedIds,
-      async () => {}
-    );
-    // Since executeBulkAction iterates, but bulkDeleteBhajans takes array:
-    // Actually we can just call bulkDeleteBhajans(selectedIds) directly
+    const count = selectedIds.length;
     const successResult = await bulkDeleteBhajans(selectedIds);
-    const fakeResult = { successful: successResult ? selectedIds.length : 0, failed: successResult ? 0 : selectedIds.length };
-    
+
     setIsBulkDeleteModalOpen(false);
     clearSelection();
     refetch();
-    
-    if (fakeResult.failed > 0) {
-      error(`Deleted ${fakeResult.successful} bhajans, but ${fakeResult.failed} failed.`);
+
+    if (successResult) {
+      success(`Successfully deleted ${count} bhajans.`);
     } else {
-      success(`Successfully deleted ${fakeResult.successful} bhajans.`);
+      error(`Failed to delete selected bhajans.`);
     }
   };
 
@@ -136,9 +129,13 @@ export function Audio() {
       </div>
 
       {/* Main Table Card */}
-      <div className="card p-0 overflow-hidden relative" style={{ minHeight: '300px' }}>
+      <div className="card p-0 overflow-hidden relative">
         {isLoading ? (
           <LoadingOverlay message="Loading..." />
+        ) : fetchError ? (
+          <div className="py-12">
+            <ErrorState title="Failed to load audio tracks" message={fetchError.message} onRetry={refetch} />
+          </div>
         ) : items.length === 0 ? (
           <EmptyState title="No bhajans found" message="Get started by adding your first spiritual audio track." icon={<Music size={40} />} />
         ) : (
@@ -199,6 +196,7 @@ export function Audio() {
                       className="btn-icon"
                       onClick={() => openEdit(item)}
                       title="Edit bhajan"
+                      aria-label="Edit bhajan"
                     >
                       <Edit2 size={16} />
                     </button>
@@ -206,6 +204,7 @@ export function Audio() {
                       className="btn-icon danger"
                       onClick={() => setDeleteId(item.id)}
                       title="Delete bhajan"
+                      aria-label="Delete bhajan"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -266,13 +265,14 @@ export function Audio() {
           <div className="card w-full max-w-xl max-h-90vh overflow-y-auto mb-0 p-8 shadow-float">
             {/* Modal Header */}
             <div className="flex-between mb-6 pb-4 border-b">
-              <h2 className="text-heading font-semibold" style={{ fontSize: '1.25rem' }}>
+              <h2 className="text-heading font-semibold text-2xl">
                 {editingId ? 'Edit Bhajan' : 'Add New Bhajan'}
               </h2>
               <button
                 type="button"
                 className="btn-icon"
                 onClick={handleCloseModal}
+                aria-label="Close"
               >
                 <X size={20} />
               </button>
@@ -281,9 +281,10 @@ export function Audio() {
             <form onSubmit={handleSubmit}>
               {/* Title Field */}
               <div className="form-group">
-                <label className="form-label">Title</label>
+                <label className="form-label" htmlFor="bhajan-title">Title</label>
                 <input
                   type="text"
+                  id="bhajan-title"
                   className="form-input"
                   placeholder="Enter bhajan title"
                   value={formData.title}
@@ -294,8 +295,9 @@ export function Audio() {
 
               {/* Description Field */}
               <div className="form-group">
-                <label className="form-label">Description</label>
+                <label className="form-label" htmlFor="bhajan-description">Description</label>
                 <textarea
+                  id="bhajan-description"
                   className="form-textarea"
                   rows={3}
                   placeholder="Enter details or lyrics preview"
@@ -305,8 +307,8 @@ export function Audio() {
               </div>
 
               {/* Lyrics Field */}
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label">Lyrics (Markdown Supported)</label>
+              <div className="form-group">
+                <span className="form-label">Lyrics (Markdown Supported)</span>
                 <MarkdownEditor
                   value={formData.lyrics}
                   onChange={val => setField('lyrics', val)}

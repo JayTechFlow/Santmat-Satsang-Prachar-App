@@ -12,6 +12,14 @@ import * as donationsFuncs from "./donations";
 import * as searchFuncs from "./search";
 import * as mediaFuncs from "./media";
 import * as adminFunctions from "./admin_funcs";
+import * as iamFuncs from "./iam";
+import * as storageTriggersFuncs from "./storage_triggers";
+import * as firestoreTriggersFuncs from "./firestore_triggers";
+import * as queueTriggersFuncs from "./queue_triggers";
+import * as aiTriggersFuncs from "./ai_triggers";
+import * as uploadPipelineFuncs from "./upload_pipeline";
+import * as observabilityFuncs from "./observability";
+import * as analyticsFuncs from "./analytics";
 
 export const auth = authFuncs;
 export const profile = profileFuncs;
@@ -21,3 +29,20 @@ export const donations = donationsFuncs;
 export const search = searchFuncs;
 export const media = mediaFuncs;
 export const adminApi = adminFunctions;
+export const iam = iamFuncs;
+export const uploadPipeline = uploadPipelineFuncs;
+
+// Agent G — Cloud Functions & Triggers
+export const storageTriggers = storageTriggersFuncs;
+export const firestoreTriggers = firestoreTriggersFuncs;
+export const queueTriggers = queueTriggersFuncs;
+export const aiTriggers = aiTriggersFuncs;
+
+// Agent I — Observability & Monitoring Platform
+export const observability = observabilityFuncs;
+
+// Platform Analytics (aggregation, summary report, telemetry logging)
+export const analytics = analyticsFuncs;
+
+
+

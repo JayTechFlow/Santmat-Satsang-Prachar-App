@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { Search } from 'lucide-react';
 
 export interface SearchBarProps {
   placeholder?: string;
   onSearch: (value: string) => void;
   value?: string;
+  label?: string;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = 'Search...',
   onSearch,
-  value
+  value,
+  label = 'Search'
 }) => {
   const [internalValue, setInternalValue] = useState(value || '');
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const id = useId();
 
   React.useEffect(() => {
     if (value !== undefined && value !== internalValue) {
@@ -25,11 +28,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInternalValue(val);
-    
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     timeoutRef.current = setTimeout(() => {
       onSearch(val);
     }, 500);
@@ -42,26 +45,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: 'var(--space-16)',
-        transform: 'translateY(-50%)',
-        color: 'var(--text-muted)',
-        display: 'flex',
-        alignItems: 'center',
-        pointerEvents: 'none'
-      }}>
+    <div className="searchbar">
+      <label htmlFor={id} className="visually-hidden">
+        {label}
+      </label>
+      <div className="searchbar-icon" aria-hidden="true">
         <Search size={20} />
       </div>
       <input
+        id={id}
         type="text"
-        className="form-input"
+        className="form-input searchbar-input"
         placeholder={placeholder}
         value={internalValue}
         onChange={handleChange}
-        style={{ paddingLeft: '44px' }}
       />
     </div>
   );

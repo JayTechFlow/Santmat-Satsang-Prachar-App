@@ -151,4 +151,9 @@ class MockSearchDataSource implements SearchDataSource {
 
     return suggestions;
   }
+  @override
+  Future<List<String>> getPopularSearches() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return ['भजन', 'आरती', 'कबीर के दोहे', 'प्रातःकालीन स्तुति'];
+  }
 }

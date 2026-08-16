@@ -12,17 +12,25 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
 import { Pagination } from '../components/ui/Pagination';
-import { NotificationStatusBadge } from '../features/notifications/components/NotificationStatusBadge';
-import { TargetScreenBadge } from '../features/notifications/components/TargetScreenBadge';
+import { Badge, StatusBadge } from '../components/ui/Badge';
+
+const targetScreenVariant: Record<TargetScreen, 'primary' | 'info' | 'success' | 'neutral'> = {
+  Home: 'info',
+  Audio: 'primary',
+  Books: 'success',
+  StutiVinati: 'info',
+};
 
 export function Notifications() {
   const {
     data: items,
     loading,
+    error,
     refetch,
     searchTerm,
     setSearchTerm,
@@ -57,6 +65,7 @@ export function Notifications() {
   // Form State
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [category, setCategory] = useState<'Updates' | 'विशेष'>('Updates');
   const [targetScreen, setTargetScreen] = useState<TargetScreen>('Home');
   const [audience, setAudience] = useState<Audience>('all');
   const [deliveryType, setDeliveryType] = useState<DeliveryType>('immediate');
@@ -66,6 +75,7 @@ export function Notifications() {
     setEditingId(null);
     setTitle('');
     setMessage('');
+    setCategory('Updates');
     setTargetScreen('Home');
     setAudience('all');
     setDeliveryType('immediate');
@@ -76,6 +86,7 @@ export function Notifications() {
     setEditingId(item.id);
     setTitle(item.title || '');
     setMessage(item.message || '');
+    setCategory(item.category || 'Updates');
     setTargetScreen(item.targetScreen || 'Home');
     setAudience(item.audience || 'all');
     setDeliveryType(item.deliveryType || 'immediate');
@@ -99,6 +110,7 @@ export function Notifications() {
     const payload = {
       title,
       message,
+      category,
       targetScreen,
       audience,
       deliveryType,
@@ -161,7 +173,10 @@ export function Notifications() {
       header: 'Target Details',
       render: (item) => (
         <div className="flex flex-col gap-1">
-          <div><TargetScreenBadge screen={item.targetScreen} /></div>
+          <div><Badge variant={targetScreenVariant[item.targetScreen] || 'neutral'}>{item.targetScreen}</Badge></div>
+          <div className="text-xs text-muted capitalize">
+            Category: {item.category || 'Updates'}
+          </div>
           <div className="text-xs text-muted capitalize">
             Audience: {item.audience}
           </div>
@@ -187,7 +202,7 @@ export function Notifications() {
     {
       key: 'status',
       header: 'Status',
-      render: (item) => <NotificationStatusBadge status={item.pushStatus} />
+      render: (item) => <StatusBadge status={item.pushStatus} />
     },
     {
       key: 'actions',
@@ -196,14 +211,14 @@ export function Notifications() {
         return (
           <div className="flex gap-2 justify-end">
             {item.pushStatus === 'pending' && (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); sendNotification(item.id); }} title="Send Now">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); sendNotification(item.id); }} title="Send Now" aria-label="Send notification">
                 <Send size={18} className="text-primary" />
               </button>
             )}
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit" aria-label="Edit notification">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete" aria-label="Delete notification">
               <Trash2 size={18} />
             </button>
           </div>
@@ -272,6 +287,10 @@ export function Notifications() {
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </div>
           </>
+        ) : !loading && error ? (
+          <div className="py-12">
+            <ErrorState title="Failed to load notifications" message={error.message} onRetry={refetch} />
+          </div>
         ) : !loading && (
           <div className="py-12">
             <EmptyState 
@@ -307,7 +326,7 @@ export function Notifications() {
                   {editingId ? 'Edit Notification' : 'Compose Notification'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
@@ -315,10 +334,11 @@ export function Notifications() {
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col gap-4">
                 <div className="form-group mb-0">
-                  <label className="form-label">Title <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="notification-title">Title <span className="text-danger">*</span></label>
                   <input 
                     type="text" 
                     className="form-input" 
+                    id="notification-title"
                     placeholder="e.g. New Bhajan Available"
                     value={title} 
                     onChange={e => setTitle(e.target.value)} 
@@ -328,9 +348,10 @@ export function Notifications() {
                 </div>
 
                 <div className="form-group mb-0">
-                  <label className="form-label">Message <span className="text-danger">*</span></label>
+                  <label className="form-label" htmlFor="notification-message">Message <span className="text-danger">*</span></label>
                   <textarea 
                     className="form-textarea" 
+                    id="notification-message"
                     rows={3}
                     placeholder="Enter notification message for users..."
                     value={message} 
@@ -340,10 +361,18 @@ export function Notifications() {
                   />
                 </div>
 
+                <div className="form-group mb-0">
+                  <label className="form-label" htmlFor="notification-category">Category</label>
+                  <select className="form-select" id="notification-category" value={category} onChange={e => setCategory(e.target.value as any)} disabled={isLoading}>
+                    <option value="Updates">Updates</option>
+                    <option value="विशेष">विशेष</option>
+                  </select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="form-group mb-0">
-                    <label className="form-label">Target Screen</label>
-                    <select className="form-select" value={targetScreen} onChange={e => setTargetScreen(e.target.value as any)} disabled={isLoading}>
+                    <label className="form-label" htmlFor="notification-target-screen">Target Screen</label>
+                    <select className="form-select" id="notification-target-screen" value={targetScreen} onChange={e => setTargetScreen(e.target.value as any)} disabled={isLoading}>
                       <option value="Home">Home</option>
                       <option value="Audio">Audio</option>
                       <option value="Books">Books</option>
@@ -351,8 +380,8 @@ export function Notifications() {
                     </select>
                   </div>
                   <div className="form-group mb-0">
-                    <label className="form-label">Audience</label>
-                    <select className="form-select" value={audience} onChange={e => setAudience(e.target.value as any)} disabled={isLoading}>
+                    <label className="form-label" htmlFor="notification-audience">Audience</label>
+                    <select className="form-select" id="notification-audience" value={audience} onChange={e => setAudience(e.target.value as any)} disabled={isLoading}>
                       <option value="all">All Users</option>
                       <option value="registered">Registered Only</option>
                       <option value="guests">Guests Only</option>
@@ -361,8 +390,8 @@ export function Notifications() {
                 </div>
 
                 <div className="form-group mb-0">
-                  <label className="form-label">Delivery Type</label>
-                  <select className="form-select" value={deliveryType} onChange={e => setDeliveryType(e.target.value as any)} disabled={isLoading}>
+                  <label className="form-label" htmlFor="notification-delivery-type">Delivery Type</label>
+                  <select className="form-select" id="notification-delivery-type" value={deliveryType} onChange={e => setDeliveryType(e.target.value as any)} disabled={isLoading}>
                     <option value="immediate">Send Immediately (On Submit)</option>
                     <option value="scheduled">Schedule for Later</option>
                   </select>
@@ -370,10 +399,11 @@ export function Notifications() {
 
                 {deliveryType === 'scheduled' && (
                   <div className="form-group mb-0 bg-background p-4 rounded-md border border-border">
-                    <label className="form-label">Schedule Time <span className="text-danger">*</span></label>
+                    <label className="form-label" htmlFor="notification-schedule-time">Schedule Time <span className="text-danger">*</span></label>
                     <input 
                       type="datetime-local" 
                       className="form-input"
+                      id="notification-schedule-time"
                       value={scheduledFor}
                       onChange={e => setScheduledFor(e.target.value)}
                       required={deliveryType === 'scheduled'}

@@ -13,13 +13,14 @@ import type { Column } from '../components/ui/DataTable';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ErrorState } from '../components/ui/ErrorState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { BulkActionBar } from '../components/ui/BulkActionBar';
 import { Pagination } from '../components/ui/Pagination';
 import { ImageUpload } from '../components/ui/ImageUpload';
 import { PDFUpload } from '../components/ui/PDFUpload';
-import { BookStatusBadge } from '../features/books/components/BookStatusBadge';
+import { StatusBadge } from '../components/ui/Badge';
 import { BookPreview } from '../features/books/components/BookPreview';
 import { PDFPreview } from '../features/books/components/PDFPreview';
 import { CategorySelector } from '../features/categories/components/CategorySelector';
@@ -29,6 +30,7 @@ export function Books() {
   const {
     data: items,
     loading,
+    error,
     refetch,
     searchTerm,
     setSearchTerm,
@@ -189,8 +191,8 @@ export function Books() {
       key: 'cover',
       header: 'Cover',
       render: (item) => (
-        <div style={{ width: '48px', height: '64px' }}>
-          <BookPreview coverUrl={item.coverImageUrl} title={item.title} />
+        <div>
+          <BookPreview coverUrl={item.coverImageUrl} title={item.title} width="48px" height="64px" />
         </div>
       )
     },
@@ -215,7 +217,7 @@ export function Books() {
     {
       key: 'status',
       header: 'Status',
-      render: (item) => <BookStatusBadge status={item.publishStatus} />
+      render: (item) => <StatusBadge status={item.publishStatus} />
     },
     {
       key: 'metrics',
@@ -234,18 +236,18 @@ export function Books() {
         return (
           <div className="flex gap-2 justify-end">
             {item.publishStatus !== 'archived' ? (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBook(item.id, true); }} title="Archive">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBook(item.id, true); }} title="Archive" aria-label="Archive book">
                 <Archive size={18} />
               </button>
             ) : (
-              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBook(item.id, false); }} title="Restore">
+              <button className="btn-icon" onClick={(e) => { e.stopPropagation(); archiveBook(item.id, false); }} title="Restore" aria-label="Restore book">
                 <RefreshCw size={18} />
               </button>
             )}
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); openEdit(item); }} title="Edit" aria-label="Edit book">
               <Edit2 size={18} />
             </button>
-            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete">
+            <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); setDeleteId(item.id); }} title="Delete" aria-label="Delete book">
               <Trash2 size={18} />
             </button>
           </div>
@@ -282,7 +284,6 @@ export function Books() {
         />
         <select 
           className="form-select" 
-          style={{ width: '200px' }}
           value={categoryFilter}
           onChange={e => setCategoryFilter(e.target.value)}
         >
@@ -298,7 +299,11 @@ export function Books() {
       <div className="card p-0 overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
-        {items.length > 0 ? (
+        {error && !loading ? (
+          <div className="py-12">
+            <ErrorState title="Failed to load books" message={error.message} onRetry={refetch} />
+          </div>
+        ) : items.length > 0 ? (
           <>
             <DataTable<BookDTO>
               data={items}
@@ -351,7 +356,7 @@ export function Books() {
                   {editingId ? 'Edit Book' : 'Add Book'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading}>
+              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
@@ -383,8 +388,8 @@ export function Books() {
                   </div>
                   
                   <div className="form-group">
-                    <label className="form-label">Status</label>
-                    <select className="form-select" value={publishStatus} onChange={e => setPublishStatus(e.target.value as any)} disabled={isLoading}>
+                    <label className="form-label" htmlFor="book-status">Status</label>
+                    <select id="book-status" className="form-select" value={publishStatus} onChange={e => setPublishStatus(e.target.value as any)} disabled={isLoading}>
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
                       <option value="archived">Archived</option>
@@ -395,8 +400,9 @@ export function Books() {
                 {/* Right Column - Text Data */}
                 <div className="flex flex-col gap-4">
                   <div className="form-group mb-0">
-                    <label className="form-label">Title <span className="text-danger">*</span></label>
+                    <label className="form-label" htmlFor="book-title">Title <span className="text-danger">*</span></label>
                     <input 
+                      id="book-title"
                       type="text" 
                       className="form-input" 
                       value={title} 
@@ -407,8 +413,9 @@ export function Books() {
                   </div>
 
                   <div className="form-group mb-0">
-                    <label className="form-label">Subtitle</label>
+                    <label className="form-label" htmlFor="book-subtitle">Subtitle</label>
                     <input 
+                      id="book-subtitle"
                       type="text" 
                       className="form-input" 
                       value={subtitle} 
@@ -418,8 +425,9 @@ export function Books() {
                   </div>
 
                   <div className="form-group mb-0">
-                    <label className="form-label">Author <span className="text-danger">*</span></label>
+                    <label className="form-label" htmlFor="book-author">Author <span className="text-danger">*</span></label>
                     <input 
+                      id="book-author"
                       type="text" 
                       className="form-input" 
                       value={author} 
@@ -440,8 +448,9 @@ export function Books() {
                   </div>
 
                   <div className="form-group mb-0">
-                    <label className="form-label">Description</label>
+                    <label className="form-label" htmlFor="book-description">Description</label>
                     <textarea 
+                      id="book-description"
                       className="form-textarea" 
                       rows={4}
                       value={description} 
@@ -452,8 +461,9 @@ export function Books() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="form-group mb-0">
-                      <label className="form-label">Language</label>
+                      <label className="form-label" htmlFor="book-language">Language</label>
                       <input 
+                        id="book-language"
                         type="text" 
                         className="form-input" 
                         value={language} 
@@ -462,8 +472,9 @@ export function Books() {
                       />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label">Edition</label>
+                      <label className="form-label" htmlFor="book-edition">Edition</label>
                       <input 
+                        id="book-edition"
                         type="text" 
                         className="form-input" 
                         value={edition} 
@@ -475,8 +486,9 @@ export function Books() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="form-group mb-0">
-                      <label className="form-label">Page Count</label>
+                      <label className="form-label" htmlFor="book-pageCount">Page Count</label>
                       <input 
+                        id="book-pageCount"
                         type="number" 
                         className="form-input" 
                         value={pageCount} 
@@ -485,8 +497,9 @@ export function Books() {
                       />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label">Tags (comma separated)</label>
+                      <label className="form-label" htmlFor="book-tags">Tags (comma separated)</label>
                       <input 
+                        id="book-tags"
                         type="text" 
                         className="form-input" 
                         value={tagsInput} 
@@ -529,7 +542,7 @@ export function Books() {
           <div className="card w-full max-w-md shadow-float">
             <div className="flex-between mb-6 pb-4 border-b">
               <h2 className="text-heading font-semibold text-xl m-0">Assign Category</h2>
-              <button className="btn-icon" onClick={() => setBulkCategoryConfirm(false)}>
+              <button className="btn-icon" onClick={() => setBulkCategoryConfirm(false)} aria-label="Close">
                 <X size={20} />
               </button>
             </div>

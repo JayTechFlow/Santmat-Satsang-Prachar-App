@@ -1,6 +1,7 @@
 import type { EntityWithAudit } from '../../../core/services/BaseCrudService';
+import type { PublishStatus } from '../../../core/types/content.types';
 
-export type PublishStatus = 'draft' | 'published' | 'archived';
+export type { PublishStatus };
 
 export interface BookDTO {
   id: string;

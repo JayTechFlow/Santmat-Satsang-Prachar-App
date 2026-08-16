@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../shared/widgets/ssp_loading.dart';
-import '../../../../shared/widgets/ssp_error_state.dart';
-import '../../../../shared/widgets/ssp_audio_tile.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../shared/design_system/components/ssp_audio_tile.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
+import '../../../../shared/design_system/components/ssp_icon_button.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import '../providers/audio_providers.dart';
 import '../../domain/entities/playback_state_entity.dart';
 import '../../domain/entities/audio_entity.dart';
 import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
 
-
 class AudioDetailsPage extends ConsumerWidget {
   final String audioId;
 
-  const AudioDetailsPage({
-    super.key,
-    required this.audioId,
-  });
+  const AudioDetailsPage({super.key, required this.audioId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,18 +25,22 @@ class AudioDetailsPage extends ConsumerWidget {
 
     return audioAsync.when(
       loading: () => Scaffold(
-        appBar: AppBar(title: Text(l10n.audio)),
-        body: const SSPLoadingWidget(),
+        appBar: SSPAppBar(title: l10n.audio),
+        body: const SSPLoadingState(),
       ),
       error: (error, _) => Scaffold(
-        appBar: AppBar(title: Text(l10n.audio)),
+        appBar: SSPAppBar(title: l10n.audio),
         body: SSPErrorState(
           message: error.toString(),
           onRetry: () => ref.refresh(audioDetailsProvider(audioId)),
         ),
       ),
       data: (audio) {
-        return _AudioDetailsContent(audio: audio, l10n: l10n, primaryBrown: primaryBrown);
+        return _AudioDetailsContent(
+          audio: audio,
+          l10n: l10n,
+          primaryBrown: primaryBrown,
+        );
       },
     );
   }
@@ -62,35 +64,34 @@ class _AudioDetailsContent extends ConsumerWidget {
 
     // If current audio isn't this one, maybe we should auto-play it?
     // For now, let's keep it manual or assume the router already played it.
-    final isPlayingThis = playbackState.currentAudio?.id == audio.id &&
+    final isPlayingThis =
+        playbackState.currentAudio?.id == audio.id &&
         playbackState.status == PlaybackStatus.playing;
 
     return Scaffold(
       backgroundColor: Colors.white, // Standard full-screen player background
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leadingWidth: 150,
-        leading: Row(
-          children: [
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.keyboard_arrow_down, size: 30),
-              onPressed: () => context.pop(),
-            ),
-          ],
+      appBar: SSPAppBar(
+        title: '',
+        leading: IconButton(
+          icon: const Icon(Icons.keyboard_arrow_down, size: 30),
+          onPressed: () => context.pop(),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {}, 
+          SSPIconButton(
+            icon: const Icon(Icons.favorite_border_rounded),
+            semanticLabel: 'Add to favorites',
+            onPressed: () {
+              ref.read(toggleFavoriteAudioUseCaseProvider).call(audio.id);
+            },
           ),
-          IconButton(
-            icon: const Icon(Icons.share),
+          SSPIconButton(
+            icon: const Icon(Icons.share_rounded),
+            semanticLabel: 'Share',
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
+          SSPIconButton(
+            icon: const Icon(Icons.more_vert_rounded),
+            semanticLabel: 'More options',
             onPressed: () {},
           ),
         ],
@@ -110,7 +111,8 @@ class _AudioDetailsContent extends ConsumerWidget {
                   child: SSPImage(
                     audio.thumbnailUrl,
                     fit: BoxFit.cover,
-                    errorWidget: (ctx, err, stack) => Container(color: Colors.grey.shade300),
+                    errorWidget: (ctx, err, stack) =>
+                        Container(color: Colors.grey.shade300),
                   ),
                 ),
               ),
@@ -123,7 +125,10 @@ class _AudioDetailsContent extends ConsumerWidget {
                 children: [
                   Text(
                     audio.title,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -146,14 +151,28 @@ class _AudioDetailsContent extends ConsumerWidget {
                       inactiveTrackColor: Colors.grey.shade300,
                       thumbColor: primaryBrown,
                       trackHeight: 4.0,
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 14.0),
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 6.0,
+                      ),
+                      overlayShape: const RoundSliderOverlayShape(
+                        overlayRadius: 14.0,
+                      ),
                     ),
                     child: Slider(
-                      value: playbackState.position.inMilliseconds > 0 && audio.duration.inMilliseconds > 0
-                          ? (playbackState.position.inMilliseconds / audio.duration.inMilliseconds).clamp(0.0, 1.0)
+                      value:
+                          playbackState.position.inMilliseconds > 0 &&
+                              audio.duration.inMilliseconds > 0
+                          ? (playbackState.position.inMilliseconds /
+                                    audio.duration.inMilliseconds)
+                                .clamp(0.0, 1.0)
                           : 0.0,
-                      onChanged: (val) {}, 
+                      onChanged: (val) {
+                        final newPosition = Duration(
+                          milliseconds: (val * audio.duration.inMilliseconds)
+                              .round(),
+                        );
+                        notifier.seekTo(newPosition);
+                      },
                     ),
                   ),
                   Padding(
@@ -161,8 +180,14 @@ class _AudioDetailsContent extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(_formatDuration(playbackState.position), style: const TextStyle(fontSize: 12)),
-                        Text(_formatDuration(audio.duration), style: const TextStyle(fontSize: 12)),
+                        Text(
+                          _formatDuration(playbackState.position),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        Text(
+                          _formatDuration(audio.duration),
+                          style: const TextStyle(fontSize: 12),
+                        ),
                       ],
                     ),
                   ),
@@ -177,13 +202,18 @@ class _AudioDetailsContent extends ConsumerWidget {
                 IconButton(
                   icon: Icon(
                     Icons.shuffle,
-                    color: playbackState.isShuffleEnabled ? primaryBrown : Colors.grey.shade600,
+                    color: playbackState.isShuffleEnabled
+                        ? primaryBrown
+                        : Colors.grey.shade600,
                   ),
                   onPressed: () => notifier.toggleShuffle(),
                 ),
                 IconButton(
                   icon: const Icon(Icons.skip_previous, size: 36),
-                  onPressed: () {}, 
+                  onPressed: () {
+                    final homeState = ref.read(audioHomeStateProvider);
+                    notifier.playPrevious(homeState.popularAudio);
+                  },
                 ),
                 GestureDetector(
                   onTap: () {
@@ -218,12 +248,17 @@ class _AudioDetailsContent extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.skip_next, size: 36),
-                  onPressed: () {}, 
+                  onPressed: () {
+                    final homeState = ref.read(audioHomeStateProvider);
+                    notifier.playNext(homeState.popularAudio);
+                  },
                 ),
                 IconButton(
                   icon: Icon(
                     Icons.repeat,
-                    color: playbackState.isRepeatEnabled ? primaryBrown : Colors.grey.shade600,
+                    color: playbackState.isRepeatEnabled
+                        ? primaryBrown
+                        : Colors.grey.shade600,
                   ),
                   onPressed: () => notifier.toggleRepeat(),
                 ),
@@ -261,22 +296,44 @@ class _AudioDetailsContent extends ConsumerWidget {
             children: [
               Text(
                 l10n.popularAudio, // Using this as Up Next
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          ...upNextList.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: SSPAudioTile(
-              title: item.title,
-              subtitle: item.speaker,
-              duration: _formatDuration(item.duration),
-              imageUrl: item.thumbnailUrl,
-              onTap: () {}, // Switch track
-              onPlayPause: () {},
+          ...upNextList.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: SSPAudioTile(
+                title: item.title,
+                subtitle: item.speaker,
+                durationText: _formatDuration(item.duration),
+                artwork: item.thumbnailUrl.isNotEmpty
+                    ? SSPImage(
+                        item.thumbnailUrl,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                onTap: () {
+                  ref.read(playbackStateProvider.notifier).play(item);
+                },
+                onPlayPause: () {
+                  final playbackState = ref.read(playbackStateProvider);
+                  if (playbackState.currentAudio?.id == item.id &&
+                      playbackState.status == PlaybackStatus.playing) {
+                    ref.read(playbackStateProvider.notifier).pause();
+                  } else {
+                    ref.read(playbackStateProvider.notifier).play(item);
+                  }
+                },
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );

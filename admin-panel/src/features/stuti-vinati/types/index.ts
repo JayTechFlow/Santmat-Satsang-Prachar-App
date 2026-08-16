@@ -1,6 +1,7 @@
 import type { EntityWithAudit } from '../../../core/services/BaseCrudService';
+import type { PublishStatus } from '../../../core/types/content.types';
 
-export type PublishStatus = 'draft' | 'published' | 'archived';
+export type { PublishStatus };
 
 export interface StutiVinatiDTO {
   id: string;
@@ -10,7 +11,9 @@ export interface StutiVinatiDTO {
   translation?: string;
   transliteration?: string;
   imageUrl?: string;
+  audioUrl?: string;
   categoryId?: string;
+  type?: string;
   tags: string[];
   featured: boolean;
   publishStatus: PublishStatus;

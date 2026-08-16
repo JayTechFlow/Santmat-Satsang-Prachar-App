@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:developer' as developer;
+import '../../shared/design_system/tokens/animation/ssp_animation.dart';
 
 import '../../features/authentication/presentation/pages/login_page.dart';
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
@@ -12,7 +12,9 @@ import '../../features/home/presentation/pages/home_shell_page.dart';
 import '../../features/profile/presentation/pages/account_settings_page.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
-import '../../features/satsang/presentation/pages/satsang_home_page.dart';
+import '../../features/profile/presentation/pages/favorite_bhajans_page.dart';
+import '../../features/profile/presentation/pages/listening_history_page.dart';
+import '../../features/stuti_vinati/presentation/pages/stuti_vinati_home_page.dart';
 import '../../features/satsang/presentation/pages/satsang_details_page.dart';
 import '../../features/satsang/presentation/pages/category_page.dart';
 import '../../features/audio/presentation/pages/audio_home_page.dart';
@@ -31,22 +33,33 @@ import '../../features/notifications/presentation/pages/notification_settings_pa
 import '../../features/notifications/domain/entities/notification_entity.dart';
 import '../../features/donations/presentation/pages/donations_home_page.dart';
 import '../../features/donations/presentation/pages/donations_secondary_pages.dart';
-import '../../features/downloads/presentation/pages/downloads_home_page.dart';
-import '../../features/downloads/presentation/pages/download_details_page.dart';
-import '../../features/downloads/presentation/pages/storage_management_page.dart';
 import '../../features/library/presentation/pages/library_home_page.dart';
 import '../../features/library/presentation/pages/library_secondary_pages.dart';
-import '../../features/preferences/presentation/pages/preferences_home_page.dart';
 import '../../features/preferences/presentation/pages/preferences_secondary_pages.dart';
+import '../../core/auth/permission_guard.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class GoRouterRefreshNotifier extends ChangeNotifier {
   GoRouterRefreshNotifier(Ref ref) {
-    ref.listen(authStateProvider, (_, __) {
+    ref.listen(authStateProvider, (previous, next) {
       notifyListeners();
     });
   }
+}
+
+Widget _buildFadeSlideTransition(Animation<double> animation, Widget child) {
+  final curved = CurvedAnimation(parent: animation, curve: SSPAnimation.standard);
+  return FadeTransition(
+    opacity: curved,
+    child: SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(0.0, 0.1),
+        end: Offset.zero,
+      ).animate(curved),
+      child: child,
+    ),
+  );
 }
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -56,61 +69,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/splash',
     refreshListenable: refreshNotifier,
-    redirect: (context, state) {
-      final authState = ref.read(authStateProvider);
-
-      developer.log(
-        'ROUTER_TRACE: redirect triggered. path=${state.uri.path}, isLoading=${authState.isLoading}, hasValue=${authState.hasValue}',
-      );
-
-      final isSplash = state.uri.path == '/splash';
-      final isOnboarding = state.uri.path == '/onboarding';
-      final isLogin = state.uri.path == '/login';
-
-      if (authState.isLoading) {
-        developer.log('ROUTER_TRACE: authState is loading');
-        if (isLogin || isOnboarding) {
-          developer.log('ROUTER_TRACE: staying on ${state.uri.path}');
-          return null;
-        }
-        developer.log('ROUTER_TRACE: returning /splash');
-        return '/splash';
-      }
-
-      final session = authState.value;
-
-      if (session == null) {
-        developer.log('ROUTER_TRACE: session is null, returning /splash');
-        return '/splash';
-      }
-
-      final isFirstLaunch = session.isFirstLaunch;
-      final isAuthenticated = session.isAuthenticated;
-
-      developer.log(
-        'ROUTER_TRACE: session data: isFirstLaunch=$isFirstLaunch, isAuthenticated=$isAuthenticated',
-      );
-
-      if (isFirstLaunch) {
-        if (!isOnboarding) {
-          developer.log('ROUTER_TRACE: redirecting to /onboarding');
-          return '/onboarding';
-        }
-      } else if (!isAuthenticated) {
-        if (!isLogin) {
-          developer.log('ROUTER_TRACE: redirecting to /login');
-          return '/login';
-        }
-      } else {
-        if (isSplash || isOnboarding || isLogin) {
-          developer.log('ROUTER_TRACE: redirecting to / (dashboard)');
-          return '/';
-        }
-      }
-
-      developer.log('ROUTER_TRACE: no redirect needed, returning null');
-      return null;
-    },
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48),
+            const SizedBox(height: 16),
+            Text('Page not found', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => context.go('/'),
+              child: const Text('Go Home'),
+            ),
+          ],
+        ),
+      ),
+    ),
+    redirect: createPermissionRedirect(ref),
     routes: [
       GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
       GoRoute(
@@ -129,11 +105,31 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AccountSettingsPage(),
       ),
       GoRoute(
+        path: '/profile/favorites',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const FavoriteBhajansPage(),
+      ),
+      GoRoute(
+        path: '/profile/history',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ListeningHistoryPage(),
+      ),
+      GoRoute(
         path: '/satsang/details/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return SatsangDetailsPage(satsangId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: SatsangDetailsPage(satsangId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
@@ -147,25 +143,55 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/audio/details/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return AudioDetailsPage(audioId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: AudioDetailsPage(audioId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
         path: '/audio/category/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return AudioCategoryPage(categoryId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: AudioCategoryPage(categoryId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
         path: '/books/details/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return BookDetailsPage(bookId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: BookDetailsPage(bookId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
@@ -222,9 +248,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/events/details/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return EventDetailsPage(eventId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: EventDetailsPage(eventId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
@@ -241,16 +277,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: '/notifications',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const NotificationsPage(),
-      ),
-      GoRoute(
         path: '/notifications/details',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final notif = state.extra as NotificationEntity;
-          return NotificationDetailsPage(notification: notif);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: NotificationDetailsPage(notification: notif),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
@@ -266,17 +307,37 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/donations/details/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return DonationDetailsPage(campaignId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: DonationDetailsPage(campaignId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
         path: '/donations/checkout/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return DonationCheckoutPage(campaignId: id);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: DonationCheckoutPage(campaignId: id),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              if (SSPAnimation.prefersReducedMotion(context)) {
+                return child;
+              }
+              return _buildFadeSlideTransition(animation, child);
+            },
+            transitionDuration: SSPAnimation.pageTransition,
+          );
         },
       ),
       GoRoute(
@@ -291,24 +352,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           return DonationReceiptPage(receiptId: id);
         },
-      ),
-      GoRoute(
-        path: '/downloads',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const DownloadsHomePage(),
-      ),
-      GoRoute(
-        path: '/downloads/details/:id',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return DownloadDetailsPage(downloadId: id);
-        },
-      ),
-      GoRoute(
-        path: '/downloads/storage',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const StorageManagementPage(),
       ),
       GoRoute(
         path: '/library',
@@ -336,11 +379,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const LibraryRecentActivityPage(),
       ),
       GoRoute(
-        path: '/settings',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const PreferencesHomePage(),
-      ),
-      GoRoute(
         path: '/settings/appearance',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const PreferenceAppearanceSettingsPage(),
@@ -348,8 +386,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings/accessibility',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            const PreferenceAccessibilitySettingsPage(),
+        builder: (context, state) => const PreferenceAccessibilitySettingsPage(),
       ),
       GoRoute(
         path: '/settings/notifications',
@@ -370,11 +407,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings/reading',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const PreferenceReadingSettingsPage(),
-      ),
-      GoRoute(
-        path: '/settings/downloads',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const PreferenceDownloadSettingsPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -398,7 +430,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/satsang',
-                builder: (context, state) => const SatsangHomePage(),
+                builder: (context, state) => const StutiVinatiHomePage(),
               ),
             ],
           ),

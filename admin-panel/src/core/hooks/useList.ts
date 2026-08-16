@@ -27,12 +27,13 @@ export function useList<T extends { id: string }>(
       filters.push({ field: options.searchField, operator: '<=', value: searchTerm + '\uf8ff' });
     }
 
+    const defaultSortField = options.defaultSort?.field || 'createdAt';
     const sorts: CustomQueryOptions['sorts'] = [
-      { field: options.defaultSort?.field || 'createdAt', direction: sortOrder }
+      { field: defaultSortField, direction: sortOrder }
     ];
 
     return { filters, sorts };
-  }, [searchTerm, sortOrder, options.additionalFilters, options.searchField]);
+  }, [searchTerm, sortOrder, options.additionalFilters, options.searchField, options.defaultSort?.field]);
 
   const { data: rawData, loading, error, refresh, pagination } = useCrud<T>(
     service,

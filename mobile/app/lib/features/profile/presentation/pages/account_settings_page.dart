@@ -4,7 +4,8 @@ import '../providers/profile_providers.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import '../widgets/account_info_card.dart';
 import '../widgets/delete_account_button.dart';
-import '../widgets/loading_state_widget.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
 
 class AccountSettingsPage extends ConsumerWidget {
   const AccountSettingsPage({super.key});
@@ -17,8 +18,8 @@ class AccountSettingsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.accountSettings)),
       body: profileState.when(
-        loading: () => const LoadingStateWidget(),
-        error: (error, _) => Center(child: Text(error.toString())),
+        loading: () => const SSPLoadingState(),
+        error: (error, _) => SSPErrorState(message: error.toString()),
         data: (profile) {
           return ListView(
             children: [

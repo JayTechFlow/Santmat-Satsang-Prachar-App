@@ -75,4 +75,14 @@ class SearchRepositoryImpl implements SearchRepository {
       return Result.failure(e);
     }
   }
+
+  @override
+  Future<Result<List<String>>> getPopularSearches() async {
+    try {
+      final res = await dataSource.getPopularSearches();
+      return Result.success(res);
+    } on Exception catch (e) {
+      return Result.failure(e);
+    }
+  }
 }

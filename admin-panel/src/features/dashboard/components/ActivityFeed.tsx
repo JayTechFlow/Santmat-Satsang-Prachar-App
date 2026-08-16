@@ -11,28 +11,27 @@ export const ActivityFeed = memo(function ActivityFeed({ activities }: ActivityF
     <div className="card h-full">
       <div className="card-header">
         <h3 className="card-title">Recent Activity</h3>
-        <Clock size={20} className="text-muted" />
+        <Clock size={20} className="text-muted" aria-hidden="true" />
       </div>
-      
-      
+
       {activities.length === 0 ? (
-        <div className="text-center text-muted" style={{ padding: '2rem' }}>
+        <div className="text-center text-muted activity-empty">
           No recent activity found.
         </div>
       ) : (
-        <div className="flex-col gap-4">
+        <ul className="activity-feed">
           {activities.map((item) => (
-            <div key={item.id} className="flex items-center gap-4 pb-4 border-b">
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)' }}></div>
+            <li key={item.id} className="activity-item">
+              <span className="activity-dot" aria-hidden="true" />
               <div className="flex-1">
                 <div className="font-medium text-sm">{item.title}</div>
                 <div className="text-xs text-muted mt-1 capitalize">
                   {item.type.replace('_', ' ')} • {new Date(item.timestamp).toLocaleDateString()}
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

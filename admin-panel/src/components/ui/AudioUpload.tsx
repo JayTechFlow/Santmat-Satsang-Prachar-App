@@ -96,7 +96,7 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({
             <div style={{
               height: '4px',
               flex: 1,
-              backgroundColor: '#E8E8E8',
+              backgroundColor: 'var(--border)',
               borderRadius: '2px',
               position: 'relative'
             }}>

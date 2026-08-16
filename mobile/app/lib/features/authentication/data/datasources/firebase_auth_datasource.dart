@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:developer' as developer;
@@ -12,26 +13,34 @@ class FirebaseAuthDataSource {
   User? get currentUser => _firebaseAuth.currentUser;
 
   Future<UserCredential> signInAnonymously() async {
-    developer.log(
-      '4. FirebaseAuth.signInAnonymously() started. Current user before: ${_firebaseAuth.currentUser?.uid}',
-    );
+    if (kDebugMode) {
+      developer.log(
+        '4. FirebaseAuth.signInAnonymously() started. Current user before: ${_firebaseAuth.currentUser?.uid}',
+      );
+    }
     final result = await _firebaseAuth.signInAnonymously();
-    developer.log(
-      '5. FirebaseAuth.signInAnonymously() completed. Current user after: ${_firebaseAuth.currentUser?.uid}',
-    );
+    if (kDebugMode) {
+      developer.log(
+        '5. FirebaseAuth.signInAnonymously() completed. Current user after: ${_firebaseAuth.currentUser?.uid}',
+      );
+    }
     return result;
   }
 
   Future<UserCredential> signInWithGoogle() async {
-    developer.log(
-      'FLOW_TRACE: 1. FirebaseAuthDataSource.signInWithGoogle() started',
-    );
+    if (kDebugMode) {
+      developer.log(
+        'FLOW_TRACE: 1. FirebaseAuthDataSource.signInWithGoogle() started',
+      );
+    }
 
     // 2. Perform authentication using .authenticate() (Replaces .signIn() in v7.x)
     final GoogleSignInAccount googleUser = await GoogleSignIn.instance
         .authenticate();
 
-    developer.log('FLOW_TRACE: googleUser obtained: ${googleUser.email}');
+    if (kDebugMode) {
+      developer.log('FLOW_TRACE: googleUser obtained: ${googleUser.email}');
+    }
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
     // 3. Provide token to Firebase
@@ -39,11 +48,15 @@ class FirebaseAuthDataSource {
       idToken: googleAuth.idToken,
     );
 
-    developer.log('FLOW_TRACE: 2. FirebaseAuth.signInWithCredential() started');
+    if (kDebugMode) {
+      developer.log('FLOW_TRACE: 2. FirebaseAuth.signInWithCredential() started');
+    }
     final result = await _firebaseAuth.signInWithCredential(credential);
-    developer.log(
-      'FLOW_TRACE: 3. FirebaseAuth.signInWithCredential() completed. User: ${result.user?.uid}',
-    );
+    if (kDebugMode) {
+      developer.log(
+        'FLOW_TRACE: 3. FirebaseAuth.signInWithCredential() completed. User: ${result.user?.uid}',
+      );
+    }
     return result;
   }
 
@@ -79,5 +92,23 @@ class FirebaseAuthDataSource {
       _firebaseAuth.signOut(),
       GoogleSignIn.instance.signOut(),
     ]);
+  }
+
+  /// Get the current user's ID token
+  Future<String?> getIdToken({bool forceRefresh = false}) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      return await user.getIdToken(forceRefresh);
+    }
+    return null;
+  }
+
+  /// Get the current user's refresh token
+  Future<String?> getRefreshToken() async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      return await user.getIdToken(true); // Force refresh to get new token
+    }
+    return null;
   }
 }

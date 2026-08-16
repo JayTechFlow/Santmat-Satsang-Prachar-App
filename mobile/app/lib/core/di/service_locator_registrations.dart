@@ -25,6 +25,7 @@ import '../storage/resolvers/media_url_resolver.dart';
 import '../storage/resolvers/signed_url_resolver.dart';
 import '../storage/cache/media_cache_manager.dart';
 import '../storage/validators/media_integrity_validator.dart';
+import '../storage/secure_storage_service.dart';
 
 final environmentConfigurationProvider = Provider<EnvironmentConfiguration>((
   ref,
@@ -137,4 +138,9 @@ final mediaIntegrityValidatorProvider = Provider<MediaIntegrityValidator>((
   ref,
 ) {
   return MediaIntegrityValidator();
+});
+
+final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
+  final storage = ref.watch(secureStorageProvider);
+  return SecureStorageService(storage);
 });

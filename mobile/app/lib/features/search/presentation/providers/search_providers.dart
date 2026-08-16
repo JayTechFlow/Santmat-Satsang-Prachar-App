@@ -24,6 +24,9 @@ final clearRecentSearchesUseCaseProvider = Provider(
 final getSearchSuggestionsUseCaseProvider = Provider(
   (ref) => GetSearchSuggestionsUseCase(ref.watch(searchRepositoryProvider)),
 );
+final getPopularSearchesUseCaseProvider = Provider(
+  (ref) => GetPopularSearchesUseCase(ref.watch(searchRepositoryProvider)),
+);
 
 class SearchNotifier extends Notifier<SearchState> {
   Timer? _debounceTimer;
@@ -106,7 +109,15 @@ final searchProvider = NotifierProvider<SearchNotifier, SearchState>(
 final recentSearchesProvider = FutureProvider<List<RecentSearchEntity>>((
   ref,
 ) async {
-  final res = await ref.read(getRecentSearchesUseCaseProvider).call();
-  if (res.isError) throw Exception(res.error);
+  final usecase = ref.read(getRecentSearchesUseCaseProvider);
+  final res = await usecase();
+  if (res.isError) return [];
+  return res.data!;
+});
+
+final popularSearchesProvider = FutureProvider<List<String>>((ref) async {
+  final usecase = ref.read(getPopularSearchesUseCaseProvider);
+  final res = await usecase();
+  if (res.isError) return [];
   return res.data!;
 });

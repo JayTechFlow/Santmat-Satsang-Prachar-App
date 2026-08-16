@@ -45,6 +45,7 @@ const DataTableRow = React.memo(<T extends any>({
             checked={isSelected}
             onChange={() => onToggleSelection && onToggleSelection(id)}
             className="cursor-pointer"
+            aria-label={`Select row ${String(id)}`}
           />
         </td>
       )}
@@ -123,14 +124,22 @@ const DataTableComponent = <T extends any>({
                   ref={input => { if (input) input.indeterminate = someSelected; }}
                   onChange={handleSelectAll}
                   className="cursor-pointer"
+                  aria-label="Select all rows"
                 />
               </th>
             )}
-            {columns.map((col) => (
-              <th 
+{columns.map((col) => (
+              <th
                 key={col.key as string}
                 className={col.sortable ? "cursor-pointer select-none" : "select-none"}
                 onClick={() => col.sortable && handleSort(col.key as string)}
+                aria-sort={col.sortable
+                  ? sortKey === col.key
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                  : undefined}
               >
                 <div className="flex items-center gap-2">
                   {col.header}

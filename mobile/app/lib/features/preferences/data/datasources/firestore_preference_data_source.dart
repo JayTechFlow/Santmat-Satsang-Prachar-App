@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/firebase/firestore_collections.dart';
 import '../../../../core/services/firestore_service.dart';
 import '../../domain/entities/user_preference_entity.dart';
@@ -16,9 +17,14 @@ import '../../domain/entities/personalization_preference_entity.dart';
 
 class FirestorePreferenceDataSource implements PreferenceDataSource {
   final FirestoreService _firestoreService;
-  final String _userId = 'mock_user_id'; // Placeholder for auth
+  final FirebaseAuth _firebaseAuth;
 
-  FirestorePreferenceDataSource(this._firestoreService);
+  FirestorePreferenceDataSource(
+    this._firestoreService, {
+    FirebaseAuth? firebaseAuth,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
+  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
   String get _preferencesPath => FirestoreCollections.preferences;
 

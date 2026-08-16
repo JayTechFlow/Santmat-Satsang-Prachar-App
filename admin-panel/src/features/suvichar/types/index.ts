@@ -4,6 +4,7 @@ export interface SuvicharDTO {
   id: string;
   title: string;
   content: string;
+  imageUrl?: string;
 }
 
 export type SuvicharViewModel = EntityWithAudit<SuvicharDTO>;

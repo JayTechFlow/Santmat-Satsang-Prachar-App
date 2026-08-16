@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:santmat_satsang_prachar/features/audio/data/datasources/mock_audio_data_source.dart';
+import '../../../../helpers/mock_audio_data_source.dart';
 import 'package:santmat_satsang_prachar/features/audio/data/repositories/audio_repository_impl.dart';
 
 void main() {

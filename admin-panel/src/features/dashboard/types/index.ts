@@ -8,7 +8,7 @@ export interface DashboardStatsDTO {
 
 export interface ActivityItemDTO {
   id: string;
-  type: 'audio' | 'book' | 'stuti_vinati' | 'user';
+  type: 'audio' | 'book' | 'stuti_vinati' | 'suvichar' | 'user';
   title: string;
   timestamp: number;
 }

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:santmat_satsang_prachar/core/storage/storage_service.dart';
 import 'package:santmat_satsang_prachar/core/di/service_locator_registrations.dart';
@@ -14,9 +13,6 @@ import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/f
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/donation_data_source.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/firestore_donation_data_source.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/mock_donation_data_source.dart';
-import 'package:santmat_satsang_prachar/features/downloads/data/datasources/download_data_source.dart';
-import 'package:santmat_satsang_prachar/features/downloads/data/datasources/firestore_download_data_source.dart';
-import 'package:santmat_satsang_prachar/features/downloads/data/datasources/mock_download_data_source.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/event_data_source.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/firestore_event_data_source.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/mock_event_data_source.dart';
@@ -45,7 +41,6 @@ import 'package:santmat_satsang_prachar/features/authentication/data/repositorie
 import 'package:santmat_satsang_prachar/features/books/data/repositories/book_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/daily_quotes/data/repositories/daily_quote_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/repositories/donation_repository_impl.dart';
-import 'package:santmat_satsang_prachar/features/downloads/data/repositories/download_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/events/data/repositories/event_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/home/data/repositories/home_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/library/data/repositories/library_repository_impl.dart';
@@ -65,12 +60,19 @@ import 'package:santmat_satsang_prachar/features/search/domain/repositories/sear
 import 'package:santmat_satsang_prachar/features/audio/domain/repositories/audio_repository.dart';
 import 'package:santmat_satsang_prachar/features/profile/domain/repositories/profile_repository.dart';
 import 'package:santmat_satsang_prachar/features/events/domain/repositories/event_repository.dart';
-import 'package:santmat_satsang_prachar/features/downloads/domain/repositories/download_repository.dart';
 import 'package:santmat_satsang_prachar/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:santmat_satsang_prachar/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:santmat_satsang_prachar/features/stuti_vinati/data/datasources/stuti_vinati_remote_datasource.dart';
+import 'package:santmat_satsang_prachar/features/stuti_vinati/data/datasources/stuti_vinati_firebase_datasource.dart';
+import 'package:santmat_satsang_prachar/features/stuti_vinati/domain/repositories/stuti_vinati_repository.dart';
+import 'package:santmat_satsang_prachar/features/stuti_vinati/data/repositories/stuti_vinati_repository_impl.dart';
+import 'package:santmat_satsang_prachar/core/media/data/datasources/media_remote_datasource.dart';
+import 'package:santmat_satsang_prachar/core/media/data/repositories/media_repository_impl.dart';
+import 'package:santmat_satsang_prachar/core/media/domain/repositories/i_media_repository.dart';
 
 final homeDataSourceProvider = Provider<HomeDataSource>((ref) {
-  return FirebaseHomeDataSource(FirebaseFirestore.instance);
+  return FirebaseHomeDataSource(ref.watch(firestoreServiceProvider));
 });
 
 final homeRepositoryProvider = Provider<HomeRepository>((ref) {
@@ -150,7 +152,7 @@ final searchDataSourceProvider = Provider<SearchDataSource>((ref) {
   if (isDev) {
     return MockSearchDataSource();
   }
-  return FirestoreSearchDataSource(ref.watch(firestoreServiceProvider));
+  return FirestoreSearchDataSource(ref.watch(firestoreServiceProvider), ref.watch(cloudFunctionsServiceProvider));
 });
 
 final searchRepositoryProvider = Provider<SearchRepository>((ref) {
@@ -195,18 +197,6 @@ final eventRepositoryProvider = Provider<EventRepository>((ref) {
   return EventRepositoryImpl(ref.watch(eventDataSourceProvider));
 });
 
-final downloadDataSourceProvider = Provider<DownloadDataSource>((ref) {
-  final env = ref.watch(environmentConfigurationProvider);
-  if (env.isDev) {
-    return MockDownloadDataSource();
-  }
-  return FirestoreDownloadDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final downloadRepositoryProvider = Provider<DownloadRepository>((ref) {
-  return DownloadRepositoryImpl(ref.watch(downloadDataSourceProvider));
-});
-
 final authDataSourceProvider = Provider<FirebaseAuthDataSource>((ref) {
   return FirebaseAuthDataSource(FirebaseAuth.instance);
 });
@@ -215,6 +205,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(
     ref.watch(authDataSourceProvider),
     ref.watch(sharedPreferencesProvider),
+    ref,
   );
 });
 
@@ -229,4 +220,23 @@ final notificationDataSourceProvider = Provider<NotificationDataSource>((ref) {
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
   return NotificationRepositoryImpl(ref.watch(notificationDataSourceProvider));
 });
+
+
+final stutiVinatiDataSourceProvider = Provider<StutiVinatiRemoteDataSource>((ref) {
+  return StutiVinatiFirebaseDataSource(FirebaseFirestore.instance);
+});
+
+final stutiVinatiRepositoryProvider = Provider<StutiVinatiRepository>((ref) {
+  return StutiVinatiRepositoryImpl(ref.watch(stutiVinatiDataSourceProvider));
+});
+
+final mediaRemoteDataSourceProvider = Provider<IMediaRemoteDataSource>((ref) {
+  return FirestoreMediaDataSource(firestore: FirebaseFirestore.instance);
+});
+
+final mediaRepositoryProvider = Provider<IMediaRepository>((ref) {
+  return MediaRepositoryImpl(ref.watch(mediaRemoteDataSourceProvider));
+});
+
+
 

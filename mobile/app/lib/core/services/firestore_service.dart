@@ -4,7 +4,19 @@ class FirestoreService {
   final FirebaseFirestore? _firestoreOverride;
 
   FirestoreService({FirebaseFirestore? firestore})
-    : _firestoreOverride = firestore;
+    : _firestoreOverride = firestore {
+    // Enable offline persistence for Firestore (production only)
+    if (firestore == null) {
+      try {
+        FirebaseFirestore.instance.settings = const Settings(
+          persistenceEnabled: true,
+          cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+        );
+      } catch (_) {
+        // Firebase not yet initialized (e.g., test environment) — skip
+      }
+    }
+  }
 
   FirebaseFirestore get _firestore =>
       _firestoreOverride ?? FirebaseFirestore.instance;

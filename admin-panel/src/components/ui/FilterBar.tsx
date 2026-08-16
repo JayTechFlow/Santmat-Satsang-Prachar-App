@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Filter } from 'lucide-react';
 
 export interface FilterOption {
@@ -11,33 +11,31 @@ export interface FilterBarProps {
   value: string | number;
   onChange: (value: string | number) => void;
   placeholder?: string;
+  label?: string;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
   options,
   value,
   onChange,
-  placeholder = 'Filter by...'
+  placeholder = 'Filter by...',
+  label = 'Filter'
 }) => {
+  const id = useId();
+
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '250px' }}>
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: 'var(--space-16)',
-        transform: 'translateY(-50%)',
-        color: 'var(--text-muted)',
-        display: 'flex',
-        alignItems: 'center',
-        pointerEvents: 'none'
-      }}>
+    <div className="filterbar">
+      <label htmlFor={id} className="visually-hidden">
+        {label}
+      </label>
+      <div className="filterbar-icon" aria-hidden="true">
         <Filter size={20} />
       </div>
       <select
-        className="form-select"
+        id={id}
+        className="form-select filterbar-select"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        style={{ paddingLeft: '44px', appearance: 'none' }}
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (

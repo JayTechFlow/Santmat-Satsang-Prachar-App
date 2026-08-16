@@ -22,7 +22,28 @@ class LanguageSelectorTile extends ConsumerWidget {
       title: l10n.language,
       subtitle: currentLanguage == 'en' ? 'English' : 'हिंदी',
       onTap: () {
-        // Show dialog or bottom sheet to select language
+        showDialog(
+          context: context,
+          builder: (context) => SimpleDialog(
+            title: Text(l10n.language),
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onLanguageChanged('en');
+                },
+                child: const Text('English'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onLanguageChanged('hi');
+                },
+                child: const Text('हिंदी'),
+              ),
+            ],
+          ),
+        );
       },
       trailing: const Icon(Icons.chevron_right),
     );

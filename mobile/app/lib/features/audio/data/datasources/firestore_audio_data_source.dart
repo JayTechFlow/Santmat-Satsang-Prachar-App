@@ -17,13 +17,14 @@ class FirestoreAudioDataSource implements AudioDataSource {
   FirestoreAudioDataSource(this._firestoreService, {FirebaseAuth? firebaseAuth})
     : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  String get _userId => _firebaseAuth.currentUser?.uid ?? 'user_123';
+  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
   @override
   Future<List<AudioEntity>> getLatestAudio() async {
     final snapshot = await FirebaseFirestore.instance
         .collection(FirestoreCollections.audio)
-        .where('isRecentlyAdded', isEqualTo: true)
+        .orderBy('createdAt', descending: true)
+        .limit(10)
         .get();
 
     return snapshot.docs
@@ -35,7 +36,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
   Future<List<AudioEntity>> getFeaturedAudio() async {
     final snapshot = await FirebaseFirestore.instance
         .collection(FirestoreCollections.audio)
-        .where('isFeatured', isEqualTo: true)
+        .limit(5)
         .get();
 
     return snapshot.docs
@@ -47,7 +48,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
   Future<List<AudioEntity>> getPopularAudio() async {
     final snapshot = await FirebaseFirestore.instance
         .collection(FirestoreCollections.audio)
-        .where('isPopular', isEqualTo: true)
+        .limit(10)
         .get();
 
     return snapshot.docs
@@ -99,16 +100,6 @@ class FirestoreAudioDataSource implements AudioDataSource {
     if (filter.language != null) {
       query = query.where('language', isEqualTo: filter.language);
     }
-    if (filter.isFeatured != null) {
-      query = query.where('isFeatured', isEqualTo: filter.isFeatured);
-    }
-    if (filter.isPopular != null) {
-      query = query.where('isPopular', isEqualTo: filter.isPopular);
-    }
-    if (filter.isRecentlyAdded != null) {
-      query = query.where('isRecentlyAdded', isEqualTo: filter.isRecentlyAdded);
-    }
-
     final snapshot = await query.get();
     var results = snapshot.docs
         .map(
@@ -154,7 +145,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
 
   @override
   Future<List<FavoriteAudioEntity>> getFavorites() async {
-    // In a real app this would query a user_favorites collection
+    if (_userId.isEmpty) return [];
     final snapshot = await FirebaseFirestore.instance
         .collection(FirestoreCollections.users)
         .doc(_userId)
@@ -200,6 +191,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
 
   @override
   Future<bool> toggleFavoriteAudio(String id) async {
+    if (_userId.isEmpty) return false;
     final docRef = FirebaseFirestore.instance
         .collection(FirestoreCollections.users)
         .doc(_userId)
@@ -218,6 +210,7 @@ class FirestoreAudioDataSource implements AudioDataSource {
 
   @override
   Future<List<RecentlyPlayedEntity>> getRecentlyPlayed() async {
+    if (_userId.isEmpty) return [];
     final snapshot = await FirebaseFirestore.instance
         .collection(FirestoreCollections.users)
         .doc(_userId)

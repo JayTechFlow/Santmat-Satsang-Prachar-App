@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/audio/presentation/providers/audio_providers.dart';
-import 'package:santmat_satsang_prachar/features/audio/data/datasources/mock_audio_data_source.dart';
+import '../../../../helpers/mock_audio_data_source.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/playback_state_entity.dart';
 import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
@@ -10,6 +10,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         audioDataSourceProvider.overrideWithValue(MockAudioDataSource()),
+        audioPlayerProvider.overrideWithValue(null),
       ],
     );
     addTearDown(container.dispose);
@@ -30,7 +31,11 @@ void main() {
   });
 
   test('PlaybackNotifier manages state correctly', () {
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [
+        audioPlayerProvider.overrideWithValue(null),
+      ],
+    );
     addTearDown(container.dispose);
 
     var state = container.read(playbackStateProvider);

@@ -11,27 +11,27 @@ export const TopBhajansList = memo(function TopBhajansList({ bhajans }: TopBhaja
     <div className="card h-full">
       <div className="card-header">
         <h3 className="card-title">Top Bhajans</h3>
-        <Music size={20} className="text-muted" />
+        <Music size={20} className="text-muted" aria-hidden="true" />
       </div>
-      
+
       {bhajans.length === 0 ? (
-        <div className="text-center text-muted" style={{ padding: '2rem' }}>
+        <div className="text-center text-muted activity-empty">
           No bhajans available.
         </div>
       ) : (
-        <div className="flex-col gap-4">
+        <ul className="top-bhajans-list">
           {bhajans.map((item, index) => (
-            <div key={item.id} className="flex items-center gap-4">
-              <div className="font-bold text-muted" style={{ width: '24px' }}>#{index + 1}</div>
+            <li key={item.id} className="top-bhajan-item">
+              <span className="bhajan-rank">#{index + 1}</span>
               <div className="flex-1">
                 <div className="font-medium text-sm">{item.title}</div>
                 <div className="text-xs text-muted mt-1">
                   {item.plays} plays
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

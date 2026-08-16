@@ -1,0 +1,11 @@
+{
+  "name": "santmat-satsang-prachar",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "bootstrap:dev": "npm --prefix backend/firebase/functions run bootstrap:dev --",
+    "build:functions": "npm --prefix backend/firebase/functions run build",
+    "build:admin": "npm --prefix admin-panel run build",
+    "lint:admin": "npm --prefix admin-panel run lint"
+  }
+}

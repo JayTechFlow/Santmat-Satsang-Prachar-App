@@ -50,25 +50,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div>
       {currentPreview && !isUploading ? (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div className="image-upload-preview-wrapper">
           <img 
             src={currentPreview} 
             alt="Preview" 
-            className="image-preview"
-            style={{ width: '100%', maxWidth: '300px', height: 'auto', maxHeight: '300px' }}
+            className="image-preview image-upload-preview-img"
           />
           <button
             onClick={handleClear}
-            className="btn-icon"
-            style={{
-              position: 'absolute',
-              top: 'var(--space-8)',
-              right: 'var(--space-8)',
-              backgroundColor: 'var(--surface)',
-              boxShadow: 'var(--shadow-card)'
-            }}
+            className="btn-icon image-upload-clear"
+            aria-label="Remove image"
           >
-            <X size={16} />
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
       ) : (

@@ -15,10 +15,13 @@ class FirestoreProfileDataSource implements ProfileDataSource {
     FirebaseAuth? firebaseAuth,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  String get _userId => _firebaseAuth.currentUser?.uid ?? 'user_123';
+  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
   @override
   Future<UserProfileEntity> getProfile() async {
+    if (_userId.isEmpty) {
+      throw Exception('User not authenticated');
+    }
     final doc = await _firestoreService.getDocument(
       FirestoreCollections.users,
       _userId,

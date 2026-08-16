@@ -8,6 +8,7 @@ import '../theme/app_icons.dart';
 import '../theme/app_gradients.dart';
 import 'ssp_glass_card.dart';
 import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
+import 'audio_wave_animation.dart';
 
 
 class SSPPrayerCard extends StatelessWidget {
@@ -89,9 +90,18 @@ class SSPPrayerCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(AppIcons.favoriteOutline, color: Colors.white),
-                          onPressed: () {},
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.share, color: Colors.white),
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon: Icon(AppIcons.favoriteOutline, color: Colors.white),
+                              onPressed: () {},
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -117,6 +127,10 @@ class SSPPrayerCard extends StatelessWidget {
                           onPressed: onPlayPause,
                           child: Icon(isPlaying ? AppIcons.pause : AppIcons.play),
                         ),
+                        if (isPlaying) ...[
+                          AppSpacing.gapW16,
+                          const AudioWaveAnimation(isPlaying: true, color: Colors.white, height: 16),
+                        ],
                         AppSpacing.gapW16,
                         Text(
                           isPlaying ? 'Playing...' : 'Listen Now',

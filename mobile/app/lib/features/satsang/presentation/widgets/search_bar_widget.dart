@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/design_system/components/ssp_search_field.dart';
 import '../../../../shared/theme/app_spacing.dart';
-import '../../../../shared/theme/app_radius.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final String hintText;
@@ -21,23 +21,9 @@ class SearchBarWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
+            child: SSPSearchField(
+              hintText: hintText,
               onChanged: onChanged,
-              decoration: InputDecoration(
-                hintText: hintText,
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.xxl),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sp16,
-                ),
-              ),
             ),
           ),
           if (onFilterTap != null) ...[

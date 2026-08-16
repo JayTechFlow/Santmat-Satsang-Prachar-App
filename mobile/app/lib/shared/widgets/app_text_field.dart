@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/ssp_text_input_field.dart';
 
+/// Legacy AppTextField adapter delegating to the canonical [SSPTextInputField].
 class AppTextField extends StatelessWidget {
   final String label;
   final TextEditingController? controller;
@@ -16,14 +18,12 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return SSPTextInputField(
+      label: label,
       controller: controller,
       obscureText: obscureText,
       validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
     );
   }
 }
+

@@ -52,8 +52,7 @@ export function useBhajanMutations(onSuccessCallback?: () => void) {
       for (const id of ids) {
         await mutations.delete(id);
       }
-      return true;
-    } catch (err: any) {
+    } catch {
       return false;
     }
   };

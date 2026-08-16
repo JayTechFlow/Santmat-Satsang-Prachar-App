@@ -13,6 +13,7 @@ abstract class SearchRepository {
   Future<Result<void>> saveRecentSearch(String query);
   Future<Result<void>> deleteRecentSearch(String query);
   Future<Result<void>> clearRecentSearches();
+  Future<Result<List<String>>> getPopularSearches();
   Future<Result<List<SearchSuggestionEntity>>> getSearchSuggestions(
     String query,
   );

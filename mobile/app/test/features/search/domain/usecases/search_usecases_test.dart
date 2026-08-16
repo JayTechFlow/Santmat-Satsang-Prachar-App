@@ -34,6 +34,10 @@ class MockSearchRepository implements SearchRepository {
   Future<Result<List<SearchSuggestionEntity>>> getSearchSuggestions(
     String query,
   ) async => const Result.success([]);
+
+  @override
+  Future<Result<List<String>>> getPopularSearches() async =>
+      const Result.success([]);
 }
 
 void main() {

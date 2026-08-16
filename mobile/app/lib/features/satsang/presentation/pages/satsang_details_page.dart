@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/satsang_providers.dart';
-import '../widgets/loading_widget.dart';
-import '../widgets/error_state_widget.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
@@ -20,10 +21,13 @@ class SatsangDetailsPage extends ConsumerWidget {
 
     return Scaffold(
       body: satsangAsync.when(
-        loading: () => const Scaffold(body: SatsangLoadingWidget()),
+        loading: () => Scaffold(
+          appBar: SSPAppBar(title: ''),
+          body: const SSPLoadingState(),
+        ),
         error: (err, stack) => Scaffold(
-          appBar: AppBar(),
-          body: SatsangErrorStateWidget(
+          appBar: SSPAppBar(title: ''),
+          body: SSPErrorState(
             message: err.toString(),
             onRetry: () => ref.refresh(satsangDetailsProvider(satsangId)),
           ),

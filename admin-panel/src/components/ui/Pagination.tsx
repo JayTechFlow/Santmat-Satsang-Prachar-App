@@ -17,21 +17,23 @@ export const Pagination: React.FC<PaginationProps> = ({
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="flex justify-center items-center gap-2 py-4 border-t">
+    <nav className="pagination" aria-label="Pagination">
       <button
         className="btn-icon"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
+        aria-label="Previous page"
       >
-        <ChevronLeft size={20} />
+        <ChevronLeft size={20} aria-hidden="true" />
       </button>
 
       {pages.map((page) => (
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`btn-icon ${page === currentPage ? 'bg-primary text-surface' : ''}`}
-          style={page === currentPage ? { backgroundColor: 'var(--primary)', color: 'white' } : {}}
+          className={`btn-icon pagination-page ${page === currentPage ? 'pagination-page-active' : ''}`}
+          aria-label={`Page ${page}`}
+          aria-current={page === currentPage ? 'page' : undefined}
         >
           {page}
         </button>
@@ -41,9 +43,10 @@ export const Pagination: React.FC<PaginationProps> = ({
         className="btn-icon"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
+        aria-label="Next page"
       >
-        <ChevronRight size={20} />
+        <ChevronRight size={20} aria-hidden="true" />
       </button>
-    </div>
+    </nav>
   );
 };

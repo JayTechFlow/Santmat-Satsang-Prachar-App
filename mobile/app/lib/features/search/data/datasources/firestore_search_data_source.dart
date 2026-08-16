@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/firebase/firestore_collections.dart';
 import '../../../../core/services/firestore_service.dart';
+import '../../../../core/services/cloud_functions_service.dart';
 import '../../domain/entities/search_result_entity.dart';
 import '../../domain/entities/recent_search_entity.dart';
 import '../../domain/entities/search_suggestion_entity.dart';
@@ -10,9 +12,16 @@ import 'search_data_source.dart';
 
 class FirestoreSearchDataSource implements SearchDataSource {
   final FirestoreService _firestoreService;
-  final String _userId = 'mock_user_id';
+  final CloudFunctionsService _cloudFunctionsService;
+  final FirebaseAuth _firebaseAuth;
 
-  FirestoreSearchDataSource(this._firestoreService);
+  FirestoreSearchDataSource(
+    this._firestoreService,
+    this._cloudFunctionsService, {
+    FirebaseAuth? firebaseAuth,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
+  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
   @override
   Future<List<SearchResultEntity>> searchEverything(
@@ -100,5 +109,19 @@ class FirestoreSearchDataSource implements SearchDataSource {
         .map((item) => SearchSuggestionDto(suggestion: item.title))
         .take(5)
         .toList();
+  }
+
+  @override
+  Future<List<String>> getPopularSearches() async {
+    try {
+      final response = await _cloudFunctionsService.callFunction('trendingSearches');
+      if (response['status'] == 'success') {
+        final List<dynamic> data = response['data'] ?? [];
+        return data.map((e) => e.toString()).toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
   }
 }

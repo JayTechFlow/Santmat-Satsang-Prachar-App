@@ -1,90 +1,130 @@
 import { collection, getDocs, query, limit, getCountFromServer } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
+import { db, auth } from '../../../firebase/config';
 import type { ActivityItemDTO, BhajanDTO, ChartDataDTO } from '../types';
+
+const ACTIVITY_COLLECTIONS = ['audio', 'books', 'stuti_vinati', 'suvichar'] as const;
+
+function docTimestamp(doc: { data: () => Record<string, any>; createTime?: { toMillis: () => number } }): number {
+  const data = doc.data();
+  if (data?.createdAt?.toMillis) return data.createdAt.toMillis();
+  if (typeof data?.createdAt === 'number') return data.createdAt;
+  if (doc.createTime?.toMillis) return doc.createTime.toMillis();
+  return 0;
+}
 
 export const dashboardRepository = {
   async getCollectionCount(collectionName: string): Promise<number> {
     try {
+      if (collectionName === 'users') {
+        const currentUser = auth.currentUser;
+        if (!currentUser) return 0;
+        const tokenResult = await currentUser.getIdTokenResult();
+        const claims = tokenResult.claims;
+        const isAdmin = claims.admin === true ||
+                        claims.role === 'developer_super_admin' ||
+                        claims.role === 'client_super_admin';
+        if (!isAdmin) return 0;
+      }
       const colRef = collection(db, collectionName);
       const snapshot = await getCountFromServer(colRef);
       return snapshot.data().count;
-    } catch (error) {
-      console.warn(`Could not get count for collection ${collectionName}`, error);
+    } catch {
       return 0;
     }
   },
 
   async getRecentActivities(): Promise<ActivityItemDTO[]> {
     const activities: ActivityItemDTO[] = [];
-    
-    try {
-      const audioRef = collection(db, 'audio');
-      const audioQuery = query(audioRef, limit(5));
-      const audioSnapshot = await getDocs(audioQuery);
-      
-      audioSnapshot.forEach(doc => {
-        const data = doc.data();
-        activities.push({
-          id: doc.id,
-          type: 'audio',
-          title: data.title || 'New Audio',
-          timestamp: data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now() - Math.random() * 10000000
-        });
-      });
 
-      const bookRef = collection(db, 'books');
-      const bookQuery = query(bookRef, limit(5));
-      const bookSnapshot = await getDocs(bookQuery);
-      
-      bookSnapshot.forEach(doc => {
-        const data = doc.data();
-        activities.push({
-          id: doc.id,
-          type: 'book',
-          title: data.title || 'New Book',
-          timestamp: data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now() - Math.random() * 10000000
-        });
-      });
-    } catch (error) {
-      console.warn('Error fetching recent activities', error);
-    }
+    await Promise.all(
+      ACTIVITY_COLLECTIONS.map(async (collectionName) => {
+        try {
+          const colRef = collection(db, collectionName);
+          const snapshot = await getDocs(query(colRef, limit(5)));
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            activities.push({
+              id: doc.id,
+              type: collectionName === 'audio' ? 'audio' : collectionName === 'books' ? 'book' : collectionName,
+              title: data.title || (collectionName === 'suvichar' ? 'New Suvichar' : 'New Item'),
+              timestamp: docTimestamp(doc),
+            } as ActivityItemDTO);
+          });
+        } catch {
+          // Skip collections that fail
+        }
+      })
+    );
 
-    return activities.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
+    return activities
+      .filter((a) => a.timestamp > 0)
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 5);
   },
 
   async getTopBhajans(): Promise<BhajanDTO[]> {
     const bhajans: BhajanDTO[] = [];
-    
+
     try {
       const audioRef = collection(db, 'audio');
-      const audioQuery = query(audioRef, limit(10));
+      const audioQuery = query(audioRef, limit(50));
       const snapshot = await getDocs(audioQuery);
-      
-      snapshot.forEach(doc => {
+
+      snapshot.forEach((doc) => {
         const data = doc.data();
         bhajans.push({
           id: doc.id,
           title: data.title || 'Unknown Bhajan',
-          plays: data.plays || Math.floor(Math.random() * 1000), 
-          createdAt: data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now()
+          plays: typeof data.plays === 'number' ? data.plays : 0,
+          createdAt: docTimestamp(doc),
         });
       });
-    } catch (error) {
-      console.warn('Error fetching top bhajans', error);
+    } catch {
+      // Return accumulated bhajans on error
     }
-    
-    return bhajans.sort((a, b) => b.plays - a.plays).slice(0, 5);
+
+    return bhajans
+      .sort((a, b) => b.plays - a.plays || b.createdAt - a.createdAt)
+      .slice(0, 5);
   },
-  
-  async getAnalyticsData(_dateRange: string): Promise<ChartDataDTO[]> {
-    return [
-      { date: 'Mon', value: 12 },
-      { date: 'Tue', value: 19 },
-      { date: 'Wed', value: 15 },
-      { date: 'Thu', value: 25 },
-      { date: 'Fri', value: 22 },
-      { date: 'Sat', value: 30 },
-      { date: 'Sun', value: 28 },
-    ];
-  }
+
+  async getAnalyticsData(dateRange: string): Promise<ChartDataDTO[]> {
+    const days = dateRange === '30days' ? 30 : 7;
+    const now = Date.now();
+    const dayMs = 86400000;
+    const start = now - days * dayMs;
+
+    const bucketKey = (d: Date) =>
+      days <= 7
+        ? d.toLocaleDateString('en-US', { weekday: 'short' })
+        : `${d.getMonth() + 1}/${d.getDate()}`;
+
+    const buckets = new Map<string, number>();
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(now - i * dayMs);
+      buckets.set(bucketKey(d), 0);
+    }
+
+    await Promise.all(
+      ACTIVITY_COLLECTIONS.map(async (collectionName) => {
+        try {
+          const colRef = collection(db, collectionName);
+          const snapshot = await getDocs(query(colRef, limit(500)));
+          snapshot.forEach((doc) => {
+            const ts = docTimestamp(doc);
+            if (ts >= start && ts <= now) {
+              const key = bucketKey(new Date(ts));
+              if (buckets.has(key)) {
+                buckets.set(key, (buckets.get(key) ?? 0) + 1);
+              }
+            }
+          });
+        } catch {
+          // Skip collections that fail
+        }
+      })
+    );
+
+    return [...buckets.entries()].map(([date, value]) => ({ date, value }));
+  },
 };

@@ -18,12 +18,26 @@ export function useAuth() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      return await authService.signInWithGoogle();
+    } catch (err: any) {
+      setError(err.message || 'Google sign-in failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     return authService.logout();
   };
 
   return {
     login,
+    signInWithGoogle,
     logout,
     loading,
     error,

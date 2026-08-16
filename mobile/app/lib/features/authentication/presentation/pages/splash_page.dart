@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/widgets/app_scaffold.dart';
-import '../../../../shared/widgets/loading_indicator.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -17,7 +17,7 @@ class SplashPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 24),
-            LoadingIndicator(),
+            SSPLoadingState(),
           ],
         ),
       ),

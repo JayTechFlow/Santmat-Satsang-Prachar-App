@@ -5,6 +5,7 @@ import '../../../../shared/theme/app_radius.dart';
 class ProfileAvatarCard extends StatelessWidget {
   final String name;
   final String? email;
+  final String? phone;
   final String? photoUrl;
   final VoidCallback? onEdit;
 
@@ -12,6 +13,7 @@ class ProfileAvatarCard extends StatelessWidget {
     super.key,
     required this.name,
     this.email,
+    this.phone,
     this.photoUrl,
     this.onEdit,
   });
@@ -61,6 +63,13 @@ class ProfileAvatarCard extends StatelessWidget {
                 if (email != null && email!.isNotEmpty)
                   Text(
                     email!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                if (phone != null && phone!.isNotEmpty)
+                  Text(
+                    phone!,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

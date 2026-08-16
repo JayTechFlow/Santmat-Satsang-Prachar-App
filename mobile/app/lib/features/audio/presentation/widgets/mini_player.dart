@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/audio_providers.dart';
 import '../../domain/entities/playback_state_entity.dart';
-import '../../../../shared/widgets/ssp_mini_player.dart';
+import '../../../../shared/design_system/components/ssp_mini_player.dart';
+import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -17,13 +18,22 @@ class MiniPlayer extends ConsumerWidget {
 
     final isPlaying = playbackState.status == PlaybackStatus.playing;
     final progress = audio.duration.inMilliseconds > 0
-        ? (playbackState.position.inMilliseconds / audio.duration.inMilliseconds).clamp(0.0, 1.0)
+        ? (playbackState.position.inMilliseconds /
+                  audio.duration.inMilliseconds)
+              .clamp(0.0, 1.0)
         : 0.0;
 
     return SSPMiniPlayer(
       title: audio.title,
       subtitle: audio.speaker,
-      imageUrl: audio.thumbnailUrl,
+      artwork: audio.thumbnailUrl.isNotEmpty
+          ? SSPImage(
+              audio.thumbnailUrl,
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+            )
+          : null,
       isPlaying: isPlaying,
       progress: progress,
       onPlayPause: () {

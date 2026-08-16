@@ -17,13 +17,13 @@ export const PrayerPreview: React.FC<PrayerPreviewProps> = ({
       <div style={{
         width: `${size}px`,
         height: `${size}px`,
-        backgroundColor: '#FFF2E8',
+        backgroundColor: 'var(--primary-light)',
         color: 'var(--primary)',
         border: '1px solid var(--border)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 'var(--radius-input)'
+        borderRadius: 'var(--radius-md)'
       }}>
         <BookOpen size={size * 0.42} />
       </div>
