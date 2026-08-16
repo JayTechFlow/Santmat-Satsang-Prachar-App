@@ -1,0 +1,42 @@
+- generic [ref=f1e53]:
+  - complementary [ref=f1e54]:
+    - generic [ref=f1e64]:
+      - heading "संतमत सत्संग प्रचार" [level=2] [ref=f1e65]
+      - text: एडमिन पैनल
+    - generic [ref=f1e66]:
+      - button "डैशबोर्ड" [ref=f1e67]
+      - button "भजन प्रबंधन" [ref=f1e75]
+      - button "स्तुति-विनती प्रबंधन" [ref=f1e92]
+      - button "श्रेणियाँ प्रबंधन" [ref=f1e99]
+      - button "उपयोगकर्ता प्रबंधन" [ref=f1e106]
+      - button "प्ले लिस्ट प्रबंधन" [ref=f1e113]
+      - button "सूचनाएँ भेजें" [ref=f1e117]
+      - button "बैनर प्रबंधन" [ref=f1e122]
+      - button "रिपोर्ट और एनालिटिक्स" [ref=f1e128]
+      - button "ऐप सेटिंग्स" [ref=f1e132]
+      - button "समर्थन संदेश" [ref=f1e137]
+      - button "पुस्तकें प्रबंधन" [ref=f1e141]
+      - button "वैश्विक खोज" [active] [ref=f1e146]
+      - button "सुरक्षित लॉग आउट" [ref=f1e151]
+    - generic [ref=f1e156]:
+      - heading "सहायता की आवश्यकता है?" [level=4] [ref=f1e157]
+      - paragraph [ref=f1e158]: "संपर्क करें: admin@santmat.app"
+      - paragraph [ref=f1e159]: +91 12345 67890
+  - generic [ref=f1e160]:
+    - banner [ref=f1e161]:
+      - heading "वैश्विक खोज" [level=1] [ref=f1e386]
+      - generic [ref=f1e164]:
+        - button "लॉग आउट" [ref=f1e165]
+        - generic [ref=f1e170] [cursor=pointer]
+        - generic [ref=f1e174]:
+          - generic [ref=f1e175]: J
+          - generic [ref=f1e177]:
+            - paragraph [ref=f1e178]: JAY
+            - paragraph [ref=f1e179]: डेवलपर सुपर एडमिन
+    - main [ref=f1e180]:
+      - generic [ref=f1e388]:
+        - generic [ref=f1e389]:
+          - generic [ref=f1e390]: वैश्विक खोज इंजन
+          - heading "संतमत सामग्री खोजें" [level=1] [ref=f1e395]
+          - paragraph [ref=f1e396]: "वैश्विक खोज: `audio`, `stuti_vinati`, `suvichar`, `books` संग्रहों से"
+        - textbox "भजन, स्तुति, सुविचार या पुस्तक खोजें…" [ref=f1e401]

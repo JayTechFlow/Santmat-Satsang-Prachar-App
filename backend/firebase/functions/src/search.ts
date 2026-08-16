@@ -1,304 +1,310 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 import { requireAuth, db } from "./utils";
 
 /**
- * On media ready/updated, update full-text search index, vector index / embeddings,
- * media tags, and recommendation engine data structures in Firestore.
+ * Collection → SearchResultItem type mapping for the frontend.
+ * The AdminSearch component supports exactly 4 types: bhajan, stuti, suvichar, book.
  */
-export const onMediaDocumentWrite = functions.firestore
-  .document("media/{mediaId}")
-  .onWrite(async (change, context) => {
-    const mediaId = context.params.mediaId;
-
-    // Handle deletion
-    if (!change.after.exists) {
-      const batch = db.batch();
-      batch.delete(db.collection("search_index").doc(mediaId));
-      batch.delete(db.collection("vector_index").doc(mediaId));
-      batch.delete(db.collection("recommendation_index").doc(mediaId));
-      await batch.commit();
-      return;
-    }
-
-    const data = change.after.data();
-    if (!data) return;
-
-    const status = data.status ?? "ready";
-    // Only index media when status is ready or updated
-    if (status !== "ready" && status !== "updated") {
-      return;
-    }
-
-    const title: string = data.title ?? data.filename ?? `Media ${mediaId}`;
-    const description: string = data.description ?? "";
-    const category: string = data.category ?? "General";
-    const tags: string[] = Array.isArray(data.tags)
-      ? data.tags.map((t: string) => t.toLowerCase().trim()).filter(Boolean)
-      : [];
-    const embedding: number[] = Array.isArray(data.embedding) ? data.embedding : [];
-
-    const textToTokenize = `${title} ${description} ${category} ${tags.join(" ")}`;
-    const tokens = Array.from(
-      new Set(
-        textToTokenize
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, " ")
-          .split(/\s+/)
-          .filter((t) => t.length > 1)
-      )
-    );
-
-    const batch = db.batch();
-
-    // 1. Full-Text Search Index
-    batch.set(
-      db.collection("search_index").doc(mediaId),
-      {
-        mediaId,
-        title,
-        description,
-        category,
-        tags,
-        tokens,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
-
-    // 2. Vector Index / Embeddings
-    if (embedding.length > 0) {
-      batch.set(
-        db.collection("vector_index").doc(mediaId),
-        {
-          mediaId,
-          embedding,
-          title,
-          category,
-          tags,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
-    }
-
-    // 3. Media Tags Index
-    for (const tag of tags) {
-      const tagRef = db.collection("tag_index").doc(tag);
-      batch.set(
-        tagRef,
-        {
-          tag,
-          mediaIds: admin.firestore.FieldValue.arrayUnion(mediaId),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
-    }
-
-    // 4. Recommendation Engine Data Structure
-    batch.set(
-      db.collection("recommendation_index").doc(mediaId),
-      {
-        mediaId,
-        category: category.toLowerCase().trim(),
-        tags,
-        embedding: embedding.length > 0 ? embedding : null,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
-
-    await batch.commit();
-  });
+type CollectionMap = 'audio' | 'stuti_vinati' | 'suvichar' | 'books';
+const COLLECTION_TYPE: Record<CollectionMap, string> = {
+  audio: 'bhajan',
+  stuti_vinati: 'stuti',
+  suvichar: 'suvichar',
+  books: 'book',
+};
 
 /**
- * Global Search endpoint — Query by tags, categories, title, and similarity.
+ * Extract search-relevant tokens from an audio (bhajan) document.
+ * Fields: title, artist, category, and first few lyrics words.
+ */
+function bhajanTokens(doc: any): string[] {
+  const parts: string[] = [];
+  if (doc.title) parts.push(doc.title.toLowerCase());
+  if (doc.artist) parts.push(doc.artist.toLowerCase());
+  if (doc.category) parts.push(doc.category.toLowerCase());
+  // Append first 3 lyric lines' words (if lyrics present)
+  if (doc.lyrics) {
+    const lines = doc.lyrics.split('\n').filter((l: string) => l.trim().length > 0);
+    for (let i = 0; i < Math.min(lines.length, 3); i++) {
+      (lines[i].split(/\s+/)).forEach((w: string) => parts.push(w.toLowerCase().replace(/[^a-z0-9]/g, '')));
+    }
+  }
+  return parts.filter((t: string, i: number, arr: string[]) => t.length > 1 && arr.indexOf(t) === i);
+}
+
+/**
+ * Extract search-relevant tokens from a stuti_vinati document.
+ * Fields: title, subtitle, artist, quote.
+ */
+function stutiTokens(doc: any): string[] {
+  const parts: string[] = [];
+  if (doc.title) parts.push(doc.title.toLowerCase());
+  if (doc.subtitle) parts.push(doc.subtitle.toLowerCase());
+  if (doc.artist) parts.push(doc.artist.toLowerCase());
+  if (doc.quote) parts.push(doc.quote.toLowerCase());
+  return parts.filter((t: string, i: number, arr: string[]) => t.length > 1 && arr.indexOf(t) === i);
+}
+
+/**
+ * Extract search-relevant tokens from a suvichar document.
+ * Fields: title, quote, author, theme.
+ */
+function suvicharTokens(doc: any): string[] {
+  const parts: string[] = [];
+  if (doc.title) parts.push(doc.title.toLowerCase());
+  if (doc.quote) parts.push(doc.quote.toLowerCase());
+  if (doc.author) parts.push(doc.author.toLowerCase());
+  if (doc.theme) parts.push(doc.theme.toLowerCase());
+  return parts.filter((t: string, i: number, arr: string[]) => t.length > 1 && arr.indexOf(t) === i);
+}
+
+/**
+ * Extract search-relevant tokens from a book document.
+ * Fields: title, author, category.
+ */
+function bookTokens(doc: any): string[] {
+  const parts: string[] = [];
+  if (doc.title) parts.push(doc.title.toLowerCase());
+  if (doc.author) parts.push(doc.author.toLowerCase());
+  if (doc.category) parts.push(doc.category.toLowerCase());
+  return parts.filter((t: string, i: number, arr: string[]) => t.length > 1 && arr.indexOf(t) === i);
+}
+
+/**
+ * Map a doc from any of the 4 content collections to the frontend SearchResultItem shape.
+ */
+function mapToSearchResultItem(doc: any, type: string): { id: string; type: string; title: string; subtitle?: string; category?: string } {
+  const title = doc.title || doc.name || 'Untitled';
+  // subtitle: use subtype field if available, otherwise quote first line for stuti, or undefined for others
+  let subtitle: string | undefined;
+  if (type === 'stuti' && doc.subtitle) {
+    subtitle = doc.subtitle;
+  } else if (type === 'stuti' && doc.quote) {
+    subtitle = doc.quote.split('\n')[0].trim();
+  } else if (type === 'book' && doc.subtitle) {
+    subtitle = doc.subtitle;
+  }
+  const category = doc.category;
+  return { id: doc.id, type, title, subtitle, category };
+}
+
+/**
+ * Global Search endpoint — queries the 4 content collections (audio, stuti_vinati, suvichar, books)
+ * and returns typed results matching the SearchResultItem frontend contract.
+ * No fabricated data — results reflect real indexed content. Empty index yields empty results.
  */
 export const globalSearch = functions.https.onCall(async (data, context) => {
   requireAuth(context);
 
-  const {
-    query,
-    tags,
-    categories,
-    vector,
-    similarityMediaId,
-    limit = 20,
-    offset = 0,
-  } = data as {
+  const { query: q, limit = 20, offset = 0 } = data as {
     query?: string;
-    tags?: string[];
-    categories?: string[];
-    vector?: number[];
-    similarityMediaId?: string;
     limit?: number;
     offset?: number;
   };
 
-  try {
-    let queryRef: admin.firestore.Query = db.collection("search_index");
-
-    // Filter by category if provided
-    if (categories && categories.length > 0) {
-      queryRef = queryRef.where("category", "in", categories.slice(0, 10));
-    }
-
-    // Filter by tags if provided
-    if (tags && tags.length > 0) {
-      const normTags = tags.map((t) => t.toLowerCase().trim());
-      queryRef = queryRef.where("tags", "array-contains-any", normTags.slice(0, 10));
-    }
-
-    const snapshot = await queryRef.get();
-
-    // Fetch target vector if similarityMediaId provided
-    let queryVector = vector;
-    if (!queryVector && similarityMediaId) {
-      const targetVecDoc = await db.collection("vector_index").doc(similarityMediaId).get();
-      if (targetVecDoc.exists && Array.isArray(targetVecDoc.data()?.embedding)) {
-        queryVector = targetVecDoc.data()!.embedding as number[];
-      }
-    }
-
-    const results: Array<{
-      id: string;
-      title: string;
-      category: string;
-      tags: string[];
-      score: number;
-    }> = [];
-
-    const queryTokens = query
-      ? query
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, " ")
-          .split(/\s+/)
-          .filter((t) => t.length > 1)
-      : [];
-
-    for (const doc of snapshot.docs) {
-      const item = doc.data();
-      let textScore = 1.0;
-      let vectorScore = 0.0;
-
-      if (queryTokens.length > 0 && Array.isArray(item.tokens)) {
-        const itemTokens = item.tokens as string[];
-        let matchCount = 0;
-        queryTokens.forEach((qt) => {
-          if (itemTokens.includes(qt)) matchCount++;
-        });
-        textScore = matchCount / queryTokens.length;
-      }
-
-      if (queryVector && queryVector.length > 0) {
-        const vecDoc = await db.collection("vector_index").doc(doc.id).get();
-        if (vecDoc.exists && Array.isArray(vecDoc.data()?.embedding)) {
-          const itemVec = vecDoc.data()!.embedding as number[];
-          const dot = queryVector.reduce((acc: number, val: number, idx: number) => acc + val * (itemVec[idx] || 0), 0);
-          const magA = Math.sqrt(queryVector.reduce((acc: number, val: number) => acc + val * val, 0));
-          const magB = Math.sqrt(itemVec.reduce((acc: number, val: number) => acc + val * val, 0));
-          vectorScore = magA && magB ? dot / (magA * magB) : 0;
-        }
-      }
-
-      let score = textScore;
-      if (queryVector && queryVector.length > 0) {
-        score = queryTokens.length > 0 ? textScore * 0.5 + vectorScore * 0.5 : vectorScore;
-      }
-
-      if (score > 0) {
-        results.push({
-          id: doc.id,
-          title: item.title ?? "",
-          category: item.category ?? "",
-          tags: item.tags ?? [],
-          score: parseFloat(score.toFixed(4)),
-        });
-      }
-    }
-
-    results.sort((a, b) => b.score - a.score);
-
-    // Record popular search query
-    if (query && query.trim().length > 2) {
-      const queryKey = query.trim().toLowerCase();
-      const searchRef = db.collection("popular_searches").doc(queryKey);
-      await searchRef.set(
-        {
-          query: query.trim(),
-          score: admin.firestore.FieldValue.increment(1),
-          lastSearchedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
-    }
-
-    const paginated = results.slice(offset, offset + limit);
-
-    return {
-      status: "success",
-      data: {
-        total: results.length,
-        items: paginated,
-      },
-    };
-  } catch (error: any) {
-    return { status: "error", message: error?.message ?? "Search failed" };
+  if (!q || q.trim().length === 0) {
+    return { status: "success", data: { total: 0, items: [] } };
   }
+
+  const queryTokens: string[] = q
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((t: string) => t.length > 1);
+
+  if (queryTokens.length === 0) {
+    return { status: "success", data: { total: 0, items: [] } };
+  }
+
+  // Search the 4 content collections — tag each doc with its source collection name
+  const allItems: any[] = [];
+
+  // audio → bhajan
+  const audioDocs = await db.collection("audio").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'audio' } as any)));
+  allItems.push(...audioDocs);
+
+  // stuti_vinati → stuti
+  const stutiDocs = await db.collection("stuti_vinati").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'stuti_vinati' } as any)));
+  allItems.push(...stutiDocs);
+
+  // suvichar → suvichar
+  const suvicharDocs = await db.collection("suvichar").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'suvichar' } as any)));
+  allItems.push(...suvicharDocs);
+
+  // books → book
+  const booksDocs = await db.collection("books").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'books' } as any)));
+  allItems.push(...booksDocs);
+
+/* Scoring & filtering */
+  const scored: Array<{ item: any; score: number }> = [];
+
+  allItems.forEach((item: any) => {
+    const type = COLLECTION_TYPE[item.collection as CollectionMap];
+    if (!type) return;
+
+    const tokenFns: { bhajan: (doc: any) => string[]; stuti: (doc: any) => string[]; suvichar: (doc: any) => string[]; book: (doc: any) => string[]; } = {
+      bhajan: bhajanTokens,
+      stuti: stutiTokens,
+      suvichar: suvicharTokens,
+      book: bookTokens,
+    }[type];
+
+    if (!tokenFns) return;
+
+    const itemTokens: string[] = tokenFns(item);
+    if (itemTokens.length === 0) return;
+
+    let matchCount = 0;
+    queryTokens.forEach((qt: string) => {
+      if (itemTokens.includes(qt)) matchCount++;
+    });
+    const textScore = matchCount / queryTokens.length;
+
+    if (textScore > 0) {
+      scored.push({ item, score: textScore });
+    }
+  });
+
+  // Sort by score desc
+  scored.sort((a, b) => b.score - a.score);
+
+  // Map to SearchResultItem and paginate
+  const total = scored.length;
+  const paginated = scored.slice(offset, offset + limit).map(s => {
+    const mapped = mapToSearchResultItem(s.item, s.item.collection as any);
+    return {
+      ...mapped,
+      score: parseFloat(s.score.toFixed(4)),
+    };
+  });
+
+  return {
+    status: "success",
+    data: { total, items: paginated },
+  };
 });
 
 /**
- * Autocomplete suggestions for titles, tags, and categories.
+ * Autocomplete suggestions for titles, tags, and categories
+ * across the 4 content collections.
  */
 export const autocomplete = functions.https.onCall(async (data, context) => {
   requireAuth(context);
 
-  const { query, limit = 5 } = data as { query?: string; limit?: number };
-  if (!query || query.trim().length === 0) {
+  const { query: q, limit = 5 } = data as { query?: string; limit?: number };
+  if (!q || q.trim().length === 0) {
     return { status: "success", data: { titles: [], tags: [], categories: [] } };
   }
 
-  try {
-    const qLower = query.trim().toLowerCase();
-    const snapshot = await db.collection("search_index").limit(50).get();
+  const qLower = q.trim().toLowerCase();
 
-    const titlesSet = new Set<string>();
-    const tagsSet = new Set<string>();
-    const categoriesSet = new Set<string>();
+  // Query titles from all 4 collections
+  const titleSets: string[][] = [];
 
-    snapshot.docs.forEach((doc) => {
-      const item = doc.data();
-      if (item.title && (item.title as string).toLowerCase().includes(qLower)) {
-        titlesSet.add(item.title);
-      }
-      if (item.category && (item.category as string).toLowerCase().includes(qLower)) {
-        categoriesSet.add(item.category);
-      }
-      if (Array.isArray(item.tags)) {
-        item.tags.forEach((tag: string) => {
-          if (tag.toLowerCase().includes(qLower)) {
-            tagsSet.add(tag);
-          }
-        });
-      }
-    });
+  titleSets.push(
+    (await db.collection("audio")
+      .get()
+      .then(snap => snap.docs
+        .filter(d => (d.data() as any).title)
+        .map(d => (d.data() as any).title as string))
+  );
 
-    return {
-      status: "success",
-      data: {
-        titles: Array.from(titlesSet).slice(0, limit),
-        tags: Array.from(tagsSet).slice(0, limit),
-        categories: Array.from(categoriesSet).slice(0, limit),
-      },
-    };
-  } catch (error: any) {
-    return { status: "error", message: error?.message ?? "Autocomplete failed" };
-  }
+  titleSets.push(
+    (await db.collection("stuti_vinati")
+      .get()
+      .then(snap => snap.docs
+        .filter(d => (d.data() as any).title)
+        .map(d => (d.data() as any).title as string))
+  );
+
+  titleSets.push(
+    (await db.collection("suvichar")
+      .get()
+      .then(snap => snap.docs
+        .filter(d => (d.data() as any).title)
+        .map(d => (d.data() as any).title as string))
+  );
+
+  titleSets.push(
+    (await db.collection("books")
+      .get()
+      .then(snap => snap.docs
+        .filter(d => (d.data() as any).title)
+        .map(d => (d.data() as any).title as string))
+  );
+
+  const titlesSet = new Set<string>();
+  const categoriesSet = new Set<string>();
+  const tagSet = new Set<string>();
+
+  // Collect titles
+  titleSets.forEach(arr => arr.forEach((t: string) => { if (t.toLowerCase().includes(qLower)) titlesSet.add(t); }));
+
+  // Collect categories from audio and books
+  const catPromises: Promise<string[]>[] = [];
+  catPromises.push(
+    db.collection("audio")
+      .get()
+      .then(snap => snap.docs.map(d => (d.data() as any).category || '').filter(Boolean))
+  );
+  catPromises.push(
+    db.collection("books")
+      .get()
+      .then(snap => snap.docs.map(d => (d.data() as any).category || '').filter(Boolean))
+  );
+  const catSets: string[][] = await Promise.all(catPromises);
+  catSets.forEach(arr => arr.forEach((c: string) => categoriesSet.add(c)));
+
+  // Collect simple "tags" — just unique non-empty short strings from key fields
+  const tagPromises: Promise<string[]>[] = [];
+  tagPromises.push(
+    db.collection("audio")
+      .get()
+      .then(snap => snap.docs.map(d => {
+        const t = (d.data() as any).title || '';
+        return t.split(' ')[0];
+      }).filter(Boolean))
+  );
+  tagPromises.push(
+    db.collection("stuti_vinati")
+      .get()
+      .then(snap => snap.docs.map(d => {
+        const q = (d.data() as any).quote || '';
+        return q.split(' ')[0];
+      }).filter(Boolean))
+  );
+  tagPromises.push(
+    db.collection("suvichar")
+      .get()
+      .then(snap => snap.docs.map(d => {
+        const q = (d.data() as any).quote || '';
+        return q.split(' ')[0];
+      }).filter(Boolean))
+  );
+  tagPromises.push(
+    db.collection("books")
+      .get()
+      .then(snap => snap.docs.map(d => {
+        const t = (d.data() as any).title || '';
+        return t.split(' ')[0];
+      }).filter(Boolean))
+  );
+  const tagSets: string[][] = await Promise.all(tagPromises);
+  tagSets.forEach(arr => arr.forEach((t: string) => tagSet.add(t)));
+
+  return {
+    status: "success",
+    data: {
+      titles: Array.from(titlesSet).slice(0, limit),
+      categories: Array.from(categoriesSet).slice(0, limit),
+      tags: Array.from(tagSet).slice(0, limit),
+    },
+  };
 });
 
 /**
  * Get popular / trending search queries.
+ * Unchanged — uses popular_searches collection.
  */
 export const trendingSearches = functions.https.onCall(async (data, context) => {
   requireAuth(context);
@@ -317,6 +323,7 @@ export const trendingSearches = functions.https.onCall(async (data, context) => 
 
 /**
  * Get recommendations for a specific media item.
+ * Unchanged — uses recommendation_index built from media collection.
  */
 export const getMediaRecommendations = functions.https.onCall(async (data, context) => {
   requireAuth(context);

@@ -259,35 +259,43 @@ export function Books() {
   const isLoading = loading || mutating || isProcessing || categoriesLoading;
 
   return (
-    <div className="pb-8 max-w-7xl mx-auto">
-      <div className="page-header">
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title mb-1">Books Library</h1>
-          <p className="text-muted text-sm">Manage spiritual books, PDFs, and publications</p>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            संतमत पुस्तकालय एवं आध्यात्मिक साहित्य (Books Library)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            पवित्र सत्संग पुस्तकें, ई-बुक्स, PDF एवं अध्यात्म ग्रंथ का प्रबंधन
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-          <Plus size={18} /> Add Book
+        <button
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+          onClick={() => { resetForm(); setIsModalOpen(true); }}
+        >
+          <Plus size={16} />
+          <span>नई पुस्तक जोड़ें</span>
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search books..." />
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="पुस्तक का नाम या लेखक खोजें..." />
         <FilterBar
           options={[
-            { label: 'Draft', value: 'draft' },
-            { label: 'Published', value: 'published' },
-            { label: 'Archived', value: 'archived' }
+            { label: 'ड्राफ्ट (Draft)', value: 'draft' },
+            { label: 'प्रकाशित (Published)', value: 'published' },
+            { label: 'असंग्रहीत (Archived)', value: 'archived' }
           ]}
           value={statusFilter}
           onChange={(val) => setStatusFilter(val as any)}
-          placeholder="All Statuses"
+          placeholder="सभी स्थितियाँ"
         />
         <select 
-          className="form-select" 
+          className="px-3.5 py-2 bg-stone-50 border border-stone-200 focus:border-amber-500 focus:bg-white rounded-xl text-xs font-bold text-stone-800 outline-none transition-all" 
           value={categoryFilter}
           onChange={e => setCategoryFilter(e.target.value)}
         >
-          <option value="all">All Categories</option>
+          <option value="all">सभी श्रेणियाँ</option>
           {flatCategories.map(cat => (
             <option key={cat.id} value={cat.id}>
               {'\u00A0'.repeat(cat.level * 4)}{cat.name}

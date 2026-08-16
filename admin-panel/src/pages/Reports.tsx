@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { PageContainer } from '../components/ui/PageContainer';
-import { PageHeader } from '../components/ui/PageHeader';
 import { LoadingState } from '../components/ui/LoadingState';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
@@ -103,25 +101,25 @@ export function Reports() {
   ];
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Reports & Intelligence"
-        subtitle="System usage, operational metrics, recommendation telemetry, and AI insights."
-        breadcrumbs={[
-          { label: 'Home', path: '/' },
-          { label: 'Reports & Intelligence', path: '/reports' },
-        ]}
-        actions={
-          <button
-            type="button"
-            className="btn btn-secondary flex items-center space-x-2"
-            onClick={handleExportCSV}
-          >
-            <Download className="w-4 h-4" />
-            <span>Export CSV</span>
-          </button>
-        }
-      />
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            विस्तृत रिपोर्ट और एनालिटिक्स (Reports & Intelligence)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            प्लेटफॉर्म उपयोग, ऑडियो स्ट्रीम मेट्रिक्स, एआई विश्लेषण एवं रिपोर्ट डाउनलोड
+          </p>
+        </div>
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+          onClick={handleExportCSV}
+        >
+          <Download className="w-4 h-4" />
+          <span>रिपोर्ट डाउनलोड करें (CSV)</span>
+        </button>
+      </div>
 
       <TabsRoot defaultValue="ops" value={activeTab} onValueChange={setActiveTab} className="mb-6">
         <TabsList>
@@ -213,6 +211,6 @@ export function Reports() {
           )}
         </TabsContent>
       </TabsRoot>
-    </PageContainer>
+    </div>
   );
 }

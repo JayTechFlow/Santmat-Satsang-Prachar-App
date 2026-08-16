@@ -114,22 +114,20 @@ export function Audio() {
   const isLoading = fetching || mutating;
 
   return (
-    <div>
+    <div className="p-6 max-w-7xl mx-auto font-['Mukta'] select-none">
       {/* Header Section */}
-      <div className="page-header">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title mb-2">Bhajan & Audio Management</h1>
-          <p className="text-muted text-sm">
-            Upload, organize, and manage spiritual audio tracks and bhajans
-          </p>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">Bhajan & Audio Management</h1>
+          <p className="text-xs text-stone-600 font-medium">Upload, organize, and manage spiritual audio tracks and bhajans</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
+        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all" onClick={() => { resetForm(); setIsModalOpen(true); }}>
           <Plus size={18} /> Add New Bhajan
         </button>
       </div>
 
       {/* Main Table Card */}
-      <div className="card p-0 overflow-hidden relative">
+      <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs">
         {isLoading ? (
           <LoadingOverlay message="Loading..." />
         ) : fetchError ? (
@@ -261,16 +259,16 @@ export function Audio() {
 
       {/* Modal Dialog */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-center justify-center z-50 p-4">
-          <div className="card w-full max-w-xl max-h-90vh overflow-y-auto mb-0 p-8 shadow-float">
+        <div className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl p-6 max-w-4xl w-full shadow-2xl border border-stone-200">
             {/* Modal Header */}
-            <div className="flex-between mb-6 pb-4 border-b">
+            <div className="flex flex-col items-start gap-4 pb-4 border-b border-stone-200">
               <h2 className="text-heading font-semibold text-2xl">
                 {editingId ? 'Edit Bhajan' : 'Add New Bhajan'}
               </h2>
               <button
                 type="button"
-                className="btn-icon"
+                className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 btn-icon"
                 onClick={handleCloseModal}
                 aria-label="Close"
               >
@@ -285,7 +283,7 @@ export function Audio() {
                 <input
                   type="text"
                   id="bhajan-title"
-                  className="form-input"
+                  className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
                   placeholder="Enter bhajan title"
                   value={formData.title}
                   onChange={e => setField('title', e.target.value)}
@@ -298,7 +296,7 @@ export function Audio() {
                 <label className="form-label" htmlFor="bhajan-description">Description</label>
                 <textarea
                   id="bhajan-description"
-                  className="form-textarea"
+                  className="form-textarea w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-3 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
                   rows={3}
                   placeholder="Enter details or lyrics preview"
                   value={formData.description}
@@ -320,31 +318,35 @@ export function Audio() {
               {/* Audio Uploader Box */}
               <div className="form-group">
                 <label className="form-label">Audio File (MP3)</label>
-                <AudioUpload 
-                  onFileSelect={() => {}} 
-                  onUploadComplete={(url: string) => setField('audioUrl', url)} 
-                  folder="audio" 
-                  audioUrl={formData.audioUrl} 
-                  onClear={() => setField('audioUrl', '')} 
-                  uploadFn={(file, folder, onProgress) => uploadAudio(file, folder, onProgress)}
-                />
+                <div className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5">
+                  <AudioUpload 
+                    onFileSelect={() => {}} 
+                    onUploadComplete={(url: string) => setField('audioUrl', url)} 
+                    folder="audio" 
+                    audioUrl={formData.audioUrl} 
+                    onClear={() => setField('audioUrl', '')} 
+                    uploadFn={(file, folder, onProgress) => uploadAudio(file, folder, onProgress)}
+                  />
+                </div>
               </div>
 
               {/* Thumbnail Uploader Box */}
               <div className="form-group">
                 <label className="form-label">Thumbnail Cover Image</label>
-                <ImageUpload 
-                  onFileSelect={() => {}} 
-                  onUploadComplete={(url: string) => setField('thumbnailUrl', url)} 
-                  folder="thumbnails" 
-                  previewUrl={formData.thumbnailUrl} 
-                  onClear={() => setField('thumbnailUrl', '')} 
-                  uploadFn={(file, folder, onProgress) => uploadImage(file, folder, onProgress)}
-                />
+                <div className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5">
+                  <ImageUpload 
+                    onFileSelect={() => {}} 
+                    onUploadComplete={(url: string) => setField('thumbnailUrl', url)} 
+                    folder="thumbnails" 
+                    previewUrl={formData.thumbnailUrl} 
+                    onClear={() => setField('thumbnailUrl', '')} 
+                    uploadFn={(file, folder, onProgress) => uploadImage(file, folder, onProgress)}
+                  />
+                </div>
               </div>
 
               {/* Modal Footer Actions */}
-              <div className="flex justify-end gap-4 mt-8 pt-4 border-t">
+              <div className="flex justify-end gap-4 mt-8 pt-4 border-t border-stone-200">
                 <button type="button" className="btn btn-outline" onClick={handleCloseModal}>
                   Cancel
                 </button>

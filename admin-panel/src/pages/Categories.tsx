@@ -219,32 +219,38 @@ export function Categories() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div className="pb-8 max-w-7xl mx-auto">
-      <div className="page-header">
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title mb-1">Categories</h1>
-          <p className="text-muted text-sm">
-            Manage category taxonomy and content mappings
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            श्रेणियाँ एवं उप-श्रेणियाँ प्रबंधन
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            भजन, पुस्तकें एवं सत्संग सामग्री की श्रेणियों का प्रबंधन एवं वर्गीकरण
           </p>
         </div>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-          <Plus size={18} /> Add Category
+        <button
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+          onClick={() => { resetForm(); setIsModalOpen(true); }}
+        >
+          <Plus size={16} />
+          <span>नई श्रेणी जोड़ें</span>
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search categories..." />
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="श्रेणी खोजें..." />
         <FilterBar
-          options={[{ label: 'Active', value: 'active' }, { label: 'Archived', value: 'archived' }]}
+          options={[{ label: 'सक्रिय (Active)', value: 'active' }, { label: 'असंग्रहीत (Archived)', value: 'archived' }]}
           value={statusFilter}
           onChange={(val) => setStatusFilter(val as any)}
-          placeholder="All Statuses"
+          placeholder="सभी स्थितियाँ"
         />
         <FilterBar
-          options={[{ label: 'Audio', value: 'audio' }, { label: 'Book', value: 'book' }, { label: 'Prayer', value: 'prayer' }]}
+          options={[{ label: 'भजन (Audio)', value: 'audio' }, { label: 'ग्रंथ (Book)', value: 'book' }, { label: 'प्रार्थना (Prayer)', value: 'prayer' }]}
           value={typeFilter}
           onChange={(val) => setTypeFilter(val as any)}
-          placeholder="All Types"
+          placeholder="सभी प्रकार"
         />
       </div>
 

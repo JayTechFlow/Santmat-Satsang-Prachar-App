@@ -232,30 +232,38 @@ export function Banners() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div className="pb-8 max-w-7xl mx-auto">
-      <div className="page-header">
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title mb-1">Hero Banners</h1>
-          <p className="text-muted text-sm">Manage home app banners and promotional graphics</p>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            बैनर प्रबंधन (होम स्क्रीन इमेज एवं प्रचार)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            मोबाइल ऐप होम स्क्रीन के प्रमुख बैनर, आध्यात्मिक पोस्टर एवं प्रचार स्लाइडर का प्रबंधन
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-          <Plus size={18} /> Add Banner
+        <button
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+          onClick={() => { resetForm(); setIsModalOpen(true); }}
+        >
+          <Plus size={16} />
+          <span>नया बैनर जोड़ें</span>
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search banners..." />
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="बैनर खोजें..." />
         <FilterBar
           options={[
-            { label: 'Draft', value: 'draft' },
-            { label: 'Scheduled', value: 'scheduled' },
-            { label: 'Published', value: 'published' },
-            { label: 'Expired', value: 'expired' },
-            { label: 'Archived', value: 'archived' }
+            { label: 'ड्राफ्ट (Draft)', value: 'draft' },
+            { label: 'शेड्यूल किया गया (Scheduled)', value: 'scheduled' },
+            { label: 'प्रकाशित (Published)', value: 'published' },
+            { label: 'समाप्त (Expired)', value: 'expired' },
+            { label: 'असंग्रहीत (Archived)', value: 'archived' }
           ]}
           value={statusFilter}
           onChange={(val) => setStatusFilter(val as any)}
-          placeholder="All Statuses"
+          placeholder="सभी स्थितियाँ"
         />
       </div>
 

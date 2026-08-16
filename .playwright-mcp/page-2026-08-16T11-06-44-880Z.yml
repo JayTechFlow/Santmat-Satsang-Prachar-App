@@ -1,0 +1,16 @@
+- generic [ref=f1e15]:
+  - generic [ref=f1e16]:
+    - heading "संतमत सत्संग प्रचार" [level=1] [ref=f1e25]
+    - paragraph [ref=f1e26]: एडमिन पोर्टल — सुरक्षित प्रवेश (Secure Admin Access)
+  - generic [ref=f1e27]:
+    - generic [ref=f1e28]:
+      - generic [ref=f1e29]:
+        - generic [ref=f1e30]: ईमेल पता (Admin Email)
+        - textbox "admin@santmatsatsang.org" [ref=f1e32]: reset-test@example.com
+      - generic [ref=f1e33]:
+        - generic [ref=f1e34]: पासवर्ड
+        - textbox "••••••••" [ref=f1e36]
+      - generic [ref=f1e49]: पासवर्ड रीसेट लिंक आपके ईमेल पर भेज दिया गया है।
+      - button "एडमिन लॉगिन करें" [ref=f1e37]
+    - button "पासवर्ड भूल गए? रीसेट लिंक प्राप्त करें" [active] [ref=f1e43]
+  - paragraph [ref=f1e48]: केवल अधिकृत एडमिन खाते ही इस पोर्टल में प्रवेश कर सकते हैं।

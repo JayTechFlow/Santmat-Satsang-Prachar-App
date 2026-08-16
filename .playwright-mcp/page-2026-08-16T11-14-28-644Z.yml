@@ -1,0 +1,140 @@
+- generic [ref=f1e53]:
+  - complementary [ref=f1e54]:
+    - generic [ref=f1e64]:
+      - heading "संतमत सत्संग प्रचार" [level=2] [ref=f1e65]
+      - text: एडमिन पैनल
+    - generic [ref=f1e66]:
+      - button "डैशबोर्ड" [ref=f1e67]
+      - button "भजन प्रबंधन" [active] [ref=f1e75]
+      - button "स्तुति-विनती प्रबंधन" [ref=f1e92]
+      - button "श्रेणियाँ प्रबंधन" [ref=f1e99]
+      - button "उपयोगकर्ता प्रबंधन" [ref=f1e106]
+      - button "प्ले लिस्ट प्रबंधन" [ref=f1e113]
+      - button "सूचनाएँ भेजें" [ref=f1e117]
+      - button "बैनर प्रबंधन" [ref=f1e122]
+      - button "रिपोर्ट और एनालिटिक्स" [ref=f1e128]
+      - button "ऐप सेटिंग्स" [ref=f1e132]
+      - button "समर्थन संदेश" [ref=f1e137]
+      - button "पुस्तकें प्रबंधन" [ref=f1e141]
+      - button "वैश्विक खोज" [ref=f1e146]
+      - button "सुरक्षित लॉग आउट" [ref=f1e151]
+    - generic [ref=f1e156]:
+      - heading "सहायता की आवश्यकता है?" [level=4] [ref=f1e157]
+      - paragraph [ref=f1e158]: "संपर्क करें: admin@santmat.app"
+      - paragraph [ref=f1e159]: +91 12345 67890
+  - generic [ref=f1e160]:
+    - banner [ref=f1e161]:
+      - heading "डैशबोर्ड एवं सांख्यिकी" [level=1] [ref=f1e163]
+      - generic [ref=f1e164]:
+        - button "लॉग आउट" [ref=f1e165]
+        - generic [ref=f1e170] [cursor=pointer]
+        - generic [ref=f1e174]:
+          - generic [ref=f1e175]: J
+          - generic [ref=f1e177]:
+            - paragraph [ref=f1e178]: JAY
+            - paragraph [ref=f1e179]: डेवलपर सुपर एडमिन
+    - main [ref=f1e180]:
+      - generic [ref=f1e181]:
+        - generic [ref=f1e182]:
+          - generic [ref=f1e183]:
+            - generic [ref=f1e184]: संतमत सत्संग प्रचार • एडमिन सांख्यिकी केंद्र
+            - heading "विश्लेषण डैशबोर्ड (Analytics Dashboard)" [level=1] [ref=f1e189]
+            - paragraph [ref=f1e190]:
+              - text: "समयावधि:"
+              - strong [ref=f1e191]: पिछले 30 दिन (Last 30 Days)
+              - text: लाइव डेटा (Live Data)
+          - generic [ref=f1e192]:
+            - button "7 दिन" [ref=f1e193]
+            - button "30 दिन" [ref=f1e194]
+            - button "180 दिन (6 माह)" [ref=f1e195]
+            - button "1 वर्ष" [ref=f1e196]
+            - button "2 वर्ष" [ref=f1e197]
+            - button "5 वर्ष" [ref=f1e198]
+            - button "सर्वकालिक (Lifetime)" [ref=f1e199]
+        - generic [ref=f1e200]:
+          - generic [ref=f1e202] [cursor=pointer]:
+            - paragraph [ref=f1e203]: कुल भजन प्ले (Total Plays)
+            - heading "0" [level=3] [ref=f1e204]
+            - generic [ref=f1e205]: भजन विवरण देखें
+          - generic [ref=f1e214] [cursor=pointer]:
+            - paragraph [ref=f1e215]: सत्संग श्रवण समय
+            - heading "0 घंटे" [level=3] [ref=f1e216]
+            - text: आध्यात्मिक लाभ
+          - generic [ref=f1e222] [cursor=pointer]:
+            - paragraph [ref=f1e223]: सक्रिय सत्संगी भक्त
+            - heading "0" [level=3] [ref=f1e224]
+            - text: +4 नए
+          - generic [ref=f1e232] [cursor=pointer]:
+            - paragraph [ref=f1e233]: संग्रह स्थिति
+            - heading "2 भजन" [level=3] [ref=f1e234]
+            - generic [ref=f1e235]: 1 स्तुति • 1 श्रेणियाँ
+        - generic [ref=f1e241]:
+          - generic [ref=f1e242]:
+            - generic [ref=f1e243]:
+              - heading "भजन श्रवण रुझान ग्राफ (Playback Curve)" [level=3] [ref=f1e247]
+              - generic [ref=f1e248]: पिछले 30 दिन (Last 30 Days)
+            - img [ref=f1e250]:
+              - generic [ref=f1e354]:
+                - generic [ref=f1e357]: "0"
+                - generic [ref=f1e358]: 15 अग॰
+              - generic [ref=f1e359]:
+                - generic [ref=f1e362]: "0"
+                - generic [ref=f1e363]: 14 अग॰
+            - generic [ref=f1e251]:
+              - generic [ref=f1e252]: सत्संग भजन श्रवण संख्या
+              - generic [ref=f1e255]:
+                - text: "उच्चतम श्रवण काल:"
+                - strong [ref=f1e256]: प्रातः 4:00 - 7:00 एवं संध्या 6:00 - 8:00
+          - generic [ref=f1e257]:
+            - generic [ref=f1e258]:
+              - heading "श्रेणी अनुसार श्रवण वितरण" [level=3] [ref=f1e259]
+              - button "प्रबंधन →" [ref=f1e266]
+            - generic [ref=f1e269]:
+              - generic [ref=f1e270]: अन्य
+              - generic [ref=f1e271]: 100%
+            - generic [ref=f1e275]:
+              - generic [ref=f1e276]:
+                - paragraph [ref=f1e277]: नई श्रेणी जोड़ें
+                - paragraph [ref=f1e278]: मोबाइल ऐप पर नई भक्ति श्रेणी प्रकाशित करें
+              - button "+ जोड़ें" [ref=f1e279]
+        - generic [ref=f1e280]:
+          - generic [ref=f1e281]:
+            - generic [ref=f1e282]:
+              - generic [ref=f1e283]:
+                - heading "शीर्ष लोकप्रिय भजन (Top Listened Tracks)" [level=3] [ref=f1e284]
+                - paragraph [ref=f1e289]: भक्तों द्वारा सर्वाधिक श्रवण किए गए अमृतमयी भजन
+              - button "सभी 2 भजन देखें" [ref=f1e290]
+            - generic [ref=f1e291]:
+              - generic [ref=f1e292]:
+                - generic [ref=f1e293]:
+                  - generic [ref=f1e294]:
+                    - img "cxmnmnd" [ref=f1e295]
+                    - button [ref=f1e296]
+                  - generic [ref=f1e299]:
+                    - heading "cxmnmnd" [level=4] [ref=f1e300]
+                    - paragraph [ref=f1e301]: •
+                - generic [ref=f1e302]: प्ले
+              - generic [ref=f1e304]:
+                - generic [ref=f1e305]:
+                  - generic [ref=f1e306]:
+                    - img "cvvxc" [ref=f1e307]
+                    - button [ref=f1e308]
+                  - generic [ref=f1e311]:
+                    - heading "cvvxc" [level=4] [ref=f1e312]
+                    - paragraph [ref=f1e313]: •
+                - generic [ref=f1e314]: प्ले
+          - generic [ref=f1e317]:
+            - heading "त्वरित प्रबंधन कार्य (Quick Admin Operations)" [level=3] [ref=f1e318]
+            - generic [ref=f1e323]:
+              - button [ref=f1e324]:
+                - heading "नया भजन प्रकाशित करें" [level=4] [ref=f1e330]
+                - paragraph [ref=f1e331]: ऑडियो, बोल एवं थंबनेल जोड़ें
+              - button [ref=f1e332]:
+                - heading "होम बैनर एवं विचार वाणी" [level=4] [ref=f1e338]
+                - paragraph [ref=f1e339]: कस्टम इमेज एवं सुविचार बदलें
+              - button [ref=f1e340]:
+                - heading "स्तुति-विनती प्रबंधन" [level=4] [ref=f1e346]
+                - paragraph [ref=f1e347]: प्रातः व संध्या स्तुति पद संभालें
+              - button [ref=f1e348]:
+                - heading "सूचनाएँ एवं घोषणाएँ" [level=4] [ref=f1e352]
+                - paragraph [ref=f1e353]: भक्तों को तत्काल अलर्ट भेजें

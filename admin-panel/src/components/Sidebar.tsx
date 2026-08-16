@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SidebarContent } from './navigation/SidebarContent';
 import { useTheme } from '../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
@@ -24,45 +24,6 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
     mobileQuery.addEventListener('change', updateIsMobile);
     return () => mobileQuery.removeEventListener('change', updateIsMobile);
   }, []);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLElement>) => {
-      const links = navItemRefs.current.filter((ref): ref is HTMLAnchorElement => ref !== null);
-      if (links.length === 0) return;
-
-      const activeIndex = links.findIndex((link) => link === document.activeElement);
-      let nextIndex = activeIndex;
-
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          nextIndex = (activeIndex + 1) % links.length;
-          links[nextIndex]?.focus();
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          nextIndex = (activeIndex - 1 + links.length) % links.length;
-          links[nextIndex]?.focus();
-          break;
-        case 'Home':
-          e.preventDefault();
-          links[0]?.focus();
-          break;
-        case 'End':
-          e.preventDefault();
-          links[links.length - 1]?.focus();
-          break;
-        case 'Escape':
-          if (mobileOpen) {
-            onCloseMobile();
-          }
-          break;
-        default:
-          break;
-      }
-    },
-    [mobileOpen, onCloseMobile]
-  );
 
   useEffect(() => {
     if (mobileOpen && isMobile) {
@@ -115,7 +76,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
   // Also close on tablet when clicking overlay (if needed in future)
   const shouldShowOverlay = isMobile && mobileOpen;
 
-return (
+  return (
     <>
       {shouldShowOverlay && (
         <div className="sidebar-overlay" onClick={onCloseMobile} aria-hidden="true" />
@@ -125,10 +86,27 @@ return (
         className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''} ${shouldShowOverlay ? 'sidebar-open' : ''}`}
         role="navigation"
         aria-label="Main navigation"
-        onKeyDown={handleKeyDown}
       >
         <div className="sidebar-inner">
-          <SidebarContent collapsed={collapsed} navItemRefs={navItemRefs} />
+          {/* Top Logo & Title */}
+          <div className="p-4 border-b border-stone-200 flex items-center gap-3">
+            <div className="p-1.5 rounded-lg bg-amber-50 border border-amber-200">
+              <Sun className="w-7 h-7" />
+            </div>
+            <div>
+              <h2 className="font-['Mukta'] font-extrabold text-stone-900 text-base leading-tight">
+                संतमत सत्संग प्रचार
+              </h2>
+              <span className="font-['Mukta'] text-xs font-semibold text-amber-800">
+                एडमिन पैनल
+              </span>
+            </div>
+          </div>
+
+          {/* Navigation List */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-1 text-sm font-['Mukta']">
+            <SidebarContent collapsed={collapsed} navItemRefs={navItemRefs} />
+          </div>
 
           <div className="sidebar-theme-toggle" role="button" tabIndex={0} onClick={toggledarkLight} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}>
             <span className="sr-only">{theme === 'dark' ? 'Light theme' : 'Dark theme'}</span>

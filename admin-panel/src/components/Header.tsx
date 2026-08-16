@@ -59,19 +59,22 @@ export function Header({ collapsed, mobileOpen, onToggleSidebar }: HeaderProps) 
 
   return (
     <>
-      <header className="top-header" role="banner">
-        <div className="header-left" aria-label="Page title and navigation">
+      <header className="h-16 bg-white border-b border-stone-200 px-6 flex items-center justify-between sticky top-0 z-20 select-none" role="banner">
+        <div className="flex items-center gap-3" aria-label="Page title and navigation">
           <button
-            className="btn-icon sidebar-toggle"
+            className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold border border-amber-200 transition-all shadow-sm"
             onClick={onToggleSidebar}
             aria-label={mobileOpen ? 'Close menu' : collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-expanded={mobileOpen || !collapsed}
             aria-controls="sidebar"
-            type="button"
           >
-            {mobileOpen ? <X size={20} color="var(--text-heading)" /> : <Menu size={20} color="var(--text-heading)" />}
+            {mobileOpen ? (
+              <X size={20} className="w-4 h-4" />
+            ) : (
+              <Menu size={20} className="w-4 h-4" />
+            )}
           </button>
-          <h1 className="page-title">{pageTitle}</h1>
+          <h1 className="font-['Mukta'] font-extrabold text-xl text-stone-900">{pageTitle}</h1>
         </div>
 
         <div className="header-right" role="group" aria-label="Header actions">

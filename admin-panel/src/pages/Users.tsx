@@ -20,7 +20,7 @@ import { Pagination } from '../components/ui/Pagination';
 import { ImageUpload } from '../components/ui/ImageUpload';
 import { StatusBadge } from '../components/ui/Badge';
 import { UserAvatar } from '../features/users/components/UserAvatar';
-import { usePermissions, PermissionGate, DeveloperOnly } from '../core/auth/PermissionContext';
+import { usePermissions, PermissionGate } from '../core/auth/PermissionContext';
 
 export function Users() {
   const {
@@ -223,33 +223,39 @@ export function Users() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div className="pb-8 max-w-7xl mx-auto">
-      <div className="page-header">
+    <div className="p-6 space-y-6 max-w-7xl mx-auto font-['Mukta'] select-none">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title mb-1">User Management</h1>
-          <p className="text-muted text-sm">
-            Manage staff accounts, RBAC roles, and system access
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            सत्संगी भक्त समुदाय एवं उपयोगकर्ता प्रबंधन
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            भक्त प्रोफाइल, साधना विवरण, भूमिका आवंटन एवं खाता सुरक्षा प्रबंधन
           </p>
         </div>
         <PermissionGate permission="users.create" fallback={null}>
-          <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-            <Plus size={18} /> Add User
+          <button
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+            onClick={() => { resetForm(); setIsModalOpen(true); }}
+          >
+            <Plus size={16} />
+            <span>नया उपयोगकर्ता जोड़ें</span>
           </button>
         </PermissionGate>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search by name..." />
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-3xl border border-stone-200 shadow-sm">
+        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="नाम या ईमेल से खोजें..." />
         <FilterBar
           options={[
-            { label: 'Active', value: 'active' },
-            { label: 'Inactive', value: 'inactive' },
-            { label: 'Suspended', value: 'suspended' },
-            { label: 'Archived', value: 'archived' }
+            { label: 'सक्रिय (Active)', value: 'active' },
+            { label: 'निष्क्रिय (Inactive)', value: 'inactive' },
+            { label: 'निलंबित (Suspended)', value: 'suspended' },
+            { label: 'असंग्रहीत (Archived)', value: 'archived' }
           ]}
           value={statusFilter}
           onChange={(val) => setStatusFilter(val as any)}
-          placeholder="All Statuses"
+          placeholder="सभी स्थितियाँ"
         />
         <FilterBar
           options={[
@@ -259,11 +265,11 @@ export function Users() {
           ]}
           value={departmentFilter}
           onChange={(val) => setDepartmentFilter(val as any)}
-          placeholder="All Departments"
+          placeholder="सभी विभाग"
         />
       </div>
 
-      <div className="card p-0 overflow-hidden relative">
+      <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
         {items.length > 0 ? (
@@ -318,39 +324,41 @@ export function Users() {
       </PermissionGate>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black-40 backdrop-blur flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
-          <div className="card w-full max-w-4xl my-8 p-8 shadow-float" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => !isLoading && setIsModalOpen(false)}>
+          <div className="bg-white rounded-3xl p-6 max-w-4xl w-full shadow-2xl border border-stone-200" onClick={(e) => e.stopPropagation()}>
             {isLoading && <LoadingOverlay message="Saving..." />}
-            <div className="flex-between mb-6 pb-4 border-b">
+            <div className="flex flex-col items-start gap-4 pb-4 border-b border-stone-200">
               <div className="flex items-center gap-2">
                 <UsersIcon size={20} className="text-primary" />
                 <h2 className="text-heading font-semibold text-xl m-0">
                   {editingId ? 'Edit User Profile' : 'Add New User'}
                 </h2>
               </div>
-              <button className="btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} disabled={isLoading} aria-label="Close">
+              <button className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 btn-icon" onClick={() => !isLoading && setIsModalOpen(false)} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
             
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-[1fr_2fr] gap-6">
+              <div className="grid grid-cols-[1fr_2fr] gap-6 bg-stone-50 rounded-3xl p-6">
                 {/* Left Column - Avatar & Status */}
                 <div className="flex flex-col gap-4">
-                  <div className="form-group mb-0 text-center">
-                    <label className="form-label">Profile Photo</label>
-                    <ImageUpload 
-                      folder="avatars"
-                      previewUrl={avatarUrl}
-                      onUploadComplete={setAvatarUrl}
-                      onClear={() => setAvatarUrl('')}
-                      onFileSelect={() => {}}
-                    />
+                  <div className="form-group mb-0">
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Profile Photo</label>
+<div className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5">
+                        <ImageUpload 
+                          folder="avatars"
+                          previewUrl={avatarUrl}
+                          onUploadComplete={setAvatarUrl}
+                          onClear={() => setAvatarUrl('')}
+                          onFileSelect={() => {}}
+                        />
+                      </div>
                   </div>
                   
                   <div className="form-group mb-0">
-                    <label className="form-label" htmlFor="user-status">Account Status</label>
-                    <select className="form-select" id="user-status" value={status} onChange={e => setStatus(e.target.value as UserStatus)} disabled={isLoading}>
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Account Status</label>
+                    <select className="form-select w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-3 shadow-sm select-none" id="user-status" value={status} onChange={e => setStatus(e.target.value as UserStatus)} disabled={isLoading}>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                       <option value="suspended">Suspended</option>
@@ -359,35 +367,39 @@ export function Users() {
                   </div>
 
                   <div className="form-group mb-0">
-                    <label className="form-label">Security Settings</label>
-                    <label className="flex items-center gap-2 cursor-pointer mb-2">
-                      <input 
-                        type="checkbox" 
-                        checked={emailVerified} 
-                        onChange={e => setEmailVerified(e.target.checked)} 
-                        disabled={isLoading}
-                      />
-                      <span className="text-sm">Email Verified</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        checked={twoFactorEnabled} 
-                        onChange={e => setTwoFactorEnabled(e.target.checked)} 
-                        disabled={isLoading}
-                      />
-                      <span className="text-sm">Require 2FA</span>
-                    </label>
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Security Settings</label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={emailVerified} 
+                          onChange={e => setEmailVerified(e.target.checked)} 
+                          className="checkbox bg-stone-200 rounded border w-4 h-4 focus:ring-2 focus-ring-primary focus-outline-none"
+                          disabled={isLoading}
+                        />
+                        <span className="text-sm text-stone-600">Email Verified</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={twoFactorEnabled} 
+                          onChange={e => setTwoFactorEnabled(e.target.checked)} 
+                          className="checkbox bg-stone-200 rounded border w-4 h-4 focus:ring-2 focus-ring-primary focus-outline-none"
+                          disabled={isLoading}
+                        />
+                        <span className="text-sm text-stone-600">Require 2FA</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
                 {/* Right Column - Information */}
                 <div className="flex flex-col gap-4">
                   <div className="form-group mb-0">
-                    <label className="form-label" htmlFor="user-full-name">Full Name <span className="text-danger">*</span></label>
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Full Name <span className="text-danger">*</span></label>
                     <input 
                       type="text" 
-                      className="form-input" 
+                      className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
                       id="user-full-name"
                       value={fullName} 
                       onChange={e => setFullName(e.target.value)} 
@@ -397,101 +409,87 @@ export function Users() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="form-group mb-0">
-                      <label className="form-label" htmlFor="user-email">Email Address <span className="text-danger">*</span></label>
-                      <input 
-                        type="email" 
-                        className="form-input" 
-                        id="user-email"
-                        value={email} 
-                        onChange={e => setEmail(e.target.value)} 
-                        required 
-                        disabled={isLoading}
-                      />
+<div className="form-group mb-0">
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Email Address <span className="text-danger">*</span></label>
+                    <input 
+                      type="email" 
+                      className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
+                      id="user-email"
+                      value={email} 
+                      onChange={e => setEmail(e.target.value)} 
+                      required 
+                      disabled={isLoading}
+                    />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label" htmlFor="user-phone">Phone Number</label>
-                      <input 
-                        type="tel" 
-                        className="form-input" 
-                        id="user-phone"
-                        value={phone} 
-                        onChange={e => setPhone(e.target.value)} 
-                        disabled={isLoading}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="form-group mb-0">
-                      <label className="form-label" htmlFor="user-employee-id">Employee ID</label>
-                      <input 
-                        type="text" 
-                        className="form-input" 
-                        id="user-employee-id"
-                        value={employeeId} 
-                        onChange={e => setEmployeeId(e.target.value)} 
-                        disabled={isLoading}
-                      />
-                    </div>
-                    <div className="form-group mb-0">
-                      <label className="form-label" htmlFor="user-system-role">System Role</label>
-                      <PermissionGate permission="users.assign_role" fallback={null}>
-                        <DeveloperOnly>
-                          <select 
-                            className="form-select" 
-                            id="user-system-role"
-                            value={roleIds[0] || ''} 
-                            onChange={e => setRoleIds([e.target.value])} 
-                            disabled={isLoading}
-                          >
-                            <option value="">No Role Assigned</option>
-                            <option value="developer_super_admin">Developer Super Admin</option>
-                            <option value="client_super_admin">Client Super Admin</option>
-                            <option value="mobile_user">Mobile User</option>
-                          </select>
-                        </DeveloperOnly>
-                      </PermissionGate>
-                      <PermissionGate permission="users.assign_role" fallback={null}>
-                        <PermissionGate roles={['client_super_admin']} fallback={null}>
-                          <select 
-                            className="form-select" 
-                            id="user-system-role"
-                            value={roleIds[0] || ''} 
-                            onChange={e => setRoleIds([e.target.value])} 
-                            disabled={isLoading}
-                          >
-                            <option value="">No Role Assigned</option>
-                            <option value="client_super_admin">Client Super Admin</option>
-                            <option value="mobile_user">Mobile User</option>
-                          </select>
-                        </PermissionGate>
-                      </PermissionGate>
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
+                      id="user-phone"
+                      value={phone} 
+                      onChange={e => setPhone(e.target.value)} 
+                      disabled={isLoading}
+                    />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="form-group mb-0">
-                      <label className="form-label" htmlFor="user-designation">Designation</label>
-                      <input 
-                        type="text" 
-                        className="form-input" 
-                        id="user-designation"
-                        value={designation} 
-                        onChange={e => setDesignation(e.target.value)} 
-                        disabled={isLoading}
-                      />
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Employee ID</label>
+                    <input 
+                      type="text" 
+                      className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
+                      id="user-employee-id"
+                      value={employeeId} 
+                      onChange={e => setEmployeeId(e.target.value)} 
+                      disabled={isLoading}
+                    />
                     </div>
                     <div className="form-group mb-0">
-                      <label className="form-label" htmlFor="user-department">Department</label>
-                      <input 
-                        type="text" 
-                        className="form-input" 
-                        id="user-department"
-                        value={department} 
-                        onChange={e => setDepartment(e.target.value)} 
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">System Role</label>
+                    <div className="relative">
+                      <select 
+                        className="form-select w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-3 text-stone-900 focus:ring-2 focus-ring-primary focus-outline-none appearance-none pl-10"
+                        id="user-system-role"
+                        value={roleIds[0] || ''} 
+                        onChange={e => setRoleIds([e.target.value])} 
                         disabled={isLoading}
-                      />
+                      >
+                        <option value="">No Role Assigned</option>
+                        <option value="developer_super_admin">Developer Super Admin</option>
+                        <option value="client_super_admin">Client Super Admin</option>
+                        <option value="mobile_user">Mobile User</option>
+                      </select>
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" fill="none" stroke="currentColor">
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="form-group mb-0">
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Designation</label>
+                    <input 
+                      type="text" 
+                      className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
+                      id="user-designation"
+                      value={designation} 
+                      onChange={e => setDesignation(e.target.value)} 
+                      disabled={isLoading}
+                    />
+                    </div>
+                    <div className="form-group mb-0">
+                    <label className="form-label text-xs font-medium text-stone-700 mb-1">Department</label>
+                    <input 
+                      type="text" 
+                      className="form-input w-full bg-stone-50 border border-stone-200 rounded-xl py-2.5 px-3.5 text-stone-900 placeholder-stone-400 focus:ring-2 focus-ring-primary focus-outline-none"
+                      id="user-department"
+                      value={department} 
+                      onChange={e => setDepartment(e.target.value)} 
+                      disabled={isLoading}
+                    />
                     </div>
                   </div>
                 </div>

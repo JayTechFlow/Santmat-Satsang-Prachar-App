@@ -230,45 +230,51 @@ export function Notifications() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div className="pb-8 max-w-7xl mx-auto">
-      <div className="page-header">
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title mb-1">Push Notifications</h1>
-          <p className="text-muted text-sm">
-            Broadcast updates, announcements, and deep-link alerts to app users
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            सूचनाएँ एवं उद्घोषणाएँ भेजें (Push Notifications)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            सत्संग सूचनाएँ, नए भजन अलर्ट एवं दैनिक सुविचार संदेश का प्रसारण
           </p>
         </div>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-          <Plus size={18} /> Compose Notification
+        <button
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+          onClick={() => { resetForm(); setIsModalOpen(true); }}
+        >
+          <Plus size={16} />
+          <span>नई सूचना लिखें</span>
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="Search titles..." />
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+        <SearchBar value={searchTerm} onSearch={setSearchTerm} placeholder="सूचना शीर्षक से खोजें..." />
         <FilterBar
           options={[
-            { label: 'Pending', value: 'pending' },
-            { label: 'Sent', value: 'sent' },
-            { label: 'Failed', value: 'failed' }
+            { label: 'लंबित (Pending)', value: 'pending' },
+            { label: 'भेजी गई (Sent)', value: 'sent' },
+            { label: 'विफल (Failed)', value: 'failed' }
           ]}
           value={statusFilter}
           onChange={(val) => setStatusFilter(val as any)}
-          placeholder="All Statuses"
+          placeholder="सभी स्थितियाँ"
         />
         <FilterBar
           options={[
             { label: 'Home', value: 'Home' },
             { label: 'Audio', value: 'Audio' },
             { label: 'Books', value: 'Books' },
-            { label: 'Stuti & Vinati', value: 'StutiVinati' }
+            { label: 'StutiVinati', value: 'StutiVinati' }
           ]}
           value={targetScreenFilter}
           onChange={(val) => setTargetScreenFilter(val as any)}
-          placeholder="All Screens"
+          placeholder="सभी स्क्रीन"
         />
       </div>
 
-      <div className="card p-0 overflow-hidden relative">
+      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden relative">
         {isLoading && <LoadingOverlay message="Processing..." />}
         
         {items.length > 0 ? (

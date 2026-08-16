@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { PageContainer } from '../components/ui/PageContainer';
-import { PageHeader } from '../components/ui/PageHeader';
 import { LoadingState } from '../components/ui/LoadingState';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
@@ -95,25 +93,25 @@ export function Support() {
   ];
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="System Operations & Support Desk"
-        subtitle="Live telemetry metrics, system health, operational alerts, and support tickets."
-        breadcrumbs={[
-          { label: 'Home', path: '/' },
-          { label: 'System Support', path: '/support' },
-        ]}
-        actions={
-          <button
-            type="button"
-            className="btn btn-primary flex items-center space-x-2"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create Support Ticket</span>
-          </button>
-        }
-      />
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            समर्थन संदेश एवं भक्त सहायता (Support Center)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            भक्तों के सहायता संदेश, तकनीकी सहायता टिकट एवं प्रणाली स्वास्थ्य
+          </p>
+        </div>
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <Plus className="w-4 h-4" />
+          <span>नया सहायता टिकट बनाएँ</span>
+        </button>
+      </div>
 
       <TabsRoot defaultValue="health" value={activeTab} onValueChange={setActiveTab} className="mb-6">
         <TabsList>
@@ -341,6 +339,6 @@ export function Support() {
           </div>
         </div>
       )}
-    </PageContainer>
+    </div>
   );
 }

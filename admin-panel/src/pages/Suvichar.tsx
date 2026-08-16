@@ -145,26 +145,29 @@ export function Suvichar() {
   const isLoading = loading || mutating || isProcessing;
 
   return (
-    <div className="svc-page mx-auto max-w-7xl">
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
       {/* Header Section */}
-      <div className="page-header svc-header">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
         <div>
-          <h1 className="page-title svc-header-title">Today's Suvichar</h1>
-          <p className="svc-header-description">
-            Manage daily spiritual thoughts and inspirational quotes
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            आज का दैनिक सुविचार एवं संतवाणी
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            प्रतिदिन के आध्यात्मिक विचार, प्रेरक वचन एवं सुविचार पोस्टरों का प्रबंधन
           </p>
         </div>
         <button
-          className="btn btn-primary"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
           onClick={() => { resetForm(); setIsModalOpen(true); }}
         >
-          <Plus size={18} /> Add New
+          <Plus size={16} />
+          <span>नया सुविचार जोड़ें</span>
         </button>
       </div>
 
-      <div className="svc-toolbar">
+      <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
         <SearchBar
-          placeholder="Search suvichar by title..."
+          placeholder="सुविचार शीर्षक या विचार खोजें..."
           value={searchTerm}
           onSearch={setSearchTerm}
         />

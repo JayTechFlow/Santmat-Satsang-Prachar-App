@@ -1,6 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { PageContainer } from '../components/ui/PageContainer';
-import { PageHeader } from '../components/ui/PageHeader';
 import { SearchBar } from '../components/ui/SearchBar';
 import { FilterBar } from '../components/ui/FilterBar';
 import { DataTable } from '../components/ui/DataTable';
@@ -190,58 +188,49 @@ export function Playlist() {
   ];
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Playlists"
-        subtitle="Manage custom playlists and audio collections."
-        breadcrumbs={[
-          { label: 'Home', path: '/' },
-          { label: 'Playlists', path: '/playlist' },
-        ]}
-        actions={
-          <div className="flex items-center space-x-3">
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            भजन प्लेलिस्ट्स प्रबंधन (Playlists)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            विशेष अवसरों, संतों की अमरवाणी एवं दैनिक सत्संग प्लेलिस्ट का प्रबंधन
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            className="flex items-center gap-2 px-3.5 py-2 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl font-bold text-xs hover:bg-amber-100 transition-all"
+            onClick={() => alert('स्मार्ट एआई प्लेलिस्ट जनरेटर यूआई तैयार है!')}
+            title="Smart AI Playlist Generator"
+          >
+            <Sparkles className="w-4 h-4 text-orange-600" />
+            <span>एआई ऑटो-प्लेलिस्ट</span>
+          </button>
+          <ActionGate permission="audio.manage">
             <button
               type="button"
-              className="btn btn-secondary flex items-center space-x-2"
-              onClick={() => alert('Smart AI Playlist Generation is UI READY — Backend AI engine deployment pending.')}
-              title="Smart AI Playlist Generator"
+              className="flex items-center gap-2 px-4 py-2 bg-[#EA580C] hover:bg-[#C45A0A] text-white rounded-xl font-bold text-xs shadow-sm transition-all"
+              onClick={handleOpenCreateModal}
             >
-              <Sparkles className="w-4 h-4 text-warning" />
-              <span>AI Auto-Playlist</span>
-              <span className="badge badge-warning text-xs ml-1">UI READY</span>
+              <Plus className="w-4 h-4" />
+              <span>नई प्लेलिस्ट बनाएँ</span>
             </button>
-
-            <ActionGate permission="audio.manage">
-              <button
-                type="button"
-                className="btn btn-primary flex items-center space-x-2"
-                onClick={handleOpenCreateModal}
-              >
-                <Plus className="w-4 h-4" />
-                <span>Create Playlist</span>
-              </button>
-            </ActionGate>
-          </div>
-        }
-      />
-
-      <div className="flex flex-col md:flex-row gap-4 mb-6 items-stretch md:items-center justify-between">
-        <div className="w-full md:w-80">
-          <SearchBar
-            value={search}
-            onSearch={setSearch}
-            placeholder="Search playlists..."
-          />
+          </ActionGate>
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+        <SearchBar value={search} onSearch={setSearch} placeholder="प्लेलिस्ट का नाम खोजें..." />
         <FilterBar
           options={[
-            { label: 'All Statuses', value: '' },
-            { label: 'Published', value: 'published' },
-            { label: 'Draft', value: 'draft' },
+            { label: 'प्रकाशित (Published)', value: 'published' },
+            { label: 'ड्राफ्ट (Draft)', value: 'draft' }
           ]}
           value={statusFilter}
-          onChange={(val) => setStatusFilter(String(val))}
-          placeholder="Filter by status"
+          onChange={(val) => setStatusFilter(val.toString())}
+          placeholder="सभी स्थितियाँ"
         />
       </div>
 
@@ -401,6 +390,6 @@ export function Playlist() {
           </div>
         </div>
       )}
-    </PageContainer>
+    </div>
   );
 }

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { PageContainer } from '../components/ui/PageContainer';
-import { PageHeader } from '../components/ui/PageHeader';
 import { LoadingState } from '../components/ui/LoadingState';
 import { ErrorState } from '../components/ui/ErrorState';
 import { useSettings } from '../features/settings/hooks/useSettings';
@@ -51,21 +49,23 @@ export function Settings() {
   };
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="App & Platform Settings"
-        subtitle="Configure system parameters, publishing limits, feature flags, and maintenance mode."
-        breadcrumbs={[
-          { label: 'Home', path: '/' },
-          { label: 'App Settings', path: '/settings' },
-        ]}
-      />
+    <div className="p-6 space-y-6 font-['Mukta'] bg-[#FAF8F5] min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div>
+          <h1 className="font-extrabold text-xl text-stone-900 leading-tight">
+            ऐप एवं सुरक्षा सेटिंग्स (App & Security Settings)
+          </h1>
+          <p className="text-xs text-stone-600 font-medium">
+            सिस्टम पैरामीटर, स्टोरेज सीमाएँ, सुरक्षा नीतियाँ एवं बैकअप नियंत्रण
+          </p>
+        </div>
+      </div>
 
-      {loading && <LoadingState variant="page" message="Loading system settings..." />}
+      {loading && <LoadingState variant="page" message="सिस्टम सेटिंग्स लोड हो रही हैं..." />}
 
       {error && !loading && (
         <ErrorState
-          title="Failed to load settings"
+          title="सेटिंग्स लोड करने में विफलता"
           message={error.message}
           onRetry={refetch}
         />
@@ -74,10 +74,10 @@ export function Settings() {
       {!loading && !error && (
         <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
           {/* General Branding & Information */}
-          <div className="card p-6">
-            <div className="flex items-center space-x-3 mb-4 border-b pb-3">
-              <Sliders className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-bold">General Information</h2>
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+            <div className="flex items-center space-x-3 mb-2 border-b border-stone-100 pb-3">
+              <Sliders className="w-5 h-5 text-orange-600" />
+              <h2 className="text-base font-bold text-stone-900">सामान्य प्लेटफॉर्म जानकारी</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -230,6 +230,6 @@ export function Settings() {
           </div>
         </form>
       )}
-    </PageContainer>
+    </div>
   );
 }

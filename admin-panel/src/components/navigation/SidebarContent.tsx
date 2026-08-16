@@ -5,6 +5,7 @@ import { RouteMatcher } from './RouteMatcher';
 import { NavSection } from './NavSection';
 import { NavGroup } from './NavGroup';
 import { NavFooter } from './NavFooter';
+import { DiyaIcon } from '../ui/DiyaIcon';
 
 interface SidebarContentProps {
   collapsed: boolean;
@@ -37,11 +38,20 @@ export const SidebarContent = forwardRef<SidebarContentHandle, SidebarContentPro
     return (
       <TooltipProvider delayDuration={200}>
         <div className="sidebar-content" data-collapsed={collapsed} ref={innerRef}>
-          <div className="sidebar-header">
-            <h1 className="sidebar-title">Santmat Satsang Prachar</h1>
-            <p className="sidebar-subtitle" aria-hidden={collapsed}>
-              Admin Panel
-            </p>
+          <div className="sidebar-header flex items-center gap-3 p-4 border-b border-stone-200">
+            <div className="p-1.5 rounded-lg bg-amber-50 border border-amber-200 shrink-0">
+              <DiyaIcon className="w-7 h-7" />
+            </div>
+            {!collapsed && (
+              <div>
+                <h2 className="font-['Mukta'] font-extrabold text-stone-900 text-base leading-tight">
+                  संतमत सत्संग प्रचार
+                </h2>
+                <span className="font-['Mukta'] text-xs font-semibold text-amber-800">
+                  एडमिन पोर्टल
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="sidebar-nav" role="navigation" aria-label="Main navigation">
