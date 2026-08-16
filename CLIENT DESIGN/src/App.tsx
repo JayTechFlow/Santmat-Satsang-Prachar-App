@@ -18,6 +18,20 @@ import {
 import { AppProvider } from './context/AppContext';
 import { AdminPermissionProvider } from './context/PermissionContext';
 import { AdminLayout } from './components/admin/AdminLayout';
+import { AdminDevoteesManager } from './components/admin/AdminDevoteesManager';
+import { AdminPlaylists } from './components/admin/AdminPlaylists';
+import { AdminNotificationsManager } from './components/admin/AdminNotificationsManager';
+import { AdminBannerManager } from './components/admin/AdminBannerManager';
+import { AdminCategoryManager } from './components/admin/AdminCategoryManager';
+import { AdminReports } from './components/admin/AdminReports';
+import { AdminSettings } from './components/admin/AdminSettings';
+import { AdminSupport } from './components/admin/AdminSupport';
+import { AdminBooks } from './components/admin/AdminBooks';
+import { AdminSearch } from './components/admin/AdminSearch';
+import { AdminAddBhajan } from './components/admin/AdminAddBhajan';
+import { AdminBhajanList } from './components/admin/AdminBhajanList';
+import { AdminStutiManager } from './components/admin/AdminStutiManager';
+import { AuthWrapper } from './components/admin/AuthWrapper';
 import { LoginPage } from './components/admin/LoginPage';
 import { DiyaIcon } from './components/shared/DevotionalIcons';
 
@@ -42,7 +56,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/admin/users" replace />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/admin" element={<AuthWrapper><AdminLayout /></AuthWrapper>}>
               <Route index element={<Navigate to="/admin/users" replace />} />
               <Route path="users" element={<AdminDevoteesManager />} />
               <Route path="playlists" element={<AdminPlaylists />} />
