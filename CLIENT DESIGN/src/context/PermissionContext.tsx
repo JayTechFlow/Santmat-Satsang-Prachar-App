@@ -516,3 +516,48 @@ export function AdminOnly({ children, fallback = null }: { children: ReactNode; 
 export function FeatureGate({ children, fallback = null, feature }: { children: ReactNode; fallback?: ReactNode; feature: string }) {
   return <PermissionGate feature={feature} fallback={fallback}>{children}</PermissionGate>;
 }
+
+export function MobileOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+  return <PermissionGate roles={['mobile_user']} fallback={fallback}>{children}</PermissionGate>;
+}
+
+export function useRouteAccess(routePath: string) {
+  const { hasPermission, isFeatureEnabled, currentRole, isSuspended } = usePermissions();
+
+  const routePermissions: Record<string, {
+    permissions?: string[];
+    requireAll?: boolean;
+    roles?: AdminRole[];
+    feature?: string;
+  }> = {
+    '/': { roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/users': { permissions: ['users.view'], roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/playlists': { permissions: ['playlists.manage'], feature: 'feature.playlists', roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/notifications': { permissions: ['notifications.manage'], feature: 'feature.notifications', roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/banners': { permissions: ['banners.manage'], feature: 'feature.banners', roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/categories': { permissions: ['categories.manage'], roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/reports': { permissions: ['reports.view'], feature: 'feature.analytics', roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/settings': { permissions: ['settings.manage'], roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/support': { permissions: ['support.view'], roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/books': { permissions: ['books.manage'], feature: 'feature.books', roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/search': { permissions: ['search.execute'], roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/stuti-vinati': { permissions: ['stuti.manage'], roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/add-bhajan': { permissions: ['audio.upload'], feature: 'feature.audio', roles: ['developer_super_admin', 'client_super_admin'] },
+    '/admin/bhajan-list': { permissions: ['audio.manage'], feature: 'feature.audio', roles: ['developer_super_admin', 'client_super_admin'] },
+  };
+
+  const config = routePermissions[routePath] || { roles: ['developer_super_admin', 'client_super_admin'] };
+
+  if (isSuspended) return false;
+  if (config.roles && currentRole && !config.roles.includes(currentRole)) return false;
+  if (config.permissions) {
+    const check = config.requireAll !== false
+      ? config.permissions.every(p => hasPermission(p))
+      : config.permissions.some(p => hasPermission(p));
+    if (!check) return false;
+  }
+  if (config.feature && !isFeatureEnabled(config.feature)) return false;
+
+  return true;
+}
+

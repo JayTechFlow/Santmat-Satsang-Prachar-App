@@ -24,7 +24,7 @@
   "hosting": [
     {
       "target": "admin",
-      "public": "admin-panel/dist",
+      "public": "CLIENT DESIGN/dist",
       "ignore": [
         "firebase.json",
         "**/.*",

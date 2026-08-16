@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   addDoc,
+  getDocs,
   updateDoc,
   deleteDoc,
   onSnapshot,
@@ -15,6 +16,15 @@ import { BookEntity, ServiceResponse } from '../types';
 const COLLECTION_NAME = 'books';
 
 export class BookService {
+  async getBooks(): Promise<BookEntity[]> {
+    try {
+      const snap = await getDocs(collection(db, COLLECTION_NAME));
+      return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<BookEntity, 'id'>) }));
+    } catch {
+      return [];
+    }
+  }
+
   /**
    * Subscribe to real-time books from the `books` collection.
    * Empty snapshot -> empty list (real empty state).

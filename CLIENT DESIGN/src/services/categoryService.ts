@@ -13,6 +13,15 @@ import { CategoryEntity, ServiceResponse } from '../types';
 const COLLECTION_NAME = 'categories';
 
 export class CategoryService {
+  async getCategories(): Promise<CategoryEntity[]> {
+    try {
+      const snap = await getDocs(collection(db, COLLECTION_NAME));
+      return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<CategoryEntity, 'id'>) }));
+    } catch {
+      return [];
+    }
+  }
+
   subscribeCategories(callback: (items: CategoryEntity[]) => void, onError?: (error: Error) => void): () => void {
     try {
       return onSnapshot(

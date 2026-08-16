@@ -1,15 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { usePermissions } from '../../context/PermissionContext';
-import { LoadingSplash } from '../../App';
 
-const AuthAdminLayout: React.FC = () => {
-  const { user, loading } = usePermissions();
-  const navigate = useNavigate();
-
-  if (loading) {
-    return <LoadingSplash />;
-  }
+const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = usePermissions();
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -18,4 +12,4 @@ const AuthAdminLayout: React.FC = () => {
   return <>{children}</>;
 };
 
-export { AuthAdminLayout };
+export { AuthWrapper };

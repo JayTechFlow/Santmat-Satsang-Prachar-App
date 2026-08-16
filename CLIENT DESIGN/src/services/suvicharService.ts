@@ -13,6 +13,15 @@ import { SuvicharEntity, ServiceResponse } from '../types';
 const COLLECTION_NAME = 'suvichar';
 
 export class SuvicharService {
+  async getSuvichars(): Promise<SuvicharEntity[]> {
+    try {
+      const snap = await getDocs(collection(db, COLLECTION_NAME));
+      return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<SuvicharEntity, 'id'>) }));
+    } catch {
+      return [];
+    }
+  }
+
   subscribeSuvichars(callback: (items: SuvicharEntity[]) => void, onError?: (error: Error) => void): () => void {
     try {
       return onSnapshot(

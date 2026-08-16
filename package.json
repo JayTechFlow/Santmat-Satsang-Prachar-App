@@ -5,7 +5,8 @@
   "scripts": {
     "bootstrap:dev": "npm --prefix backend/firebase/functions run bootstrap:dev --",
     "build:functions": "npm --prefix backend/firebase/functions run build",
-    "build:admin": "npm --prefix admin-panel run build",
-    "lint:admin": "npm --prefix admin-panel run lint"
+    "build:admin": "npm --prefix \"CLIENT DESIGN\" run build",
+    "lint:admin": "npm --prefix \"CLIENT DESIGN\" run lint",
+    "test:admin": "npm --prefix \"CLIENT DESIGN\" run test"
   }
 }
