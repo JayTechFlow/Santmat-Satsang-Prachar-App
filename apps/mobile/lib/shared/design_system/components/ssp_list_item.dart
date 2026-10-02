@@ -69,12 +69,14 @@ class SSPListItem extends StatelessWidget {
     final double minHeight = dense ? SSPSpacing.minTouchTarget : 64.0;
     final Color? selectedColor = isSelected
         ? (isDark
-            ? SSPColors.darkPrimaryContainer.withValues(alpha: 0.35)
-            : SSPColors.lightPrimaryContainer)
+              ? SSPColors.darkPrimaryContainer.withValues(alpha: 0.35)
+              : SSPColors.lightPrimaryContainer)
         : null;
 
     final String defaultLabel = subtitle == null ? title : '$title\n$subtitle';
-    final String? itemLabel = onTap == null ? null : (semanticLabel ?? defaultLabel);
+    final String? itemLabel = onTap == null
+        ? null
+        : (semanticLabel ?? defaultLabel);
 
     return Semantics(
       container: true,
@@ -96,10 +98,7 @@ class SSPListItem extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (leading != null) ...[
-                      leading!,
-                      SSPSpacing.gapW16,
-                    ],
+                    if (leading != null) ...[leading!, SSPSpacing.gapW16],
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -129,10 +128,7 @@ class SSPListItem extends StatelessWidget {
                     ),
                     if (trailing != null) ...[
                       SSPSpacing.gapW8,
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: trailing!,
-                      ),
+                      Align(alignment: Alignment.centerRight, child: trailing!),
                     ],
                   ],
                 ),

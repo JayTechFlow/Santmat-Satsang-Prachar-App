@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/books_providers.dart';
 import '../widgets/books_state_widgets.dart';
 import '../../../../shared/theme/app_spacing.dart';
@@ -16,7 +17,7 @@ class BookDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookAsync = ref.watch(bookDetailsProvider(bookId));
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -84,7 +85,13 @@ class BookDetailsPage extends ConsumerWidget {
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () {
-                      // Trigger Read logic
+                      context.push(
+                        '/books/reader',
+                        extra: {
+                          'title': book.title,
+                          'pdfUrl': book.pdfUrlPlaceholder,
+                        },
+                      );
                     },
                     icon: const Icon(Icons.menu_book),
                     label: const Text('Read Now'),
@@ -99,7 +106,7 @@ class BookDetailsPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.description,
+                        l10n?.description ?? 'विवरण (Description)',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: AppSpacing.sp8),

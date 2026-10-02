@@ -34,31 +34,32 @@ void main() {
   group('SSPSectionHeader Widget Tests', () {
     testWidgets('1. Renders title text', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPSectionHeader(title: 'Featured Satsangs'),
-        ),
+        buildTestableWidget(SSPSectionHeader(title: 'Featured Satsangs')),
       );
 
       expect(find.text('Featured Satsangs'), findsOneWidget);
     });
 
-    testWidgets('2. Renders action text when actionText and onAction provided',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SSPSectionHeader(
-            title: 'Bhajans',
-            actionText: 'See All',
-            onAction: () {},
+    testWidgets(
+      '2. Renders action text when actionText and onAction provided',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SSPSectionHeader(
+              title: 'Bhajans',
+              actionText: 'See All',
+              onAction: () {},
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('See All'), findsOneWidget);
-    });
+        expect(find.text('See All'), findsOneWidget);
+      },
+    );
 
-    testWidgets('3. Invokes onAction callback when action tapped',
-        (WidgetTester tester) async {
+    testWidgets('3. Invokes onAction callback when action tapped', (
+      WidgetTester tester,
+    ) async {
       bool pressed = false;
       await tester.pumpWidget(
         buildTestableWidget(
@@ -76,13 +77,12 @@ void main() {
       expect(pressed, isTrue);
     });
 
-    testWidgets('4. Hides action when actionText is null', (WidgetTester tester) async {
+    testWidgets('4. Hides action when actionText is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPSectionHeader(
-            title: 'Featured',
-            onAction: () {},
-          ),
+          SSPSectionHeader(title: 'Featured', onAction: () {}),
         ),
       );
 
@@ -90,14 +90,12 @@ void main() {
       expect(actionButton(), findsNothing);
     });
 
-    testWidgets('5. Hides action when onAction is null (actionText present)',
-        (WidgetTester tester) async {
+    testWidgets('5. Hides action when onAction is null (actionText present)', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPSectionHeader(
-            title: 'Featured',
-            actionText: 'See All',
-          ),
+          SSPSectionHeader(title: 'Featured', actionText: 'See All'),
         ),
       );
 
@@ -105,8 +103,9 @@ void main() {
       expect(actionButton(), findsNothing);
     });
 
-    testWidgets('6. Action is a button and enabled in semantics',
-        (WidgetTester tester) async {
+    testWidgets('6. Action is a button and enabled in semantics', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPSectionHeader(
@@ -125,8 +124,9 @@ void main() {
       expect(node.label, 'See All');
     });
 
-    testWidgets('7. Semantic label override is applied to the action',
-        (WidgetTester tester) async {
+    testWidgets('7. Semantic label override is applied to the action', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPSectionHeader(
@@ -141,8 +141,9 @@ void main() {
       expect(tester.getSemantics(actionButton()).label, 'View entire library');
     });
 
-    testWidgets('8. Action enforces minimum 48dp touch target height',
-        (WidgetTester tester) async {
+    testWidgets('8. Action enforces minimum 48dp touch target height', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPSectionHeader(
@@ -171,9 +172,7 @@ void main() {
 
     testWidgets('9. Renders Hindi title', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPSectionHeader(title: 'भजन सम्मेलन'),
-        ),
+        buildTestableWidget(SSPSectionHeader(title: 'भजन सम्मेलन')),
       );
 
       expect(find.text('भजन सम्मेलन'), findsOneWidget);
@@ -181,16 +180,15 @@ void main() {
 
     testWidgets('10. Renders English title', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPSectionHeader(title: 'Upcoming Live Satsangs'),
-        ),
+        buildTestableWidget(SSPSectionHeader(title: 'Upcoming Live Satsangs')),
       );
 
       expect(find.text('Upcoming Live Satsangs'), findsOneWidget);
     });
 
-    testWidgets('11. Renders Unicode Devanagari diacritic title',
-        (WidgetTester tester) async {
+    testWidgets('11. Renders Unicode Devanagari diacritic title', (
+      WidgetTester tester,
+    ) async {
       const String title = 'सत्संग और कीर्तन — समर्पण';
       await tester.pumpWidget(
         buildTestableWidget(SSPSectionHeader(title: title)),
@@ -199,8 +197,9 @@ void main() {
       expect(find.text(title), findsOneWidget);
     });
 
-    testWidgets('12. Text scaling 2.0 renders without overflow',
-        (WidgetTester tester) async {
+    testWidgets('12. Text scaling 2.0 renders without overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPSectionHeader(
@@ -216,7 +215,9 @@ void main() {
       expect(find.byType(SSPSectionHeader), findsOneWidget);
     });
 
-    testWidgets('13. Narrow width renders without overflow', (WidgetTester tester) async {
+    testWidgets('13. Narrow width renders without overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SizedBox(
@@ -233,8 +234,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('14. Long action text renders without overflow',
-        (WidgetTester tester) async {
+    testWidgets('14. Long action text renders without overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SizedBox(
@@ -251,8 +253,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('15. Renders in dark mode with dark primary action color',
-        (WidgetTester tester) async {
+    testWidgets('15. Renders in dark mode with dark primary action color', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPSectionHeader(

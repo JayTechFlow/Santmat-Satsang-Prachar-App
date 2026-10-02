@@ -12,7 +12,7 @@ class MockAudioDataSource implements AudioDataSource {
     subtitle: 'Test Subtitle',
     description: 'Test Description',
     speaker: 'Test Speaker',
-    category: const AudioCategoryEntity(id: '1', name: 'Test Category'),
+    category: const AudioCategoryEntity(id: '1', name: 'General'),
     duration: const Duration(minutes: 5),
     language: 'Hindi',
     thumbnailUrl: 'https://test.com/image.jpg',
@@ -33,7 +33,7 @@ class MockAudioDataSource implements AudioDataSource {
   @override Future<List<AudioEntity>> searchAudio(String query) async => [dummyAudio];
   @override Future<List<AudioEntity>> filterAudio(AudioFilterEntity filter) async => [dummyAudio];
   @override Future<List<AudioCategoryEntity>> getCategories() async => [
-    const AudioCategoryEntity(id: '1', name: 'Test Category'),
+    const AudioCategoryEntity(id: '1', name: 'General'),
   ];
   @override Future<List<FavoriteAudioEntity>> getFavorites() async => [
     FavoriteAudioEntity(audio: dummyAudio, favoritedAt: DateTime.now()),

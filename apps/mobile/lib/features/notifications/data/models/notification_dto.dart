@@ -17,18 +17,31 @@ class NotificationDto {
         name: categoryRaw['name'] as String? ?? '',
       );
     } else {
-      categoryEntity = NotificationCategoryEntity(id: 'Updates', name: 'Updates');
+      categoryEntity = NotificationCategoryEntity(
+        id: data['type'] as String? ?? 'Updates',
+        name: data['type'] as String? ?? 'Updates',
+      );
     }
 
     final actionData = data['action'] as Map<String, dynamic>?;
 
+    DateTime notifTime;
+    final rawTime = data['timestamp'] ?? data['createdAt'] ?? data['date'];
+    if (rawTime is Timestamp) {
+      notifTime = rawTime.toDate();
+    } else if (rawTime is String) {
+      notifTime = DateTime.tryParse(rawTime) ?? DateTime.now();
+    } else {
+      notifTime = DateTime.now();
+    }
+
     return NotificationEntity(
       id: doc.id,
       title: data['title'] as String? ?? '',
-      body: data['body'] as String? ?? '',
+      body: data['body'] as String? ?? data['message'] as String? ?? '',
       category: categoryEntity,
       priority: data['priority'] as String? ?? 'normal',
-      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp: notifTime,
       isRead: data['isRead'] as bool? ?? false,
       iconPlaceholder: data['iconPlaceholder'] as String?,
       imagePlaceholder: data['imagePlaceholder'] as String?,

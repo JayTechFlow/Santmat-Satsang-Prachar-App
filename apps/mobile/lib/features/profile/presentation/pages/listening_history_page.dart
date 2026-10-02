@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import '../../../../core/player/canonical_player_controller.dart';
 import '../../../audio/presentation/providers/audio_providers.dart';
 import '../../../audio/presentation/widgets/audio_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../shared/design_system/components/ssp_empty_state.dart';
+import '../../../../shared/design_system/tokens/icons/ssp_icons.dart';
 
 class ListeningHistoryPage extends ConsumerWidget {
   const ListeningHistoryPage({super.key});
@@ -13,13 +18,23 @@ class ListeningHistoryPage extends ConsumerWidget {
     final historyAsync = ref.watch(recentlyPlayedProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Listening History')),
+      appBar: const SSPAppBar.standard(
+        title: 'सुनने का इतिहास',
+        subtitle: 'हाल ही में सुने गए भजन एवं प्रवचन',
+      ),
       body: historyAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text(err.toString())),
+        loading: () => const SSPLoadingState(),
+        error: (err, _) => SSPErrorState(
+          message: err.toString(),
+          onRetry: () => ref.refresh(recentlyPlayedProvider),
+        ),
         data: (history) {
           if (history.isEmpty) {
-            return const Center(child: Text('No listening history yet.'));
+            return const SSPEmptyState(
+              title: 'कोई इतिहास नहीं है',
+              message: 'आपने अभी तक कोई ऑडियो नहीं सुना है',
+              icon: SSPIcons.audioNav,
+            );
           }
           return ListView.builder(
             padding: const EdgeInsets.all(AppSpacing.sp16),
@@ -30,10 +45,17 @@ class ListeningHistoryPage extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: AppSpacing.sp16),
                 child: AudioCard(
                   audio: audio,
-                  onTap: () {
-                    ref.read(playbackStateProvider.notifier).play(audio);
-                    context.push('/audio/details/${audio.id}');
-                  },
+                  // PHASE 3: canonical open with this list as the queue.
+                  onTap: () => ref.openAudio(
+                    context,
+                    audio,
+                    queue: history
+                        .map((h) => h.audio)
+                        .where((a) => a.id.isNotEmpty)
+                        .toList(growable: false),
+                    index: index,
+                    source: 'listening-history',
+                  ),
                 ),
               );
             },

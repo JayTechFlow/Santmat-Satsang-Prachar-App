@@ -42,7 +42,9 @@ class SSPEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color primaryFg = isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary;
+    final Color primaryFg = isDark
+        ? SSPColors.darkPrimary
+        : SSPColors.lightPrimary;
     final double gapLarge = compact ? SSPSpacing.md : SSPSpacing.lg;
 
     final Widget iconBackdrop = Container(
@@ -55,11 +57,7 @@ class SSPEmptyState extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
-      child: Icon(
-        icon ?? SSPIcons.info,
-        size: 40,
-        color: primaryFg,
-      ),
+      child: Icon(icon ?? SSPIcons.info, size: 40, color: primaryFg),
     );
 
     return Semantics(
@@ -93,10 +91,7 @@ class SSPEmptyState extends StatelessWidget {
           ),
           if (actionLabel != null && onAction != null) ...[
             SizedBox(height: gapLarge),
-            SSPTertiaryButton(
-              label: actionLabel!,
-              onPressed: onAction,
-            ),
+            SSPTertiaryButton(label: actionLabel!, onPressed: onAction),
           ],
         ],
       ),

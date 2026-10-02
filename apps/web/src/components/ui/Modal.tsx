@@ -16,7 +16,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onOpenChange, children, clas
       onClick={() => onOpenChange?.(false)}
     >
       <div
-        className={`bg-white rounded-3xl border border-stone-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] ${className}`}
+        className={`bg-white rounded-xl border border-stone-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -41,7 +41,7 @@ export const ModalClose: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+    className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors"
     aria-label="Close"
   >
     <X className="w-5 h-5" />

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/notifications/presentation/providers/notifications_providers.dart';
-import 'package:santmat_satsang_prachar/features/notifications/data/datasources/mock_notification_data_source.dart';
+import '../../../../helpers/mock_notification_data_source.dart';
 import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 void main() {

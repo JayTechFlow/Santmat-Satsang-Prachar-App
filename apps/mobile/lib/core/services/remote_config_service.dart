@@ -19,6 +19,10 @@ class RemoteConfigService {
     await _remoteConfig.setDefaults(const {
       'maintenance_mode': false,
       'app_version_control': '1.0.0',
+      'image_artwork_size': 600,
+      'image_icon_size': 256,
+      'image_banner_width': 1280,
+      'image_banner_height': 720,
     });
     await _remoteConfig.fetchAndActivate();
   }

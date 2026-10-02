@@ -66,7 +66,9 @@ class SSPSectionHeader extends StatelessWidget {
                   child: Text(
                     actionText!,
                     style: SSPTypography.labelLarge.copyWith(
-                      color: isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary,
+                      color: isDark
+                          ? SSPColors.darkPrimary
+                          : SSPColors.lightPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
@@ -97,10 +99,7 @@ class SSPSectionHeader extends StatelessWidget {
           ),
           if (hasAction) ...[
             SSPSpacing.gapW8,
-            Flexible(
-              fit: FlexFit.loose,
-              child: action!,
-            ),
+            Flexible(fit: FlexFit.loose, child: action!),
           ],
         ],
       ),

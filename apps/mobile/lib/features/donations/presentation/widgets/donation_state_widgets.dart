@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../shared/design_system/components/ssp_empty_state.dart';
 
 class DonationsLoadingWidget extends StatelessWidget {
   const DonationsLoadingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const SSPLoadingState();
   }
 }
 
@@ -22,15 +25,10 @@ class DonationsErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(message, textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
-        ],
+      child: SSPErrorState(
+        message: message,
+        onRetry: onRetry,
+        retryLabel: 'Retry',
       ),
     );
   }
@@ -41,19 +39,11 @@ class DonationsEmptyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.volunteer_activism, size: 48, color: Colors.grey.shade400),
-          const SizedBox(height: 16),
-          Text(
-            'No campaigns right now',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-          ),
-        ],
+    return const Center(
+      child: SSPEmptyState(
+        title: 'कोई दान अभियान नहीं',
+        message: 'No campaigns right now',
+        icon: Icons.volunteer_activism_rounded,
       ),
     );
   }

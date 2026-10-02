@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 
 class NotificationSettingsPage extends StatelessWidget {
   const NotificationSettingsPage({super.key});
@@ -6,7 +7,10 @@ class NotificationSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notification Settings')),
+      appBar: const SSPAppBar.standard(
+        title: 'सूचना सेटिंग्स',
+        subtitle: 'अधिसूचना प्राथमिकताएं प्रबंधित करें',
+      ),
       body: ListView(
         children: [
           SwitchListTile(

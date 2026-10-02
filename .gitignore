@@ -48,12 +48,39 @@ playwright-report/
 *.bak
 *.swp
 *.swo
+*.orig
+*.rej
+*~
+*.csv
+*.out
+*.trace
+*.dump
 
 .env
 .env.*
 !.env.example
 !.env.template
 
-.DS_Store
-
 firebase/functions/lib/
+
+# Python tooling caches
+__pycache__/
+*.py[cod]
+
+# Temporary/MCP artifacts
+.playwright-mcp/
+.agents/
+.firebase/
+android/.gradle/
+.gradle/
+local.properties
+clean_arch_findings.json
+test_output.txt
+AGENT.md
+
+# Android release signing keys and credentials
+key.properties
+*.keystore
+*.jks
+**/*.keystore
+**/*.jks

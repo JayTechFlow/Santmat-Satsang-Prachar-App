@@ -4,6 +4,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:santmat_satsang_prachar/core/auth/permission_engine.dart';
+import 'package:santmat_satsang_prachar/core/config/app_config.dart';
+import 'package:santmat_satsang_prachar/core/config/dev_entry_config.dart';
 
 final permissionContextProvider = NotifierProvider<PermissionContextNotifier, PermissionContext?>(() {
   return PermissionContextNotifier();
@@ -15,27 +17,36 @@ class PermissionContextNotifier extends Notifier<PermissionContext?> {
   @override
   PermissionContext? build() {
     _listenToAuthChanges();
+    final devDirectEntry = ref.watch(appConfigProvider).enableDevDirectEntry;
+    if (devDirectEntry) {
+      return DevEntryConfig.devPermissionContext;
+    }
     return null;
   }
 
   void _listenToAuthChanges() {
-    fb_auth.FirebaseAuth.instance.authStateChanges().listen((user) {
-      _currentUser = user;
-      if (user != null) {
-        _refreshPermissionContext(user);
-      } else {
-        state = null;
-      }
-    });
+    try {
+      fb_auth.FirebaseAuth.instance.authStateChanges().listen((user) {
+        if (!ref.mounted) return;
+        _currentUser = user;
+        if (user != null) {
+          _refreshPermissionContext(user);
+        } else {
+          state = null;
+        }
+      });
+    } catch (_) {}
   }
 
   Future<void> _refreshPermissionContext(fb_auth.User user) async {
     try {
       final tokenResult = await user.getIdTokenResult(true);
       final claims = tokenResult.claims ?? {};
+      if (!ref.mounted) return;
       state = createPermissionContext(claims);
     } catch (e) {
-      state = null;
+      if (!ref.mounted) return;
+      state = PermissionContext(uid: user.uid, role: Role.mobileUser);
     }
   }
 
@@ -153,70 +164,9 @@ class PermissionChecker {
   List<FeatureFlag> get enabledFeatures => _engine.getEnabledFeaturesForRole(currentRole);
 }
 
-/// Convenience providers for common permission checks
-final canManageUsersProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('users.manage');
-});
-
-final canManageAudioProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('audio.manage');
-});
-
-final canManageBooksProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('books.manage');
-});
-
-final canManageBannersProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('banners.manage');
-});
-
-final canManageStutiProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('stuti.manage');
-});
-
-final canManageCategoriesProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('categories.manage');
-});
-
-final canManageEventsProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('events.manage');
-});
-
-final canManageNotificationsProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('notifications.manage');
-});
-
-final canManagePlaylistsProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('playlists.manage');
-});
-
-final canViewAnalyticsProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('analytics.view');
-});
-
-final canViewReportsProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('reports.view');
-});
-
-final canManageSettingsProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).hasPermission('settings.manage');
-});
-
-final isDeveloperSuperAdminProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).currentRole == Role.developerSuperAdmin;
-});
-
-final isClientSuperAdminProvider = Provider<bool>((ref) {
-  return ref.watch(permissionCheckProvider).currentRole == Role.clientSuperAdmin;
-});
-
+/// Convenience providers for mobile permission checks
 final isMobileUserProvider = Provider<bool>((ref) {
   return ref.watch(permissionCheckProvider).currentRole == Role.mobileUser;
-});
-
-final isAnyAdminProvider = Provider<bool>((ref) {
-  final role = ref.watch(permissionCheckProvider).currentRole;
-  return role == Role.developerSuperAdmin || role == Role.clientSuperAdmin;
 });
 
 final audioFeatureEnabledProvider = Provider<bool>((ref) {

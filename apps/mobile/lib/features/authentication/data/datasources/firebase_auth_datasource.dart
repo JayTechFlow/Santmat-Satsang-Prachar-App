@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'dart:developer' as developer;
 
+/// Thin Firebase Auth wrapper. Exposes Google Auth as primary authentication flow.
 class FirebaseAuthDataSource {
   final FirebaseAuth _firebaseAuth;
 
@@ -12,62 +11,34 @@ class FirebaseAuthDataSource {
 
   User? get currentUser => _firebaseAuth.currentUser;
 
-  Future<UserCredential> signInAnonymously() async {
-    if (kDebugMode) {
-      developer.log(
-        '4. FirebaseAuth.signInAnonymously() started. Current user before: ${_firebaseAuth.currentUser?.uid}',
-      );
-    }
-    final result = await _firebaseAuth.signInAnonymously();
-    if (kDebugMode) {
-      developer.log(
-        '5. FirebaseAuth.signInAnonymously() completed. Current user after: ${_firebaseAuth.currentUser?.uid}',
-      );
-    }
-    return result;
-  }
-
-  Future<UserCredential> signInWithGoogle() async {
-    if (kDebugMode) {
-      developer.log(
-        'FLOW_TRACE: 1. FirebaseAuthDataSource.signInWithGoogle() started',
-      );
-    }
-
-    // 2. Perform authentication using .authenticate() (Replaces .signIn() in v7.x)
-    final GoogleSignInAccount googleUser = await GoogleSignIn.instance
-        .authenticate();
-
-    if (kDebugMode) {
-      developer.log('FLOW_TRACE: googleUser obtained: ${googleUser.email}');
-    }
-    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
-
-    // 3. Provide token to Firebase
-    final OAuthCredential credential = GoogleAuthProvider.credential(
-      idToken: googleAuth.idToken,
+  Future<UserCredential?> signInWithGoogle() async {
+    final googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.initialize();
+    final GoogleSignInAccount account = await googleSignIn.authenticate();
+    final String? idToken = account.authentication.idToken;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      idToken: idToken,
     );
-
-    if (kDebugMode) {
-      developer.log('FLOW_TRACE: 2. FirebaseAuth.signInWithCredential() started');
-    }
-    final result = await _firebaseAuth.signInWithCredential(credential);
-    if (kDebugMode) {
-      developer.log(
-        'FLOW_TRACE: 3. FirebaseAuth.signInWithCredential() completed. User: ${result.user?.uid}',
-      );
-    }
-    return result;
+    return await _firebaseAuth.signInWithCredential(credential);
   }
 
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required Function(String verificationId) codeSent,
     required Function(FirebaseAuthException error) verificationFailed,
+    Function(PhoneAuthCredential credential)? verificationCompleted,
   }) async {
     await _firebaseAuth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        if (verificationCompleted != null) {
+          verificationCompleted(credential);
+        } else {
+          try {
+            await _firebaseAuth.signInWithCredential(credential);
+          } catch (_) {}
+        }
+      },
       verificationFailed: verificationFailed,
       codeSent: (String verificationId, int? resendToken) {
         codeSent(verificationId);
@@ -88,27 +59,9 @@ class FirebaseAuthDataSource {
   }
 
   Future<void> signOut() async {
-    await Future.wait([
-      _firebaseAuth.signOut(),
-      GoogleSignIn.instance.signOut(),
-    ]);
-  }
-
-  /// Get the current user's ID token
-  Future<String?> getIdToken({bool forceRefresh = false}) async {
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
-      return await user.getIdToken(forceRefresh);
-    }
-    return null;
-  }
-
-  /// Get the current user's refresh token
-  Future<String?> getRefreshToken() async {
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
-      return await user.getIdToken(true); // Force refresh to get new token
-    }
-    return null;
+    try {
+      await GoogleSignIn.instance.signOut();
+    } catch (_) {}
+    await _firebaseAuth.signOut();
   }
 }

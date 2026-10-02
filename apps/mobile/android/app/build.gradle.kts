@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.io.FileInputStream
+import java.io.File
 
 plugins {
     id("com.android.application")
@@ -13,7 +14,7 @@ plugins {
 
 android {
     namespace = "com.santmat.santmat_satsang_prachar"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -26,12 +27,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.santmat.santmat_satsang_prachar"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 24
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -43,12 +41,19 @@ android {
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-                signingConfig = signingConfigs.create("release") {
+                val storeFilePath = keystoreProperties.getProperty("storeFile")
+                val resolvedStoreFile = if (File(storeFilePath).isAbsolute) File(storeFilePath) else rootProject.file(storeFilePath)
+                if (!resolvedStoreFile.exists()) {
+                    throw GradleException("Keystore file defined in key.properties not found at: ${resolvedStoreFile.absolutePath}")
+                }
+                val releaseSigning = signingConfigs.findByName("release") ?: signingConfigs.create("release")
+                releaseSigning.apply {
                     keyAlias = keystoreProperties.getProperty("keyAlias")
                     keyPassword = keystoreProperties.getProperty("keyPassword")
-                    storeFile = file(keystoreProperties.getProperty("storeFile"))
+                    storeFile = resolvedStoreFile
                     storePassword = keystoreProperties.getProperty("storePassword")
                 }
+                signingConfig = releaseSigning
             } else {
                 signingConfig = signingConfigs.getByName("debug")
             }

@@ -23,7 +23,7 @@ function createMockSnap(data: any, exists = true) {
     exists,
     data: () => data,
     ref: {
-      update: async () => {},
+      update: async () => { },
     },
   };
   return snap;
@@ -153,6 +153,47 @@ describe("Firestore Triggers Unit Tests", () => {
     });
   });
 
+  describe("onAudioDocumentWrite", () => {
+    it("handles audio creation, audit log, and category stats recalculation", async () => {
+      const wrapped = testEnv.wrap(firestoreTriggers.onAudioDocumentWrite);
+
+      const beforeSnap = createMockSnap(null, false);
+      const afterSnap = createMockSnap({
+        title: "Satsang Audio 1",
+        category: "audio",
+        type: "audio",
+        status: "draft",
+        createdBy: "user_1",
+      });
+
+      const change = { before: beforeSnap, after: afterSnap };
+
+      let auditLogged = false;
+      const originalCollection = admin.firestore().collection;
+      admin.firestore().collection = ((name: string) => {
+        return {
+          add: async (data: any) => {
+            auditLogged = true;
+            return { id: "audit_1" };
+          },
+          doc: () => ({ set: async () => ({}) }),
+          where: () => ({
+            where: () => ({
+              get: async () => ({ docs: [afterSnap] }),
+            }),
+          }),
+        } as any;
+      }) as any;
+
+      try {
+        await wrapped(change as any, { params: { audioId: "audio_1" } });
+        assert.strictEqual(auditLogged, true);
+      } finally {
+        admin.firestore().collection = originalCollection;
+      }
+    });
+  });
+
   describe("onNotificationQueueCreated", () => {
     it("processes and sends multicast push notification from queue", async () => {
       const wrapped = testEnv.wrap(firestoreTriggers.onNotificationQueueCreated);
@@ -191,6 +232,121 @@ describe("Firestore Triggers Unit Tests", () => {
         assert.strictEqual(updateCalled, true);
       } finally {
         admin.messaging().sendMulticast = originalMulticast;
+        admin.firestore().collection = originalCollection;
+      }
+    });
+  });
+
+  describe("processScheduledPublishing", () => {
+    it("auto-publishes past due scheduled content and leaves future or draft content untouched", async () => {
+      const now = new Date("2026-09-14T10:00:00.000Z");
+
+      const pastDueScheduledDoc = {
+        id: "audio_due_1",
+        data: () => ({
+          title: "Past Due Bhajan",
+          status: "शेड्यूल किया गया",
+          scheduledAt: "2026-09-14T08:00:00.000Z",
+        }),
+        ref: {
+          update: async (data: any) => {
+            updatedDocs["audio_due_1"] = data;
+          },
+        },
+      };
+
+      const futureScheduledDoc = {
+        id: "audio_future_1",
+        data: () => ({
+          title: "Future Bhajan",
+          status: "शेड्यूल किया गया",
+          scheduledAt: "2026-09-14T12:00:00.000Z",
+        }),
+        ref: {
+          update: async (data: any) => {
+            updatedDocs["audio_future_1"] = data;
+          },
+        },
+      };
+
+      const draftDoc = {
+        id: "audio_draft_1",
+        data: () => ({
+          title: "Draft Bhajan",
+          status: "draft",
+          scheduledAt: "2026-09-14T08:00:00.000Z",
+        }),
+        ref: {
+          update: async (data: any) => {
+            updatedDocs["audio_draft_1"] = data;
+          },
+        },
+      };
+
+      const updatedDocs: Record<string, any> = {};
+
+      const originalCollection = admin.firestore().collection;
+      admin.firestore().collection = ((collName: string) => {
+        if (collName === "audio") {
+          return {
+            where: (field: string, op: string, val: any) => ({
+              get: async () => ({
+                docs: [pastDueScheduledDoc, futureScheduledDoc, draftDoc],
+              }),
+            }),
+          } as any;
+        }
+        return {
+          add: async () => ({ id: "audit_sched" }),
+        } as any;
+      }) as any;
+
+      try {
+        const result = await firestoreTriggers.processScheduledPublishing(now);
+        assert.strictEqual(result.publishedCount, 1);
+        assert.deepStrictEqual(result.publishedIds, ["audio_due_1"]);
+        assert.strictEqual(updatedDocs["audio_due_1"].status, "प्रकाशित");
+        assert.strictEqual(updatedDocs["audio_future_1"], undefined);
+        assert.strictEqual(updatedDocs["audio_draft_1"], undefined);
+      } finally {
+        admin.firestore().collection = originalCollection;
+      }
+    });
+
+    it("is idempotent and safe when re-run on already published content", async () => {
+      const now = new Date("2026-09-14T10:00:00.000Z");
+
+      const alreadyPublishedDoc = {
+        id: "audio_pub_1",
+        data: () => ({
+          title: "Already Published Bhajan",
+          status: "प्रकाशित",
+          scheduledAt: "2026-09-14T08:00:00.000Z",
+        }),
+        ref: {
+          update: async () => {
+            assert.fail("Should not update already published document");
+          },
+        },
+      };
+
+      const originalCollection = admin.firestore().collection;
+      admin.firestore().collection = ((collName: string) => {
+        if (collName === "audio") {
+          return {
+            where: () => ({
+              get: async () => ({ docs: [alreadyPublishedDoc] }),
+            }),
+          } as any;
+        }
+        return { add: async () => ({ id: "audit" }) } as any;
+      }) as any;
+
+      try {
+        const result = await firestoreTriggers.processScheduledPublishing(now);
+        assert.strictEqual(result.publishedCount, 0);
+        assert.deepStrictEqual(result.publishedIds, []);
+      } finally {
         admin.firestore().collection = originalCollection;
       }
     });

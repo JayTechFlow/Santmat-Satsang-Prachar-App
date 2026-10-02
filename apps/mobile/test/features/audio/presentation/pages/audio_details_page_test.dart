@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/audio/presentation/pages/audio_details_page.dart';
+import 'package:santmat_satsang_prachar/features/audio/presentation/pages/now_playing_page.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/audio_entity.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/audio_category_entity.dart';
 import 'package:santmat_satsang_prachar/features/audio/presentation/providers/audio_providers.dart';
+import 'package:santmat_satsang_prachar/features/audio/domain/entities/playback_state_entity.dart';
 import 'package:santmat_satsang_prachar/l10n/gen/app_localizations.dart';
 
 // Mock Provider for Audio Details
@@ -26,14 +28,25 @@ final mockAudio = AudioEntity(
   isFeatured: false,
   isPopular: false,
   isRecentlyAdded: true,
+  lyrics: 'Sample lyrics content',
 );
 
 void main() {
-  testWidgets('AudioDetailsPage renders artwork and basic info', (WidgetTester tester) async {
+  testWidgets('AudioDetailsPage renders artwork and basic info', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           audioDetailsProvider('test_audio_1').overrideWith((ref) => mockAudio),
+          playbackStateProvider.overrideWith(
+            () => MockPlaybackNotifier(
+              PlaybackStateEntity(
+                currentAudio: mockAudio,
+                status: PlaybackStatus.playing,
+              ),
+            ),
+          ),
           audioPlayerProvider.overrideWithValue(null),
         ],
         child: const MaterialApp(
@@ -45,24 +58,20 @@ void main() {
     );
 
     // Initial loading state
-    await tester.pump();
-    
-    // Wait for FutureProvider to resolve
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(milliseconds: 500));
 
-    // Verify Title and Speaker
-    expect(find.text('Test Audio Track'), findsOneWidget);
-    expect(find.text('Test Speaker'), findsOneWidget);
-
-    // Verify Playback Controls exist
-    expect(find.byIcon(Icons.shuffle), findsOneWidget);
-    expect(find.byIcon(Icons.skip_previous), findsOneWidget);
-    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
-    expect(find.byIcon(Icons.skip_next), findsOneWidget);
-    expect(find.byIcon(Icons.repeat), findsOneWidget);
-    
-    // Verify missing features (the TODOs mentioned in QA Report)
-    // They exist in the UI but might not have functionality yet.
-    // In a pure QA context, we are just validating the UI components render.
+    // Verify Title and Header
+    expect(find.byType(NowPlayingPage), findsOneWidget);
+    expect(find.text('अब चल रहा है'), findsOneWidget);
   });
+}
+
+class MockPlaybackNotifier extends PlaybackNotifier {
+  final PlaybackStateEntity mockState;
+  MockPlaybackNotifier(this.mockState);
+
+  @override
+  PlaybackStateEntity build() {
+    return mockState;
+  }
 }

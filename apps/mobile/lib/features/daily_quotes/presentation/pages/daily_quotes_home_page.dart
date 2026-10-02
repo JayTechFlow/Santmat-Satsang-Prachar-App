@@ -6,6 +6,7 @@ import '../widgets/daily_quotes_state_widgets.dart';
 import '../widgets/today_quote_card.dart';
 import '../widgets/quote_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 
 class DailyQuotesHomePage extends ConsumerWidget {
   const DailyQuotesHomePage({super.key});
@@ -15,19 +16,23 @@ class DailyQuotesHomePage extends ConsumerWidget {
     final state = ref.watch(dailyQuotesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daily Quotes'),
+      appBar: SSPAppBar.standard(
+        title: 'दैनिक सुविचार',
+        subtitle: 'संतों के अनमोल वचन एवं विचार',
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'खोजें',
             onPressed: () => context.push('/search'),
           ),
           IconButton(
-            icon: const Icon(Icons.favorite),
+            icon: const Icon(Icons.favorite_outline_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'पसंदीदा',
             onPressed: () => context.push('/quotes/favorites'),
           ),
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'इतिहास',
             onPressed: () => context.push('/quotes/history'),
           ),
         ],

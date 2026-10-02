@@ -4,7 +4,6 @@ import '../../../../shared/theme/app_radius.dart';
 import '../../domain/entities/audio_entity.dart';
 import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
 
-
 class AudioCard extends StatelessWidget {
   final AudioEntity audio;
   final VoidCallback onTap;

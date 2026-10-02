@@ -19,6 +19,21 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
 
   String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
+  /// Per-user notification state lives in an owner-scoped subcollection:
+  /// users/{uid}/notification_state/{notificationId}
+  /// The shared /notifications collection is admin-managed broadcast content,
+  /// so read/deleted flags must never be mutated there by mobile users
+  /// (enforced by firestore.rules; ownership enforced by users/{uid} rules).
+  String get _statePath => 'users/$_userId/notification_state';
+
+  Future<Map<String, Map<String, dynamic>>> _loadState() async {
+    if (_userId.isEmpty) return {};
+    final snap = await FirebaseFirestore.instance.collection(_statePath).get();
+    return {
+      for (final doc in snap.docs) doc.id: doc.data(),
+    };
+  }
+
   @override
   Future<List<NotificationEntity>> getNotifications(
     NotificationFilterEntity filter,
@@ -28,8 +43,17 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
     final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.notifications,
     );
+    final state = await _loadState();
     var results = snapshot.docs
-        .map((doc) => NotificationDto.fromFirestore(doc))
+        .where((doc) => !(state[doc.id]?['isDeleted'] == true))
+        .map((doc) {
+          final entity = NotificationDto.fromFirestore(doc);
+          final docState = state[doc.id];
+          if (docState == null) return entity;
+          return entity.copyWith(
+            isRead: (docState['isRead'] as bool?) ?? entity.isRead,
+          );
+        })
         .toList();
 
     if (filter.isRead != null) {
@@ -58,49 +82,75 @@ class FirestoreNotificationDataSource implements NotificationDataSource {
     final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.notifications,
     );
+    final state = await _loadState();
     return snapshot.docs
-        .map((doc) => NotificationDto.fromFirestore(doc))
+        .where((doc) => !(state[doc.id]?['isDeleted'] == true))
+        .map((doc) {
+          final entity = NotificationDto.fromFirestore(doc);
+          final docState = state[doc.id];
+          if (docState == null) return entity;
+          return entity.copyWith(
+            isRead: (docState['isRead'] as bool?) ?? entity.isRead,
+          );
+        })
         .where((n) => !n.isRead)
         .length;
   }
 
   @override
   Future<void> markNotificationAsRead(String id) async {
-    await _firestoreService.updateDocument(
-      FirestoreCollections.notifications,
+    if (_userId.isEmpty) return;
+    await _firestoreService.setDocument(
+      _statePath,
       id,
       {'isRead': true},
+      merge: true,
     );
   }
 
   @override
   Future<void> markAllNotificationsAsRead() async {
+    if (_userId.isEmpty) return;
     final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.notifications,
     );
     final batch = FirebaseFirestore.instance.batch();
     for (var doc in snapshot.docs) {
-      batch.update(doc.reference, {'isRead': true});
+      batch.set(
+        FirebaseFirestore.instance.collection(_statePath).doc(doc.id),
+        {'isRead': true},
+        SetOptions(merge: true),
+      );
     }
     await batch.commit();
   }
 
   @override
   Future<void> deleteNotification(String id) async {
-    await _firestoreService.deleteDocument(
-      FirestoreCollections.notifications,
+    if (_userId.isEmpty) return;
+    // Soft-delete: broadcast notifications are shared content owned by admins,
+    // so a user only hides them for themself.
+    await _firestoreService.setDocument(
+      _statePath,
       id,
+      {'isDeleted': true},
+      merge: true,
     );
   }
 
   @override
   Future<void> clearNotifications() async {
+    if (_userId.isEmpty) return;
     final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.notifications,
     );
     final batch = FirebaseFirestore.instance.batch();
     for (var doc in snapshot.docs) {
-      batch.delete(doc.reference);
+      batch.set(
+        FirebaseFirestore.instance.collection(_statePath).doc(doc.id),
+        {'isDeleted': true},
+        SetOptions(merge: true),
+      );
     }
     await batch.commit();
   }

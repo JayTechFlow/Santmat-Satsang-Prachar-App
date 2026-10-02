@@ -18,7 +18,9 @@ import {
   Inbox,
   AlertTriangle,
 } from 'lucide-react';
-import { searchService, SearchResultItem } from '../../services/searchService';
+import { searchService, SearchResultItem } from '../../services/shared/searchService';
+import { AdminPageHeader } from './AdminPageHeader';
+import { AdminCard } from './AdminCard';
 
 const TYPE_ROUTES: Record<SearchResultItem['type'], string> = {
   bhajan: '/admin/bhajan-list',
@@ -81,19 +83,16 @@ export const AdminSearch: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto font-['Mukta'] select-none">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-xs space-y-5">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-amber-700 uppercase tracking-wider mb-0.5">
-            <Search className="w-4 h-4 text-orange-600" />
-            <span>वैश्विक खोज इंजन</span>
-          </div>
-          <h1 className="text-2xl font-black text-stone-900">संतमत सामग्री खोजें</h1>
-<p className="text-xs text-stone-500 mt-0.5">
-              वैश्विक खोज: `audio`, `stuti_vinati`, `suvichar`, `books` संग्रहों से
-            </p>
-        </div>
+      {/* Canonical Admin Page Header */}
+      <AdminPageHeader
+        title="संतमत सामग्री खोजें"
+        subtitle="वैश्विक खोज: audio, stuti_vinati, suvichar, books संग्रहों से वास्तविक समय में खोजें"
+        badgeText="वैश्विक खोज इंजन"
+        badgeVariant="primary"
+        icon={<Search className="w-4 h-4 text-orange-600" />}
+      />
 
+      <div className="admin-card p-5 space-y-4">
         <div className="relative">
           <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
@@ -101,13 +100,13 @@ export const AdminSearch: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="भजन, स्तुति, सुविचार या पुस्तक खोजें…"
-            className="w-full pl-11 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="w-full pl-11 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-[0.625rem] text-sm focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/20"
           />
-          {loading && <Loader2 className="w-4 h-4 text-orange-600 animate-spin absolute right-4 top-1/2 -translate-y-1/2" />}
+          {loading && <Loader2 className="w-4 h-4 text-[#EA580C] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />}
         </div>
 
         {searched && !loading && !error && (
-          <p className="text-xs text-stone-500">
+          <p className="text-xs text-stone-500 font-bold">
             {total > 0 ? `${total} परिणाम मिले` : 'कोई परिणाम नहीं मिला'}
           </p>
         )}
@@ -115,18 +114,18 @@ export const AdminSearch: React.FC = () => {
 
       {/* Results */}
       {loading ? (
-        <div className="bg-white rounded-3xl p-10 border border-stone-200 shadow-xs text-center space-y-2">
+        <div className="bg-white rounded-xl p-10 border border-stone-200 shadow-xs text-center space-y-2">
           <Loader2 className="w-8 h-8 mx-auto text-orange-600 animate-spin" />
           <p className="text-xs font-bold text-stone-600">खोज हो रही है…</p>
         </div>
       ) : error ? (
-        <div className="bg-amber-50 rounded-3xl p-10 border border-amber-200 shadow-xs text-center space-y-2">
+        <div className="bg-amber-50 rounded-xl p-10 border border-amber-200 shadow-xs text-center space-y-2">
           <AlertTriangle className="w-10 h-10 mx-auto text-amber-600" />
           <p className="text-sm font-bold text-amber-900">खोज सेवा अनुपलब्ध</p>
           <p className="text-xs text-amber-800">{error}</p>
         </div>
       ) : searched && results.length === 0 ? (
-        <div className="bg-white rounded-3xl p-10 border border-stone-200 shadow-xs text-center space-y-2">
+        <div className="bg-white rounded-xl p-10 border border-stone-200 shadow-xs text-center space-y-2">
           <Inbox className="w-10 h-10 mx-auto text-stone-300" />
           <p className="text-sm font-bold text-stone-600">"{query.trim()}" के लिए कोई परिणाम नहीं</p>
           <p className="text-xs text-stone-400">
@@ -142,10 +141,10 @@ export const AdminSearch: React.FC = () => {
               <div
                 key={item.id}
                 onClick={() => navigate(targetRoute)}
-                className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs flex items-center justify-between gap-4 cursor-pointer hover:border-amber-400 hover:shadow-sm transition-all"
+                className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs flex items-center justify-between gap-4 cursor-pointer hover:border-amber-400 hover:shadow-xs transition-all"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-11 h-11 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-500 shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-500 shrink-0">
                     {typeInfo.icon}
                   </div>
                   <div className="min-w-0">

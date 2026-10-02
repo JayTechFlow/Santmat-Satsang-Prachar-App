@@ -1,101 +1,169 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/firebase/firestore_collections.dart';
 import '../../../../core/services/firestore_service.dart';
-import '../../../../core/services/cloud_functions_service.dart';
-import '../../domain/entities/search_result_entity.dart';
-import '../../domain/entities/recent_search_entity.dart';
-import '../../domain/entities/search_suggestion_entity.dart';
+import '../../../../features/audio/data/models/audio_dto.dart';
+import '../../../../features/audio/domain/entities/audio_entity.dart';
+import '../../domain/entities/search_category_definition.dart';
 import '../../domain/entities/search_filter_entity.dart';
+import '../../domain/entities/search_result_entity.dart';
+import '../../domain/entities/search_suggestion_entity.dart';
+import '../../domain/utils/search_text_utils.dart';
 import '../models/search_result_dto.dart';
 import 'search_data_source.dart';
 
 class FirestoreSearchDataSource implements SearchDataSource {
   final FirestoreService _firestoreService;
-  final CloudFunctionsService _cloudFunctionsService;
-  final FirebaseAuth _firebaseAuth;
 
-  FirestoreSearchDataSource(
-    this._firestoreService,
-    this._cloudFunctionsService, {
-    FirebaseAuth? firebaseAuth,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  FirestoreSearchDataSource(this._firestoreService);
 
-  String get _userId => _firebaseAuth.currentUser?.uid ?? '';
+  /// Published audio is fetched once per [publishedAudioCacheTtl] and shared by
+  /// every subsequent query, so switching categories or typing more characters
+  /// never re-reads the same Firestore collection.
+  static const Duration publishedAudioCacheTtl = Duration(seconds: 60);
+
+  List<AudioEntity>? _publishedAudioCache;
+  DateTime? _publishedAudioCachedAt;
+  Future<List<AudioEntity>>? _publishedAudioInFlight;
+
+  static const String _publishedStatus = 'प्रकाशित';
+
+  /// Max results rendered by the Search screen.
+  static const int maxResults = 20;
 
   @override
   Future<List<SearchResultEntity>> searchEverything(
     String query, {
     SearchFilterEntity? filter,
   }) async {
-    // In a real app, you would use Algolia or Typesense.
-    // For now we just query Firestore collection and filter client-side.
-    final snapshot = await _firestoreService.getCollection(
-      FirestoreCollections.searchIndex,
+    final contentTypes = filter?.contentTypes;
+    if (contentTypes != null &&
+        contentTypes.isNotEmpty &&
+        !contentTypes.contains(SearchContentType.audio)) {
+      return const [];
+    }
+
+    final publishedAudio = await _publishedAudio();
+    return searchPublishedAudio(
+      publishedAudio,
+      query: query,
+      category: filter?.categoryDefinition,
     );
-    final q = query.toLowerCase();
+  }
 
-    var results = snapshot.docs
-        .map((doc) => SearchResultDto.fromFirestore(doc))
-        .where((item) {
-          if (q.isNotEmpty) {
-            final matchTitle = item.title.toLowerCase().contains(q);
-            final matchSubtitle = item.subtitle.toLowerCase().contains(q);
-            final matchTags = item.tags.any((t) => t.toLowerCase().contains(q));
-            if (!matchTitle && !matchSubtitle && !matchTags) return false;
-          }
+  /// Reads the published audio collection, honouring the short-lived cache.
+  Future<List<AudioEntity>> _publishedAudio() {
+    final cached = _publishedAudioCache;
+    final cachedAt = _publishedAudioCachedAt;
+    if (cached != null &&
+        cachedAt != null &&
+        DateTime.now().difference(cachedAt) < publishedAudioCacheTtl) {
+      return Future<List<AudioEntity>>.value(cached);
+    }
 
-          if (filter != null) {
-            if (filter.contentTypes != null &&
-                filter.contentTypes!.isNotEmpty) {
-              if (!filter.contentTypes!.contains(item.type)) return false;
-            }
-          }
-          return true;
-        })
-        .toList();
+    // Collapse concurrent reads for the same collection into one round trip.
+    final inFlight = _publishedAudioInFlight;
+    if (inFlight != null) return inFlight;
 
+    final future = _fetchPublishedAudio();
+    _publishedAudioInFlight = future;
+    return future;
+  }
+
+  Future<List<AudioEntity>> _fetchPublishedAudio() async {
+    try {
+      final snapshot = await _firestoreService.queryCollection(
+        FirestoreCollections.audio,
+        (ref) => ref.where('status', isEqualTo: _publishedStatus),
+      );
+      final audio = snapshot.docs
+          .map((doc) => AudioDto.fromFirestore(doc).toEntity())
+          .toList(growable: false);
+      _publishedAudioCache = audio;
+      _publishedAudioCachedAt = DateTime.now();
+      return audio;
+    } finally {
+      _publishedAudioInFlight = null;
+    }
+  }
+
+  /// The complete, Firebase-free search pipeline.
+  ///
+  /// Takes already-fetched published audio, applies the category filter, the
+  /// text query and the existing ranking, then de-duplicates by audio id.
+  /// [category] `null` means the ALL sentinel (no category restriction).
+  List<SearchResultEntity> searchPublishedAudio(
+    Iterable<AudioEntity> publishedAudio, {
+    required String query,
+    SearchCategoryDefinition? category,
+  }) {
+    final q = normalizeSearchText(query);
+    final seenIds = <String>{};
+    final results = <SearchResultEntity>[];
+
+    for (final audio in publishedAudio) {
+      if (!seenIds.add(audio.id)) continue;
+      if (!matchesSearchQuery(audio, q)) continue;
+      if (category != null && !category.matches(audio.category)) continue;
+      results.add(searchResultFromAudio(audio, q));
+    }
+
+    results.sort(
+      (a, b) => rankSearchResult(a, q).compareTo(rankSearchResult(b, q)),
+    );
     return results;
   }
 
-  @override
-  Future<List<RecentSearchEntity>> getRecentSearches() async {
-    final path = '${FirestoreCollections.users}/$_userId/recent_searches';
-    final snapshot = await _firestoreService.getCollection(path);
-    var searches = snapshot.docs
-        .map((doc) => RecentSearchDto.fromFirestore(doc))
-        .toList();
-    searches.sort((a, b) => b.searchedAt.compareTo(a.searchedAt));
-    return searches;
+  /// Whether [audio] matches the normalized [query] across its searchable
+  /// fields (title, subtitle, speaker, category, description, lyrics).
+  bool matchesSearchQuery(AudioEntity audio, String query) {
+    if (query.isEmpty) return true;
+    final searchable = [
+      audio.title,
+      audio.subtitle,
+      audio.speaker,
+      audio.category.name,
+      audio.category.id,
+      if (audio.description.isNotEmpty) audio.description,
+      if (audio.lyrics != null && audio.lyrics!.isNotEmpty) audio.lyrics!,
+    ];
+    return searchable.any((field) => normalizedContainsAll(field, query));
   }
 
-  @override
-  Future<void> saveRecentSearch(String query) async {
-    final q = query.trim();
-    if (q.isEmpty) return;
-    final path = '${FirestoreCollections.users}/$_userId/recent_searches';
-    final docId = q.toLowerCase().replaceAll(' ', '_');
-
-    await _firestoreService.setDocument(path, docId, {
-      'query': q,
-      'searchedAt': FieldValue.serverTimestamp(),
-    }, merge: true);
+  /// Bump ordering: title hits rank first, then subtitle, then everything else.
+  int rankSearchResult(SearchResultEntity item, String query) {
+    if (query.isEmpty) return 0;
+    if (normalizedContains(item.title, query)) return 0;
+    if (normalizedContains(item.subtitle, query)) return 1;
+    return 2;
   }
 
-  @override
-  Future<void> deleteRecentSearch(String query) async {
-    final docId = query.toLowerCase().replaceAll(' ', '_');
-    final path = '${FirestoreCollections.users}/$_userId/recent_searches';
-    await _firestoreService.deleteDocument(path, docId);
-  }
-
-  @override
-  Future<void> clearRecentSearches() async {
-    final path = '${FirestoreCollections.users}/$_userId/recent_searches';
-    final snapshot = await _firestoreService.getCollection(path);
-    for (var doc in snapshot.docs) {
-      await _firestoreService.deleteDocument(path, doc.id);
-    }
+  /// Maps an [AudioEntity] to a [SearchResultEntity] deep link ready for the
+  /// shell router. Never fabricates content: falls back to the category name
+  /// or defaults when fields are missing.
+  SearchResultEntity searchResultFromAudio(AudioEntity audio, String query) {
+    final categoryName = audio.category.name.isNotEmpty
+        ? audio.category.name
+        : 'भजन';
+    final subtitle = audio.speaker.isNotEmpty
+        ? '$categoryName • ${audio.speaker}'
+        : categoryName;
+    List<String> tags = [categoryName];
+    if (audio.speaker.isNotEmpty) tags = [...tags, audio.speaker];
+    if (query.isNotEmpty && !tags.contains(query)) tags = [...tags, query];
+    if (audio.description.isNotEmpty) tags = [...tags, audio.description];
+    return SearchResultEntity(
+      id: audio.id,
+      title: audio.title,
+      subtitle: subtitle,
+      imageUrl: audio.thumbnailUrl.isEmpty
+          ? audio.artworkUrl
+          : audio.thumbnailUrl,
+      type: SearchContentType.audio,
+      routePath: '/audio/details/${audio.id}',
+      date: audio.releaseDate,
+      tags: tags,
+      // Carried so the search list can build a real playback queue.
+      audio: audio,
+    );
   }
 
   @override
@@ -106,22 +174,10 @@ class FirestoreSearchDataSource implements SearchDataSource {
     final q = query.toLowerCase();
     return results
         .where((item) => item.title.toLowerCase().contains(q))
-        .map((item) => SearchSuggestionDto(suggestion: item.title))
+        .map<SearchSuggestionEntity>(
+          (item) => SearchSuggestionDto(suggestion: item.title),
+        )
         .take(5)
         .toList();
-  }
-
-  @override
-  Future<List<String>> getPopularSearches() async {
-    try {
-      final response = await _cloudFunctionsService.callFunction('search-trendingSearches');
-      if (response['status'] == 'success') {
-        final List<dynamic> data = response['data'] ?? [];
-        return data.map((e) => e.toString()).toList();
-      }
-      return [];
-    } catch (e) {
-      return [];
-    }
   }
 }

@@ -17,10 +17,14 @@ class HomeNotifier extends Notifier<HomeState> {
 
     result.when(
       success: (data) {
-        state = AsyncValue.data(data);
+        if (ref.mounted) {
+          state = AsyncValue.data(data);
+        }
       },
       failure: (error) {
-        state = AsyncValue.error(error, StackTrace.current);
+        if (ref.mounted) {
+          state = AsyncValue.error(error, StackTrace.current);
+        }
       },
     );
   }
@@ -31,10 +35,14 @@ class HomeNotifier extends Notifier<HomeState> {
 
     result.when(
       success: (data) {
-        state = AsyncValue.data(data);
+        if (ref.mounted) {
+          state = AsyncValue.data(data);
+        }
       },
       failure: (error) {
-        state = AsyncValue.error(error, StackTrace.current);
+        if (ref.mounted) {
+          state = AsyncValue.error(error, StackTrace.current);
+        }
       },
     );
   }

@@ -32,10 +32,6 @@ void main() {
     );
   }
 
-  Ink itemInk(WidgetTester tester) => tester.widget<Ink>(
-    find.descendant(of: find.byType(SSPListItem), matching: find.byType(Ink)),
-  );
-
   Finder itemInkWell(WidgetTester tester) => find.descendant(
     of: find.byType(SSPListItem),
     matching: find.byType(InkWell),

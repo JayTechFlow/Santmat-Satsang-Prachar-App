@@ -1,9 +1,13 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { requireAuth, requireAdmin, logger, writeAuditLog } from "./utils";
+import { requireAdmin, logger, writeAuditLog } from "./utils";
+
+// Never persist full FCM tokens in audit logs (Phase 8/15).
+const maskToken = (token: string): string =>
+  token.length > 12 ? `${token.slice(0, 6)}...${token.slice(-4)}` : "***";
 
 export const subscribeTopic = functions.https.onCall(async (data, context) => {
-  requireAuth(context);
+  requireAdmin(context);
   const { token, topic } = data;
   if (!token || !topic) {
     throw new functions.https.HttpsError("invalid-argument", "Token and topic required.");
@@ -14,7 +18,7 @@ export const subscribeTopic = functions.https.onCall(async (data, context) => {
 });
 
 export const unsubscribeTopic = functions.https.onCall(async (data, context) => {
-  requireAuth(context);
+  requireAdmin(context);
   const { token, topic } = data;
   if (!token || !topic) {
     throw new functions.https.HttpsError("invalid-argument", "Token and topic required.");
@@ -75,7 +79,10 @@ export const sendDirectNotification = functions.https.onCall(async (data, contex
       data: payload || {},
     });
 
-    await writeAuditLog("NOTIFICATION_DIRECT_SENT", uid, { messageId, targetToken });
+    await writeAuditLog("NOTIFICATION_DIRECT_SENT", uid, {
+      messageId,
+      targetTokenMasked: maskToken(targetToken),
+    });
     return { status: "success", data: { messageId } };
   } else {
     const multicastResult = await admin.messaging().sendMulticast({

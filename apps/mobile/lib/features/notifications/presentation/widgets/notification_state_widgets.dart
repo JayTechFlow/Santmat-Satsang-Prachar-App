@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../shared/design_system/components/ssp_empty_state.dart';
+import '../../../../shared/design_system/tokens/icons/ssp_icons.dart';
 
 class NotificationsLoadingWidget extends StatelessWidget {
   const NotificationsLoadingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const SSPLoadingState();
   }
 }
 
@@ -22,15 +26,10 @@ class NotificationsErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(message, textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
-        ],
+      child: SSPErrorState(
+        message: message,
+        onRetry: onRetry,
+        retryLabel: 'Retry',
       ),
     );
   }
@@ -41,19 +40,11 @@ class NotificationsEmptyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.notifications_none, size: 48, color: Colors.grey.shade400),
-          const SizedBox(height: 16),
-          Text(
-            'No notifications yet',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-          ),
-        ],
+    return const Center(
+      child: SSPEmptyState(
+        title: 'कोई नई सूचना नहीं',
+        message: 'No notifications yet',
+        icon: SSPIcons.notificationsNav,
       ),
     );
   }

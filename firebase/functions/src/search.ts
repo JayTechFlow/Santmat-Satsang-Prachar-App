@@ -124,7 +124,9 @@ export const globalSearch = functions.https.onCall(async (data, context) => {
   allItems.push(...audioDocs);
 
   // stuti_vinati → stuti
-  const stutiDocs = await db.collection("stuti_vinati").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'stuti_vinati' } as any)));
+  const stutiDocs = await db.collection("stuti_vinati")
+    .where("type", "in", ["morning", "evening"])
+    .get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'stuti_vinati' } as any)));
   allItems.push(...stutiDocs);
 
   // suvichar → suvichar
@@ -213,6 +215,7 @@ export const autocomplete = functions.https.onCall(async (data, context) => {
 
   titleSets.push(
     await db.collection("stuti_vinati")
+      .where("type", "in", ["morning", "evening"])
       .get()
       .then(snap => snap.docs
         .filter(d => (d.data() as any).title)
@@ -269,6 +272,7 @@ export const autocomplete = functions.https.onCall(async (data, context) => {
   );
   tagPromises.push(
     db.collection("stuti_vinati")
+      .where("type", "in", ["morning", "evening"])
       .get()
       .then(snap => snap.docs.map(d => {
         const q = (d.data() as any).quote || '';

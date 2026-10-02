@@ -69,10 +69,7 @@ class SSPCard extends StatelessWidget {
       child: InkWell(
         borderRadius: SSPRadius.brLarge,
         onTap: onTap,
-        child: Padding(
-          padding: padding,
-          child: child,
-        ),
+        child: Padding(padding: padding, child: child),
       ),
     );
 

@@ -9,9 +9,31 @@ export const requireAuth = (context: functions.https.CallableContext) => {
         logger.warn("Unauthenticated function call attempt", { app: context.app?.appId });
         throw new functions.https.HttpsError("unauthenticated", "User must be authenticated.");
     }
-    
-    // Enterprise Best Practice: Audit App Check before enforcement
+
+    // Suspension enforcement (Phase 8): a suspended account must not reach
+    // any protected callable, regardless of role.
+    if (context.auth.token.accountStatus === "suspended") {
+        logger.warn("Suspended account denied", { uid: context.auth.uid });
+        throw new functions.https.HttpsError(
+            "permission-denied",
+            "Account is suspended."
+        );
+    }
+
+    // App Check (Phase 9 / Phase 20 — controlled rollout):
+    // AUDIT mode (default): missing tokens are logged but allowed, so
+    //   development and existing clients keep working.
+    // ENFORCE mode: set environment variable ENFORCE_APP_CHECK=true to hard-fail
+    //   requests without a valid App Check token. Only enable after telemetry
+    //   shows real clients send tokens.
     if (context.app == undefined) {
+        if (process.env.ENFORCE_APP_CHECK === "true") {
+            logger.warn("App Check enforcement rejected request", { uid: context.auth.uid });
+            throw new functions.https.HttpsError(
+                "failed-precondition",
+                "App Check verification failed."
+            );
+        }
         logger.warn("Request missing App Check token", { uid: context.auth.uid });
     }
 };
@@ -55,6 +77,9 @@ export const requireFeature = (featureId: string) => {
 
 // Backward compatibility - use permission-based checks
 export const requireAdmin = (context: functions.https.CallableContext) => {
+    // Explicit auth gate first so unauthenticated callers receive
+    // "unauthenticated" (not a role-based "permission-denied").
+    requireAuth(context);
     const result = requireRole('developer_super_admin', 'client_super_admin')(context);
     if (!result.allowed) {
         throw new functions.https.HttpsError("permission-denied", result.reason || "Admin privileges required.");

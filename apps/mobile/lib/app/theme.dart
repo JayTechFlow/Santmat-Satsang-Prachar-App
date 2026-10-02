@@ -23,8 +23,12 @@ class SSPTheme {
         onSecondary: SSPColors.lightOnSecondary,
         secondaryContainer: SSPColors.lightSecondaryContainer,
         onSecondaryContainer: SSPColors.lightOnSecondaryContainer,
+        tertiary: SSPColors.purpleStutiPrimary,
+        onTertiary: Colors.white,
+        tertiaryContainer: Color(0xFFF3E8FF),
+        onTertiaryContainer: SSPColors.purpleStutiDark,
         error: SSPColors.error,
-        onError: SSPColors.lightOnPrimary,
+        onError: Colors.white,
         surface: SSPColors.lightSurface,
         onSurface: SSPColors.lightOnSurface,
         surfaceContainerHighest: SSPColors.lightSurfaceVariant,
@@ -35,12 +39,16 @@ class SSPTheme {
       scaffoldBackgroundColor: SSPColors.lightBackground,
       textTheme: SSPTypography.textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: SSPColors.headerMaroon,
+        foregroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: SSPColors.lightOnSurface),
-        titleTextStyle: SSPTypography.titleLarge.copyWith(color: SSPColors.lightOnSurface),
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: SSPTypography.titleLarge.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -99,8 +107,12 @@ class SSPTheme {
         onSecondary: SSPColors.darkOnSecondary,
         secondaryContainer: SSPColors.darkSecondaryContainer,
         onSecondaryContainer: SSPColors.darkOnSecondaryContainer,
+        tertiary: SSPColors.purpleStutiPrimary,
+        onTertiary: Colors.white,
+        tertiaryContainer: Color(0xFF3B0764),
+        onTertiaryContainer: Color(0xFFF3E8FF),
         error: SSPColors.error,
-        onError: SSPColors.darkOnPrimary,
+        onError: Colors.white,
         surface: SSPColors.darkSurface,
         onSurface: SSPColors.darkOnSurface,
         surfaceContainerHighest: SSPColors.darkSurfaceVariant,
@@ -114,12 +126,16 @@ class SSPTheme {
         displayColor: SSPColors.darkOnSurface,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: SSPColors.headerMaroon,
+        foregroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: SSPColors.darkOnSurface),
-        titleTextStyle: SSPTypography.titleLarge.copyWith(color: SSPColors.darkOnSurface),
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: SSPTypography.titleLarge.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -173,3 +189,4 @@ class AppTheme {
   static ThemeData get lightTheme => SSPTheme.lightTheme;
   static ThemeData get darkTheme => SSPTheme.darkTheme;
 }
+

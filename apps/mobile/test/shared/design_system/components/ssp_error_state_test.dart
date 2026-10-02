@@ -23,12 +23,11 @@ void main() {
   }
 
   group('SSPErrorState Widget Tests', () {
-    testWidgets('1. Renders default title when title is null',
-        (WidgetTester tester) async {
+    testWidgets('1. Renders default title when title is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPErrorState(message: 'Could not load audio.'),
-        ),
+        buildTestableWidget(SSPErrorState(message: 'Could not load audio.')),
       );
 
       expect(find.text('Something went wrong'), findsOneWidget);
@@ -36,15 +35,15 @@ void main() {
 
     testWidgets('2. Renders provided message', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPErrorState(message: 'Could not load audio.'),
-        ),
+        buildTestableWidget(SSPErrorState(message: 'Could not load audio.')),
       );
 
       expect(find.text('Could not load audio.'), findsOneWidget);
     });
 
-    testWidgets('3. Renders custom title when provided', (WidgetTester tester) async {
+    testWidgets('3. Renders custom title when provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPErrorState(title: 'Connection lost', message: 'Try again later.'),
@@ -55,8 +54,9 @@ void main() {
       expect(find.text('Something went wrong'), findsNothing);
     });
 
-    testWidgets('4. Invokes onRetry callback when retry tapped',
-        (WidgetTester tester) async {
+    testWidgets('4. Invokes onRetry callback when retry tapped', (
+      WidgetTester tester,
+    ) async {
       bool retried = false;
       await tester.pumpWidget(
         buildTestableWidget(
@@ -73,30 +73,31 @@ void main() {
       expect(retried, isTrue);
     });
 
-    testWidgets('5. No retry button when onRetry is null', (WidgetTester tester) async {
+    testWidgets('5. No retry button when onRetry is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPErrorState(message: 'Failed to load satsang.'),
-        ),
+        buildTestableWidget(SSPErrorState(message: 'Failed to load satsang.')),
       );
 
       expect(find.byType(SSPTertiaryButton), findsNothing);
       expect(find.text('Retry'), findsNothing);
     });
 
-    testWidgets('6. Default retry label rendered when onRetry provided',
-        (WidgetTester tester) async {
+    testWidgets('6. Default retry label rendered when onRetry provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPErrorState(message: 'Failed.', onRetry: () {}),
-        ),
+        buildTestableWidget(SSPErrorState(message: 'Failed.', onRetry: () {})),
       );
 
       expect(find.byType(SSPTertiaryButton), findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
     });
 
-    testWidgets('7. Custom retry label is rendered', (WidgetTester tester) async {
+    testWidgets('7. Custom retry label is rendered', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPErrorState(
@@ -113,21 +114,18 @@ void main() {
 
     testWidgets('8. Renders default error icon', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPErrorState(message: 'Failed.'),
-        ),
+        buildTestableWidget(SSPErrorState(message: 'Failed.')),
       );
 
       expect(find.byIcon(SSPIcons.error), findsOneWidget);
     });
 
-    testWidgets('9. Renders custom icon when provided', (WidgetTester tester) async {
+    testWidgets('9. Renders custom icon when provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPErrorState(
-            message: 'Failed.',
-            icon: Icons.wifi_off_outlined,
-          ),
+          SSPErrorState(message: 'Failed.', icon: Icons.wifi_off_outlined),
         ),
       );
 
@@ -135,8 +133,9 @@ void main() {
       expect(find.byIcon(SSPIcons.error), findsNothing);
     });
 
-    testWidgets('10. Renders Hindi title, message and retry label',
-        (WidgetTester tester) async {
+    testWidgets('10. Renders Hindi title, message and retry label', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPErrorState(
@@ -153,8 +152,9 @@ void main() {
       expect(find.text('पुनः प्रयास करें'), findsOneWidget);
     });
 
-    testWidgets('11. Container semantics summarize title and message',
-        (WidgetTester tester) async {
+    testWidgets('11. Container semantics summarize title and message', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPErrorState(
@@ -164,13 +164,16 @@ void main() {
         ),
       );
 
-      final SemanticsNode node = tester.getSemantics(find.byType(SSPErrorState));
+      final SemanticsNode node = tester.getSemantics(
+        find.byType(SSPErrorState),
+      );
       expect(node.label, contains('Streaming failed'));
       expect(node.label, contains('Please check your internet connection.'));
     });
 
-    testWidgets('12. Text scaling 2.0 renders without overflow',
-        (WidgetTester tester) async {
+    testWidgets('12. Text scaling 2.0 renders without overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPErrorState(
@@ -197,21 +200,24 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('14. Long content renders without overflow (takeException null)',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SizedBox(
-            width: 260,
-            child: SSPErrorState(
-              message: 'A very long error description that keeps going well beyond the available width in restricted and scaled layouts.',
-              onRetry: () {},
+    testWidgets(
+      '14. Long content renders without overflow (takeException null)',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SizedBox(
+              width: 260,
+              child: SSPErrorState(
+                message:
+                    'A very long error description that keeps going well beyond the available width in restricted and scaled layouts.',
+                onRetry: () {},
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(tester.takeException(), isNull);
-    });
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

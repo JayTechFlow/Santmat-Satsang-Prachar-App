@@ -42,17 +42,16 @@ void main() {
     testWidgets('2. Renders default info icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPEmptyState(
-            title: 'Empty',
-            message: 'Nothing here.',
-          ),
+          SSPEmptyState(title: 'Empty', message: 'Nothing here.'),
         ),
       );
 
       expect(find.byIcon(SSPIcons.info), findsOneWidget);
     });
 
-    testWidgets('3. Renders custom icon when provided', (WidgetTester tester) async {
+    testWidgets('3. Renders custom icon when provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -67,8 +66,9 @@ void main() {
       expect(find.byIcon(SSPIcons.info), findsNothing);
     });
 
-    testWidgets('4. Invokes onAction callback when action tapped',
-        (WidgetTester tester) async {
+    testWidgets('4. Invokes onAction callback when action tapped', (
+      WidgetTester tester,
+    ) async {
       bool pressed = false;
       await tester.pumpWidget(
         buildTestableWidget(
@@ -87,8 +87,9 @@ void main() {
       expect(pressed, isTrue);
     });
 
-    testWidgets('5. No action button when onAction is null',
-        (WidgetTester tester) async {
+    testWidgets('5. No action button when onAction is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -103,8 +104,9 @@ void main() {
       expect(find.text('Explore Library'), findsNothing);
     });
 
-    testWidgets('6. No action button when actionLabel is null',
-        (WidgetTester tester) async {
+    testWidgets('6. No action button when actionLabel is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -118,8 +120,9 @@ void main() {
       expect(find.byType(SSPTertiaryButton), findsNothing);
     });
 
-    testWidgets('7. Rendering a tertiary action button when both provided',
-        (WidgetTester tester) async {
+    testWidgets('7. Rendering a tertiary action button when both provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -135,8 +138,9 @@ void main() {
       expect(find.text('Browse'), findsOneWidget);
     });
 
-    testWidgets('8. Compact mode reduces gaps between icon and title',
-        (WidgetTester tester) async {
+    testWidgets('8. Compact mode reduces gaps between icon and title', (
+      WidgetTester tester,
+    ) async {
       final Widget standard = buildTestableWidget(
         SSPEmptyState(title: 'Empty', message: 'Nothing here.'),
       );
@@ -173,7 +177,9 @@ void main() {
       );
     });
 
-    testWidgets('9. Renders Hindi title and message', (WidgetTester tester) async {
+    testWidgets('9. Renders Hindi title and message', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -187,7 +193,9 @@ void main() {
       expect(find.text('सहेजे गए भजन यहाँ दिखाई देंगे।'), findsOneWidget);
     });
 
-    testWidgets('10. Renders English title and message', (WidgetTester tester) async {
+    testWidgets('10. Renders English title and message', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -201,8 +209,9 @@ void main() {
       expect(find.text('Your favorites will show up here.'), findsOneWidget);
     });
 
-    testWidgets('11. Container semantics summarize title and message',
-        (WidgetTester tester) async {
+    testWidgets('11. Container semantics summarize title and message', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
@@ -212,18 +221,22 @@ void main() {
         ),
       );
 
-      final SemanticsNode node = tester.getSemantics(find.byType(SSPEmptyState));
+      final SemanticsNode node = tester.getSemantics(
+        find.byType(SSPEmptyState),
+      );
       expect(node.label, contains('No downloads'));
       expect(node.label, contains('Downloaded content will appear here.'));
     });
 
-    testWidgets('12. Text scaling 2.0 renders without overflow',
-        (WidgetTester tester) async {
+    testWidgets('12. Text scaling 2.0 renders without overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPEmptyState(
             title: 'No items found matching your search',
-            message: 'Try adjusting filters or search for something shorter instead.',
+            message:
+                'Try adjusting filters or search for something shorter instead.',
             actionLabel: 'Clear Filters',
             onAction: () {},
           ),
@@ -234,14 +247,12 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('13. Renders in dark mode with primary container backdrop',
-        (WidgetTester tester) async {
+    testWidgets('13. Renders in dark mode with primary container backdrop', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPEmptyState(
-            title: 'Empty',
-            message: 'Nothing here.',
-          ),
+          SSPEmptyState(title: 'Empty', message: 'Nothing here.'),
           brightness: Brightness.dark,
         ),
       );
@@ -261,23 +272,26 @@ void main() {
       );
     });
 
-    testWidgets('14. Long content renders without overflow (takeException null)',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SizedBox(
-            width: 260,
-            child: SSPEmptyState(
-              title: 'A very long empty state heading for narrow screens',
-              message: 'A very long supporting description that continues beyond the available width of the container in restricted layouts.',
-              actionLabel: 'View Everything',
-              onAction: () {},
+    testWidgets(
+      '14. Long content renders without overflow (takeException null)',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SizedBox(
+              width: 260,
+              child: SSPEmptyState(
+                title: 'A very long empty state heading for narrow screens',
+                message:
+                    'A very long supporting description that continues beyond the available width of the container in restricted layouts.',
+                actionLabel: 'View Everything',
+                onAction: () {},
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(tester.takeException(), isNull);
-    });
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

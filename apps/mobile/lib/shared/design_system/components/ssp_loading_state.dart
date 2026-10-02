@@ -16,11 +16,7 @@ class SSPLoadingState extends StatelessWidget {
   /// Diameter of the progress indicator in logical pixels. Defaults to 40.0.
   final double size;
 
-  const SSPLoadingState({
-    super.key,
-    this.message,
-    this.size = 40.0,
-  });
+  const SSPLoadingState({super.key, this.message, this.size = 40.0});
 
   @override
   Widget build(BuildContext context) {

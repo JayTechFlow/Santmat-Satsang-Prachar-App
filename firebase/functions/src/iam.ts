@@ -74,28 +74,31 @@ export const syncUserCustomClaims = functions.firestore
     const oldStatus = oldUserData.status || "active";
 
     // Determine new Role - ONLY 3 roles exist: developer_super_admin, client_super_admin, mobile_user
-    let resolvedRole = "mobile_user";
+    let resolvedRole = "";
     const role = userData.role || "";
     const roleIds: string[] = Array.isArray(userData.roleIds) ? userData.roleIds : [];
 
     if (role === "developer_super_admin" || roleIds.includes("developer_super_admin")) {
       resolvedRole = "developer_super_admin";
-    } else if (
-      role === "client_super_admin" ||
-      roleIds.includes("client_super_admin")
-    ) {
+    } else if (role === "client_super_admin" || roleIds.includes("client_super_admin")) {
       resolvedRole = "client_super_admin";
+    } else if (role === "mobile_user" || roleIds.includes("mobile_user")) {
+      resolvedRole = "mobile_user";
+    } else {
+      logger.error(`Security Warning: Invalid/unknown role '${role}' for user ${userId}. Failing safely.`);
+      resolvedRole = "invalid_role";
     }
 
     // Determine old resolved role for comparison
-    let oldResolvedRole = "mobile_user";
+    let oldResolvedRole = "";
     if (oldRole === "developer_super_admin" || oldRoleIds.includes("developer_super_admin")) {
       oldResolvedRole = "developer_super_admin";
-    } else if (
-      oldRole === "client_super_admin" ||
-      oldRoleIds.includes("client_super_admin")
-    ) {
+    } else if (oldRole === "client_super_admin" || oldRoleIds.includes("client_super_admin")) {
       oldResolvedRole = "client_super_admin";
+    } else if (oldRole === "mobile_user" || oldRoleIds.includes("mobile_user")) {
+      oldResolvedRole = "mobile_user";
+    } else {
+      oldResolvedRole = "invalid_role";
     }
 
     const isAdmin = resolvedRole === "developer_super_admin" || resolvedRole === "client_super_admin";
@@ -152,23 +155,50 @@ export const bootstrapDeveloperSuperAdmin = functions.https.onCall(async () => {
 
 /**
  * Secure Role Assignment Endpoint
- * Prevents privilege escalation and self-promotion.
+ * Prevents privilege escalation, self-promotion, and arbitrary role injection.
+ * Enforces Last Admin Protection.
  */
 export const setUserRole = functions.https.onCall(async (data, context) => {
   requireAuth(context);
   const callerUid = context.auth!.uid;
   const callerRole = context.auth!.token.role || "";
 
-  const { targetUid, newRole } = data;
-
-  if (!targetUid || !newRole) {
+  // Caller role guard: only developer_super_admin and client_super_admin can assign roles
+  if (callerRole !== "developer_super_admin" && callerRole !== "client_super_admin") {
     throw new functions.https.HttpsError(
-      "invalid-argument",
-      "targetUid and newRole parameters are required."
+      "permission-denied",
+      "Permission denied: Insufficient privileges to assign roles."
     );
   }
 
-  // Self-Promotion Guard
+  const { targetUid, newRole } = data || {};
+
+  // Input validation for targetUid and newRole
+  if (!targetUid || typeof targetUid !== "string" || !newRole || typeof newRole !== "string") {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "targetUid and newRole parameters are required and must be strings."
+    );
+  }
+
+  // Validate targetUid format (alphanumeric with hyphen/underscore, no path traversal)
+  if (targetUid.length < 1 || targetUid.length > 128 || targetUid.includes("/") || targetUid.includes("..") || !/^[a-zA-Z0-9_-]+$/.test(targetUid)) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Invalid targetUid format."
+    );
+  }
+
+  // Validate newRole against canonical roles allowlist
+  const ALLOWED_ROLES: Role[] = ["developer_super_admin", "client_super_admin", "mobile_user"];
+  if (!ALLOWED_ROLES.includes(newRole as Role)) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      `Invalid role '${newRole}'. Allowed roles: ${ALLOWED_ROLES.join(", ")}.`
+    );
+  }
+
+  // Self-Promotion / Self-Modification Guard
   if (targetUid === callerUid) {
     throw new functions.https.HttpsError(
       "permission-denied",
@@ -176,7 +206,7 @@ export const setUserRole = functions.https.onCall(async (data, context) => {
     );
   }
 
-  // Hierarchy Guards
+  // Privilege Escalation Guard: Only Developer Super Admins can assign the Developer role
   if (newRole === "developer_super_admin" && callerRole !== "developer_super_admin") {
     throw new functions.https.HttpsError(
       "permission-denied",
@@ -185,8 +215,16 @@ export const setUserRole = functions.https.onCall(async (data, context) => {
   }
 
   const targetDoc = await db.collection("users").doc(targetUid).get();
-  const targetCurrentRole = targetDoc.data()?.role || "";
+  if (!targetDoc.exists) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      `Target user ${targetUid} does not exist.`
+    );
+  }
 
+  const targetCurrentRole = targetDoc.data()?.role || "mobile_user";
+
+  // Hierarchy Guard: Only Developer Super Admins can modify a Developer account
   if (targetCurrentRole === "developer_super_admin" && callerRole !== "developer_super_admin") {
     throw new functions.https.HttpsError(
       "permission-denied",
@@ -194,11 +232,19 @@ export const setUserRole = functions.https.onCall(async (data, context) => {
     );
   }
 
-  if (callerRole !== "developer_super_admin" && callerRole !== "client_super_admin") {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Permission denied: Insufficient privileges to assign roles."
-    );
+  // Last Admin Protection: Prevent demoting the last active developer_super_admin
+  if (targetCurrentRole === "developer_super_admin" && newRole !== "developer_super_admin") {
+    const devAdminSnap = await db
+      .collection("users")
+      .where("role", "==", "developer_super_admin")
+      .get();
+    const activeDevAdmins = devAdminSnap.docs.filter((d) => d.data()?.status !== "suspended");
+    if (activeDevAdmins.length <= 1 && activeDevAdmins.some((d) => d.id === targetUid)) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "Last Admin Protection: Cannot demote the last active Developer Super Admin account."
+      );
+    }
   }
 
   // Update target user document in Firestore
@@ -211,7 +257,12 @@ export const setUserRole = functions.https.onCall(async (data, context) => {
     { merge: true }
   );
 
-  await writeAuditLog("SET_USER_ROLE", callerUid, { targetUid, newRole });
+  await writeAuditLog("SET_USER_ROLE", callerUid, {
+    targetUid,
+    oldRole: targetCurrentRole,
+    newRole,
+  });
+
   return { status: "success", message: `Role updated to ${newRole} for ${targetUid}` };
 });
 

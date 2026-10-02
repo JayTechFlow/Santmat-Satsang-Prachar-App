@@ -12,15 +12,23 @@ final updateProfileUseCaseProvider = Provider<UpdateProfileUseCase>((ref) {
   return UpdateProfileUseCase(ref.watch(profileRepositoryProvider));
 });
 
-final updateProfilePhotoUseCaseProvider = Provider<UpdateProfilePhotoUseCase>((
-  ref,
-) {
+final uploadProfilePhotoUseCaseProvider =
+    Provider<UploadProfilePhotoUseCase>((ref) {
+  return UploadProfilePhotoUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final removeProfilePhotoUseCaseProvider =
+    Provider<RemoveProfilePhotoUseCase>((ref) {
+  return RemoveProfilePhotoUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final updateProfilePhotoUseCaseProvider =
+    Provider<UpdateProfilePhotoUseCase>((ref) {
   return UpdateProfilePhotoUseCase(ref.watch(profileRepositoryProvider));
 });
 
-final updatePreferencesUseCaseProvider = Provider<UpdatePreferencesUseCase>((
-  ref,
-) {
+final updatePreferencesUseCaseProvider =
+    Provider<UpdatePreferencesUseCase>((ref) {
   return UpdatePreferencesUseCase(ref.watch(profileRepositoryProvider));
 });
 
@@ -28,8 +36,7 @@ final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
   return LogoutUseCase(ref.watch(profileRepositoryProvider));
 });
 
-final profileStateProvider = NotifierProvider<ProfileNotifier, ProfileState>(
-  () {
-    return ProfileNotifier();
-  },
-);
+final profileStateProvider =
+    NotifierProvider<ProfileNotifier, ProfileState>(() {
+  return ProfileNotifier();
+});

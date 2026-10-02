@@ -1,40 +1,37 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:santmat_satsang_prachar/core/storage/storage_service.dart';
+
+/// The media data source and repository are defined once, in
+/// `core/media/presentation/providers/media_providers.dart`, and re-exported
+/// here so DI consumers keep resolving them from the service locator module.
+export '../media/presentation/providers/media_providers.dart'
+    show mediaRemoteDataSourceProvider, mediaRepositoryProvider;
 import 'package:santmat_satsang_prachar/core/di/service_locator_registrations.dart';
 import 'package:santmat_satsang_prachar/features/audio/data/datasources/audio_data_source.dart';
 import 'package:santmat_satsang_prachar/features/audio/data/datasources/firestore_audio_data_source.dart';
 import 'package:santmat_satsang_prachar/features/authentication/data/datasources/firebase_auth_datasource.dart';
 import 'package:santmat_satsang_prachar/features/books/data/datasources/book_data_source.dart';
 import 'package:santmat_satsang_prachar/features/books/data/datasources/firestore_book_data_source.dart';
-import 'package:santmat_satsang_prachar/features/books/data/datasources/mock_book_data_source.dart';
 import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/daily_quote_data_source.dart';
 import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/firestore_daily_quote_data_source.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/donation_data_source.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/firestore_donation_data_source.dart';
-import 'package:santmat_satsang_prachar/features/donations/data/datasources/mock_donation_data_source.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/event_data_source.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/firestore_event_data_source.dart';
-import 'package:santmat_satsang_prachar/features/events/data/datasources/mock_event_data_source.dart';
 import 'package:santmat_satsang_prachar/features/home/data/datasources/firebase_home_data_source.dart';
 import 'package:santmat_satsang_prachar/features/home/data/datasources/home_data_source.dart';
 import 'package:santmat_satsang_prachar/features/library/data/datasources/firestore_library_data_source.dart';
 import 'package:santmat_satsang_prachar/features/library/data/datasources/library_data_source.dart';
-import 'package:santmat_satsang_prachar/features/library/data/datasources/mock_library_data_source.dart';
 import 'package:santmat_satsang_prachar/features/notifications/data/datasources/firestore_notification_data_source.dart';
-import 'package:santmat_satsang_prachar/features/notifications/data/datasources/mock_notification_data_source.dart';
 import 'package:santmat_satsang_prachar/features/notifications/data/datasources/notification_data_source.dart';
 import 'package:santmat_satsang_prachar/features/preferences/data/datasources/firestore_preference_data_source.dart';
-import 'package:santmat_satsang_prachar/features/preferences/data/datasources/mock_preference_data_source.dart';
 import 'package:santmat_satsang_prachar/features/preferences/data/datasources/preference_data_source.dart';
 import 'package:santmat_satsang_prachar/features/profile/data/datasources/firestore_profile_data_source.dart';
-import 'package:santmat_satsang_prachar/features/profile/data/datasources/mock_profile_data_source.dart';
 import 'package:santmat_satsang_prachar/features/profile/data/datasources/profile_data_source.dart';
 import 'package:santmat_satsang_prachar/features/satsang/data/datasources/firestore_satsang_data_source.dart';
-import 'package:santmat_satsang_prachar/features/satsang/data/datasources/mock_satsang_data_source.dart';
 import 'package:santmat_satsang_prachar/features/satsang/data/datasources/satsang_data_source.dart';
 import 'package:santmat_satsang_prachar/features/search/data/datasources/firestore_search_data_source.dart';
-import 'package:santmat_satsang_prachar/features/search/data/datasources/mock_search_data_source.dart';
 import 'package:santmat_satsang_prachar/features/search/data/datasources/search_data_source.dart';
 import 'package:santmat_satsang_prachar/features/audio/data/repositories/audio_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/authentication/data/repositories/auth_repository_impl.dart';
@@ -67,9 +64,6 @@ import 'package:santmat_satsang_prachar/features/stuti_vinati/data/datasources/s
 import 'package:santmat_satsang_prachar/features/stuti_vinati/data/datasources/stuti_vinati_firebase_datasource.dart';
 import 'package:santmat_satsang_prachar/features/stuti_vinati/domain/repositories/stuti_vinati_repository.dart';
 import 'package:santmat_satsang_prachar/features/stuti_vinati/data/repositories/stuti_vinati_repository_impl.dart';
-import 'package:santmat_satsang_prachar/core/media/data/datasources/media_remote_datasource.dart';
-import 'package:santmat_satsang_prachar/core/media/data/repositories/media_repository_impl.dart';
-import 'package:santmat_satsang_prachar/core/media/domain/repositories/i_media_repository.dart';
 
 final homeDataSourceProvider = Provider<HomeDataSource>((ref) {
   return FirebaseHomeDataSource(ref.watch(firestoreServiceProvider));
@@ -80,10 +74,6 @@ final homeRepositoryProvider = Provider<HomeRepository>((ref) {
 });
 
 final preferenceDataSourceProvider = Provider<PreferenceDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockPreferenceDataSource();
-  }
   return FirestorePreferenceDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -92,10 +82,6 @@ final preferenceRepositoryProvider = Provider<PreferenceRepository>((ref) {
 });
 
 final donationDataSourceProvider = Provider<DonationDataSource>((ref) {
-  final env = ref.watch(environmentConfigurationProvider);
-  if (env.isDev) {
-    return MockDonationDataSource();
-  }
   return FirestoreDonationDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -104,10 +90,6 @@ final donationRepositoryProvider = Provider<DonationRepository>((ref) {
 });
 
 final satsangDataSourceProvider = Provider<SatsangDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockSatsangDataSource();
-  }
   return FirestoreSatsangDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -116,10 +98,6 @@ final satsangRepositoryProvider = Provider<SatsangRepository>((ref) {
 });
 
 final libraryDataSourceProvider = Provider<LibraryDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockLibraryDataSource();
-  }
   return FirestoreLibraryDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -128,10 +106,6 @@ final libraryRepositoryProvider = Provider<LibraryRepository>((ref) {
 });
 
 final bookDataSourceProvider = Provider<BookDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockBookDataSource();
-  }
   return FirestoreBookDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -148,11 +122,7 @@ final dailyQuoteRepositoryProvider = Provider<DailyQuoteRepository>((ref) {
 });
 
 final searchDataSourceProvider = Provider<SearchDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockSearchDataSource();
-  }
-  return FirestoreSearchDataSource(ref.watch(firestoreServiceProvider), ref.watch(cloudFunctionsServiceProvider));
+  return FirestoreSearchDataSource(ref.watch(firestoreServiceProvider));
 });
 
 final searchRepositoryProvider = Provider<SearchRepository>((ref) {
@@ -168,14 +138,7 @@ final audioRepositoryProvider = Provider<AudioRepository>((ref) {
 });
 
 final profileDataSourceProvider = Provider<ProfileDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockProfileDataSource();
-  }
-  return FirestoreProfileDataSource(
-    ref.watch(firestoreServiceProvider),
-    firebaseAuth: FirebaseAuth.instance,
-  );
+  return FirestoreProfileDataSource(ref.watch(firestoreServiceProvider));
 });
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
@@ -186,10 +149,6 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
 });
 
 final eventDataSourceProvider = Provider<EventDataSource>((ref) {
-  final isDev = ref.watch(environmentConfigurationProvider).isDev;
-  if (isDev) {
-    return MockEventDataSource();
-  }
   return FirestoreEventDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -210,10 +169,6 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 final notificationDataSourceProvider = Provider<NotificationDataSource>((ref) {
-  final env = ref.watch(environmentConfigurationProvider);
-  if (env.isDev) {
-    return MockNotificationDataSource();
-  }
   return FirestoreNotificationDataSource(ref.watch(firestoreServiceProvider));
 });
 
@@ -221,22 +176,12 @@ final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
   return NotificationRepositoryImpl(ref.watch(notificationDataSourceProvider));
 });
 
-
-final stutiVinatiDataSourceProvider = Provider<StutiVinatiRemoteDataSource>((ref) {
+final stutiVinatiDataSourceProvider = Provider<StutiVinatiRemoteDataSource>((
+  ref,
+) {
   return StutiVinatiFirebaseDataSource(FirebaseFirestore.instance);
 });
 
 final stutiVinatiRepositoryProvider = Provider<StutiVinatiRepository>((ref) {
   return StutiVinatiRepositoryImpl(ref.watch(stutiVinatiDataSourceProvider));
 });
-
-final mediaRemoteDataSourceProvider = Provider<IMediaRemoteDataSource>((ref) {
-  return FirestoreMediaDataSource(firestore: FirebaseFirestore.instance);
-});
-
-final mediaRepositoryProvider = Provider<IMediaRepository>((ref) {
-  return MediaRepositoryImpl(ref.watch(mediaRemoteDataSourceProvider));
-});
-
-
-

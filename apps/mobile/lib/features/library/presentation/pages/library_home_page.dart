@@ -5,6 +5,7 @@ import '../providers/library_providers.dart';
 import '../widgets/library_state_widgets.dart';
 import '../widgets/library_item_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 
 class LibraryHomePage extends ConsumerWidget {
   const LibraryHomePage({super.key});
@@ -14,7 +15,10 @@ class LibraryHomePage extends ConsumerWidget {
     final state = ref.watch(libraryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Library')),
+      appBar: const SSPAppBar.standard(
+        title: 'Library',
+        subtitle: 'मेरी लाइब्रेरी — गतिविधियां एवं संग्रह',
+      ),
       body: state.isLoading
           ? const LibraryLoadingWidget()
           : state.error != null
@@ -117,11 +121,15 @@ class LibraryHomePage extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
           TextButton(
             onPressed: () => context.push(route),

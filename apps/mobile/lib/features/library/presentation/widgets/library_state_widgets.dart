@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/design_system/components/ssp_loading_state.dart';
+import '../../../../shared/design_system/components/ssp_error_state.dart';
+import '../../../../shared/design_system/components/ssp_empty_state.dart';
 
 class LibraryLoadingWidget extends StatelessWidget {
   const LibraryLoadingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const SSPLoadingState();
   }
 }
 
@@ -22,15 +25,10 @@ class LibraryErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(message, textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
-        ],
+      child: SSPErrorState(
+        message: message,
+        onRetry: onRetry,
+        retryLabel: 'Retry',
       ),
     );
   }
@@ -49,18 +47,11 @@ class LibraryEmptyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 48, color: Colors.grey.shade400),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-          ),
-        ],
+      child: SSPEmptyState(
+        title: 'कोई सामग्री नहीं है',
+        message: message,
+        icon: icon,
+        compact: true,
       ),
     );
   }

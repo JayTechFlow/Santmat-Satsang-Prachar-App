@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:santmat_satsang_prachar/features/preferences/data/datasources/mock_preference_data_source.dart';
+import '../../../../helpers/mock_preference_data_source.dart';
 import 'package:santmat_satsang_prachar/features/preferences/data/repositories/preference_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/preferences/domain/entities/appearance_preference_entity.dart';
 

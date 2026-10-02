@@ -3,7 +3,6 @@ import '../config/environment_configuration.dart';
 import '../config/backend_configuration.dart';
 import '../services/firestore_service.dart';
 import '../services/firebase_storage_service.dart';
-import '../services/firebase_auth_service.dart';
 import '../services/firebase_messaging_service.dart';
 import '../services/firebase_analytics_service.dart';
 import '../services/crashlytics_service.dart';
@@ -25,7 +24,12 @@ import '../storage/resolvers/media_url_resolver.dart';
 import '../storage/resolvers/signed_url_resolver.dart';
 import '../storage/cache/media_cache_manager.dart';
 import '../storage/validators/media_integrity_validator.dart';
-import '../storage/secure_storage_service.dart';
+
+// Re-exported so DI consumers can resolve the secure-storage provider from the
+// service locator module. The single definition lives in
+// `../storage/secure_storage_service.dart`.
+export '../storage/secure_storage_service.dart'
+    show secureStorageServiceProvider;
 
 final environmentConfigurationProvider = Provider<EnvironmentConfiguration>((
   ref,
@@ -45,10 +49,6 @@ final firestoreServiceProvider = Provider<FirestoreService>((ref) {
 
 final firebaseStorageServiceProvider = Provider<FirebaseStorageService>((ref) {
   return FirebaseStorageService();
-});
-
-final firebaseAuthServiceProvider = Provider<FirebaseAuthService>((ref) {
-  return FirebaseAuthService();
 });
 
 final firebaseMessagingServiceProvider = Provider<FirebaseMessagingService>((
@@ -138,9 +138,4 @@ final mediaIntegrityValidatorProvider = Provider<MediaIntegrityValidator>((
   ref,
 ) {
   return MediaIntegrityValidator();
-});
-
-final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
-  final storage = ref.watch(secureStorageProvider);
-  return SecureStorageService(storage);
 });

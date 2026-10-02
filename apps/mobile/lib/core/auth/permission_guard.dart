@@ -1,12 +1,18 @@
 // Sprint E1 — Permission Guard (Flutter Route Protection)
 // Route-level and widget-level authorization guards.
 
+import 'package:flutter/foundation.dart';
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:santmat_satsang_prachar/core/auth/permission_engine.dart';
 import 'package:santmat_satsang_prachar/core/auth/permission_context.dart';
+import 'package:santmat_satsang_prachar/core/config/app_config.dart';
+import '../../features/authentication/presentation/providers/auth_status_provider.dart';
 import '../../features/authentication/presentation/providers/auth_state_provider.dart';
+import '../../features/authentication/domain/entities/auth_status.dart';
+
 
 /// Route guard configuration
 class RoutePermissionConfig {
@@ -67,6 +73,15 @@ final Map<String, RoutePermissionConfig> routePermissionMap = {
     ],
   ),
   '/books/details/:id': RoutePermissionConfig(
+    requiredPermissions: ['mobile.books'],
+    requiredFeature: 'feature.books',
+    allowedRoles: [
+      Role.mobileUser,
+      Role.clientSuperAdmin,
+      Role.developerSuperAdmin,
+    ],
+  ),
+  '/books/reader': RoutePermissionConfig(
     requiredPermissions: ['mobile.books'],
     requiredFeature: 'feature.books',
     allowedRoles: [
@@ -172,13 +187,6 @@ final Map<String, RoutePermissionConfig> routePermissionMap = {
       Role.developerSuperAdmin,
     ],
   ),
-
-  // Admin-only routes (would be in admin panel, not mobile)
-  // These are defined here for completeness but mobile app shouldn't have them
-  '/admin': RoutePermissionConfig(
-    allowedRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin],
-    fallbackRoute: '/',
-  ),
 };
 
 /// Extension to get permission config for a route
@@ -191,7 +199,7 @@ extension RoutePermissionExtension on String {
     // Try pattern match for parameterized routes
     for (final entry in routePermissionMap.entries) {
       final pattern = entry.key.replaceAll(RegExp(r':[^/]+'), r'[^/]+');
-      final regex = RegExp('^' + pattern + r'$');
+      final regex = RegExp('^$pattern\$');
       if (regex.hasMatch(this)) {
         return entry.value;
       }
@@ -210,107 +218,108 @@ extension RoutePermissionExtension on String {
 /// Create a GoRouter redirect function that enforces permissions
 GoRouterRedirect createPermissionRedirect(Ref ref) {
   return (BuildContext context, GoRouterState state) {
-    final authState = ref.read(authStateProvider);
+    final devDirectEntry = ref.read(appConfigProvider).enableDevDirectEntry;
+    final authStatus = ref.read(authStatusProvider);
     final config = state.uri.path.permissionConfig;
+    if (kDebugMode) {
+      developer.log('REDIRECT CHECK: path=${state.uri.path}, authStatus=$authStatus, devDirectEntry=$devDirectEntry');
+    }
 
-    // If auth is loading, stay on current page or go to splash
-    if (authState.isLoading) {
-      if (state.uri.path == '/login' ||
-          state.uri.path == '/onboarding' ||
-          state.uri.path == '/splash') {
+    // Public auth routes that don't require authentication
+    const publicAuthRoutes = {
+      '/login',
+      '/register',
+      '/onboarding',
+      '/splash',
+    };
+
+    // TEMPORARY DEVELOPMENT DIRECT-ENTRY MODE
+    if (devDirectEntry) {
+      if (publicAuthRoutes.contains(state.uri.path)) {
+        return '/';
+      }
+      return null;
+    }
+
+    // Loading / bootstrapping: stay on splash or auth pages
+    if (authStatus.isLoading) {
+      if (publicAuthRoutes.contains(state.uri.path)) {
         return null;
       }
       return '/splash';
     }
 
-    final session = authState.value;
+    // Unauthenticated: redirect to onboarding (if first launch) or login
+    if (authStatus == AuthStatus.unauthenticated) {
+      final asyncSession = ref.read(authStateProvider);
+      final isFirstLaunch = asyncSession.value?.isFirstLaunch ?? false;
+      final target = isFirstLaunch ? '/onboarding' : '/login';
 
-    // No session - redirect to login/onboarding/splash
-    if (session == null) {
-      if (state.uri.path == '/login' ||
-          state.uri.path == '/onboarding' ||
-          state.uri.path == '/splash') {
+      if (publicAuthRoutes.contains(state.uri.path)) {
         return null;
       }
-      return '/splash';
+      return target;
     }
 
-    // Check if user is authenticated
-    final isAuthenticated = session.isAuthenticated;
-    final isFirstLaunch = session.isFirstLaunch;
+    // Authenticated: proceed with permission checks
+    if (authStatus == AuthStatus.authenticated) {
+      // Authenticated user accessing auth pages -> home
+      if (publicAuthRoutes.contains(state.uri.path)) {
+        return '/';
+      }
 
-    // Handle first launch / onboarding
-    if (isFirstLaunch) {
-      if (state.uri.path != '/onboarding') {
-        return '/onboarding';
+      final permContext = ref.read(permissionContextProvider);
+      final effectiveRole = permContext?.role ?? Role.mobileUser;
+      final engine = permissionEngine;
+
+      // Role check
+      if (config.allowedRoles.isNotEmpty &&
+          !config.allowedRoles.contains(effectiveRole)) {
+        return config.fallbackRoute;
+      }
+      // Required all permissions
+      if (config.requiredAllPermissions.isNotEmpty &&
+          !engine.hasAllPermissions(effectiveRole, config.requiredAllPermissions)) {
+        return config.fallbackRoute;
+      }
+      // Required any permissions
+      if (config.requiredAnyPermissions.isNotEmpty &&
+          !engine.hasAnyPermission(effectiveRole, config.requiredAnyPermissions)) {
+        return config.fallbackRoute;
+      }
+      // Legacy required permissions (treated as all)
+      if (config.requiredPermissions.isNotEmpty &&
+          !engine.hasAllPermissions(effectiveRole, config.requiredPermissions)) {
+        return config.fallbackRoute;
+      }
+      // Feature gate
+      if (config.requiredFeature != null &&
+          !engine.isFeatureEnabled(config.requiredFeature!, effectiveRole)) {
+        return config.fallbackRoute;
       }
       return null;
     }
 
-    // Not authenticated - redirect to login
-    if (!isAuthenticated) {
-      if (state.uri.path != '/login') {
-        return '/login';
+    // Suspended or deactivated accounts - redirect to login with error
+    if (authStatus == AuthStatus.suspended || authStatus == AuthStatus.accessDenied) {
+      if (publicAuthRoutes.contains(state.uri.path)) {
+        return null;
       }
-      return null;
+      return '/login';
     }
 
-    // Authenticated - check permissions for the target route
-    final context = ref.read(permissionContextProvider);
-    if (context == null) {
-      return config.fallbackRoute;
-    }
-
-    final engine = permissionEngine;
-
-    // Check allowed roles
-    if (config.allowedRoles.isNotEmpty &&
-        !config.allowedRoles.contains(context.role)) {
-      return config.fallbackRoute;
-    }
-
-    // Check required permissions (all must pass)
-    if (config.requiredAllPermissions.isNotEmpty) {
-      if (!engine.hasAllPermissions(
-        context.role,
-        config.requiredAllPermissions,
-      )) {
-        return config.fallbackRoute;
+    // Error states must not loop splash<->auth forever: stay on the public
+    // auth page so the user can retry (e.g. failed registration/network), and
+    // route non-public pages to login for recovery.
+    if (authStatus == AuthStatus.error) {
+      if (publicAuthRoutes.contains(state.uri.path)) {
+        return null;
       }
+      return '/login';
     }
 
-    // Check required permissions (any can pass)
-    if (config.requiredAnyPermissions.isNotEmpty) {
-      if (!engine.hasAnyPermission(
-        context.role,
-        config.requiredAnyPermissions,
-      )) {
-        return config.fallbackRoute;
-      }
-    }
-
-    // Check required permissions (legacy single list - treated as ALL)
-    if (config.requiredPermissions.isNotEmpty) {
-      if (!engine.hasAllPermissions(context.role, config.requiredPermissions)) {
-        return config.fallbackRoute;
-      }
-    }
-
-    // Check required feature
-    if (config.requiredFeature != null) {
-      if (!engine.isFeatureEnabled(config.requiredFeature!, context.role)) {
-        return config.fallbackRoute;
-      }
-    }
-
-    // Authenticated user trying to access login/onboarding/splash - redirect to home
-    if (state.uri.path == '/login' ||
-        state.uri.path == '/onboarding' ||
-        state.uri.path == '/splash') {
-      return '/';
-    }
-
-    return null;
+    // For other statuses (bootstrapping/authLoading) fallback to splash
+    return '/splash';
   };
 }
 
@@ -430,56 +439,6 @@ class PermissionGate extends ConsumerWidget {
   }
 }
 
-/// Convenience widget for admin-only content
-class AdminOnly extends ConsumerWidget {
-  final Widget child;
-  final Widget? fallback;
-
-  const AdminOnly({super.key, required this.child, this.fallback});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return PermissionGate(
-      allowedRoles: const [Role.developerSuperAdmin, Role.clientSuperAdmin],
-      fallback: fallback,
-      child: child,
-    );
-  }
-}
-
-/// Convenience widget for developer super admin only
-class DeveloperOnly extends ConsumerWidget {
-  final Widget child;
-  final Widget? fallback;
-
-  const DeveloperOnly({super.key, required this.child, this.fallback});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return PermissionGate(
-      allowedRoles: const [Role.developerSuperAdmin],
-      fallback: fallback,
-      child: child,
-    );
-  }
-}
-
-/// Convenience widget for client super admin only
-class ClientAdminOnly extends ConsumerWidget {
-  final Widget child;
-  final Widget? fallback;
-
-  const ClientAdminOnly({super.key, required this.child, this.fallback});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return PermissionGate(
-      allowedRoles: const [Role.clientSuperAdmin],
-      fallback: fallback,
-      child: child,
-    );
-  }
-}
 
 /// Convenience widget for mobile users only (hides from admins)
 class MobileOnly extends ConsumerWidget {

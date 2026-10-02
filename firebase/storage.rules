@@ -62,11 +62,13 @@ service firebase.storage {
     // FILE TYPE & SIZE VALIDATORS (Prevent MIME spoofing & size limit violations)
     // =====================================================
 
+    // NOTE: SVG is intentionally NOT allowed. SVG can embed active script content
+    // and is rendered inline by browsers (stored XSS). Use raster formats only.
     function isValidImage() {
       return request.resource == null || (
         isNotExecutable() &&
-        request.resource.name.matches('.*\\.(jpg|jpeg|png|webp|gif|svg|ico)$') &&
-        request.resource.contentType.matches('image/(jpeg|png|webp|gif|svg\\+xml|x-icon|vnd\\.microsoft\\.icon)') &&
+        request.resource.name.matches('.*\\.(jpg|jpeg|png|webp|gif|ico)$') &&
+        request.resource.contentType.matches('image/(jpeg|png|webp|gif|x-icon|vnd\\.microsoft\\.icon)') &&
         request.resource.size <= 10 * 1024 * 1024
       );
     }
@@ -76,7 +78,7 @@ service firebase.storage {
         isNotExecutable() &&
         request.resource.name.matches('.*\\.(mp3|m4a|wav|ogg|aac|flac|opus)$') &&
         request.resource.contentType.matches('audio/(mpeg|mp4|wav|ogg|aac|x-m4a|flac|opus)') &&
-        request.resource.size <= 100 * 1024 * 1024
+        request.resource.size <= 512 * 1024 * 1024
       );
     }
 

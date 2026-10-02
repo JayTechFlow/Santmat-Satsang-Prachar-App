@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/search_result_entity.dart';
-import '../../domain/entities/recent_search_entity.dart';
 import '../../domain/entities/search_suggestion_entity.dart';
 
 class SearchResultDto extends SearchResultEntity {
@@ -30,23 +29,6 @@ class SearchResultDto extends SearchResultEntity {
       date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       tags: List<String>.from(data['tags'] ?? []),
     );
-  }
-}
-
-class RecentSearchDto extends RecentSearchEntity {
-  const RecentSearchDto({required super.query, required super.searchedAt});
-
-  factory RecentSearchDto.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>? ?? {};
-    return RecentSearchDto(
-      query: data['query'] ?? '',
-      searchedAt:
-          (data['searchedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {'query': query, 'searchedAt': Timestamp.fromDate(searchedAt)};
   }
 }
 

@@ -57,10 +57,12 @@ class SSPAudioTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color placeholderBg =
-        isDark ? SSPColors.darkSurfaceVariant : SSPColors.lightSurfaceVariant;
+    final Color placeholderBg = isDark
+        ? SSPColors.darkSurfaceVariant
+        : SSPColors.lightSurfaceVariant;
 
-    final Widget artworkWidget = artwork ??
+    final Widget artworkWidget =
+        artwork ??
         Container(
           width: 56,
           height: 56,
@@ -94,11 +96,7 @@ class SSPAudioTile extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: SSPRadius.brMedium,
-                  child: SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: artworkWidget,
-                  ),
+                  child: SizedBox(width: 56, height: 56, child: artworkWidget),
                 ),
                 SSPSpacing.gapW16,
                 Expanded(

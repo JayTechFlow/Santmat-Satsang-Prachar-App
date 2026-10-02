@@ -50,20 +50,54 @@ class BookDto {
   factory BookDto.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
 
-    final authorMap = data['author'] as Map<String, dynamic>? ?? {};
-    final author = BookAuthorEntity(
-      id: authorMap['id'] as String? ?? '',
-      name: authorMap['name'] as String? ?? '',
-      bio: authorMap['bio'] as String? ?? '',
-      imageUrl: authorMap['imageUrl'] as String? ?? '',
-    );
+    BookAuthorEntity author;
+    final rawAuthor = data['author'];
+    if (rawAuthor is Map) {
+      final authorMap = Map<String, dynamic>.from(rawAuthor);
+      author = BookAuthorEntity(
+        id: authorMap['id'] as String? ?? '',
+        name: authorMap['name'] as String? ?? '',
+        bio: authorMap['bio'] as String? ?? '',
+        imageUrl: authorMap['imageUrl'] as String? ?? '',
+      );
+    } else if (rawAuthor is String && rawAuthor.isNotEmpty) {
+      author = BookAuthorEntity(
+        id: '',
+        name: rawAuthor,
+        bio: '',
+        imageUrl: '',
+      );
+    } else {
+      author = const BookAuthorEntity(
+        id: '',
+        name: 'संतमत साहित्य',
+        bio: '',
+        imageUrl: '',
+      );
+    }
 
-    final categoryMap = data['category'] as Map<String, dynamic>? ?? {};
-    final category = BookCategoryEntity(
-      id: categoryMap['id'] as String? ?? '',
-      name: categoryMap['name'] as String? ?? '',
-      description: categoryMap['description'] as String? ?? '',
-    );
+    BookCategoryEntity category;
+    final rawCategory = data['category'];
+    if (rawCategory is Map) {
+      final categoryMap = Map<String, dynamic>.from(rawCategory);
+      category = BookCategoryEntity(
+        id: categoryMap['id'] as String? ?? '',
+        name: categoryMap['name'] as String? ?? '',
+        description: categoryMap['description'] as String? ?? '',
+      );
+    } else if (rawCategory is String && rawCategory.isNotEmpty) {
+      category = BookCategoryEntity(
+        id: '',
+        name: rawCategory,
+        description: '',
+      );
+    } else {
+      category = const BookCategoryEntity(
+        id: '',
+        name: 'साहित्य',
+        description: '',
+      );
+    }
 
     final chaptersList = data['chapters'] as List<dynamic>? ?? [];
     final chapters = chaptersList.map((c) {
@@ -75,6 +109,26 @@ class BookDto {
       );
     }).toList();
 
+    final coverImg = data['coverImageUrl'] as String? ??
+        data['coverUrl'] as String? ??
+        data['imageUrl'] as String? ??
+        '';
+
+    final pdfPath = data['pdfUrlPlaceholder'] as String? ??
+        data['pdfUrl'] as String? ??
+        data['storagePath'] as String? ??
+        '';
+
+    DateTime pubDate;
+    final rawDate = data['publicationDate'] ?? data['publishDate'] ?? data['createdAt'];
+    if (rawDate is Timestamp) {
+      pubDate = rawDate.toDate();
+    } else if (rawDate is String) {
+      pubDate = DateTime.tryParse(rawDate) ?? DateTime.now();
+    } else {
+      pubDate = DateTime.now();
+    }
+
     return BookDto(
       id: doc.id,
       title: data['title'] as String? ?? '',
@@ -82,22 +136,21 @@ class BookDto {
       description: data['description'] as String? ?? '',
       author: author,
       category: category,
-      language: data['language'] as String? ?? '',
+      language: data['language'] as String? ?? 'hi',
       edition: data['edition'] as String? ?? '',
-      publicationDate:
-          (data['publicationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      pageCount: data['pageCount'] as int? ?? 0,
+      publicationDate: pubDate,
+      pageCount: data['pageCount'] as int? ?? data['pagesCount'] as int? ?? data['pages'] as int? ?? 0,
       estimatedReadingTime: Duration(
         minutes: data['estimatedReadingTimeMinutes'] as int? ?? 0,
       ),
-      coverImageUrl: data['coverImageUrl'] as String? ?? '',
-      thumbnailUrl: data['thumbnailUrl'] as String? ?? '',
+      coverImageUrl: coverImg,
+      thumbnailUrl: data['thumbnailUrl'] as String? ?? coverImg,
       tags: List<String>.from(data['tags'] ?? []),
       isFeatured: data['isFeatured'] as bool? ?? false,
       isPopular: data['isPopular'] as bool? ?? false,
       isRecentlyAdded: data['isRecentlyAdded'] as bool? ?? false,
       chapters: chapters,
-      pdfUrlPlaceholder: data['pdfUrlPlaceholder'] as String? ?? '',
+      pdfUrlPlaceholder: pdfPath,
     );
   }
 

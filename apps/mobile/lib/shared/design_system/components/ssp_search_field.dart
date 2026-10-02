@@ -57,7 +57,7 @@ class SSPSearchField extends StatefulWidget {
   /// Custom leading icon override. Defaults to search icon.
   final Widget? leadingIcon;
 
-  /// Custom trailing icon override (e.g. filter/mic).
+  /// Custom trailing icon override (e.g. a filter action).
   final Widget? trailingIcon;
 
   /// Whether to request focus automatically on mount.
@@ -116,7 +116,9 @@ class _SSPSearchFieldState extends State<SSPSearchField> {
     if (widget.controller != oldWidget.controller) {
       oldWidget.controller?.removeListener(_onTextControllerChanged);
       if (widget.controller == null && _internalController == null) {
-        _internalController = TextEditingController(text: oldWidget.controller?.text ?? '');
+        _internalController = TextEditingController(
+          text: oldWidget.controller?.text ?? '',
+        );
       }
       _effectiveController.addListener(_onTextControllerChanged);
       _hasText = _effectiveController.text.isNotEmpty;
@@ -170,17 +172,29 @@ class _SSPSearchFieldState extends State<SSPSearchField> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Theme color derivations using SSP design system tokens
-    final Color bg = isDark ? SSPColors.darkSurfaceVariant : SSPColors.lightSurfaceVariant;
-    final Color textFg = isDark ? SSPColors.darkOnSurface : SSPColors.lightOnSurface;
+    final Color bg = isDark
+        ? SSPColors.darkSurfaceVariant
+        : SSPColors.lightSurfaceVariant;
+    final Color textFg = isDark
+        ? SSPColors.darkOnSurface
+        : SSPColors.lightOnSurface;
     final Color hintFg = isDark
         ? SSPColors.softWhite.withValues(alpha: 0.5)
         : SSPColors.templeBrown.withValues(alpha: 0.5);
-    final Color iconFg = isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary;
-    final Color focusBorderColor = isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary;
-    final Color disabledBg = isDark ? SSPColors.darkOutlineVariant : SSPColors.lightOutlineVariant;
+    final Color iconFg = isDark
+        ? SSPColors.darkPrimary
+        : SSPColors.lightPrimary;
+    final Color focusBorderColor = isDark
+        ? SSPColors.darkPrimary
+        : SSPColors.lightPrimary;
+    final Color disabledBg = isDark
+        ? SSPColors.darkOutlineVariant
+        : SSPColors.lightOutlineVariant;
 
     final Color currentBg = widget.enabled ? bg : disabledBg;
-    final Color currentBorderColor = _isFocused ? focusBorderColor : Colors.transparent;
+    final Color currentBorderColor = _isFocused
+        ? focusBorderColor
+        : Colors.transparent;
 
     // Build leading visual widget (loading spinner or search icon)
     Widget leadingWidget;
@@ -197,23 +211,34 @@ class _SSPSearchFieldState extends State<SSPSearchField> {
         ),
       );
     } else {
-      leadingWidget = widget.leadingIcon ??
-          Icon(
-            Icons.search_rounded,
-            color: iconFg,
-            size: 22,
-          );
+      leadingWidget =
+          widget.leadingIcon ??
+          Icon(Icons.search_rounded, color: iconFg, size: 22);
     }
 
-    // Build trailing action widget (clear icon button or custom trailing widget)
+    // Build trailing action widget (clear icon button, or custom trailing widget)
     Widget? trailingWidget;
-    if (widget.showClearButton && _hasText && widget.enabled && !widget.readOnly) {
-      trailingWidget = SSPIconButton(
-        icon: const Icon(Icons.clear_rounded),
-        semanticLabel: 'Clear search query',
-        iconSize: 18,
-        minimumSize: 36,
-        onPressed: _handleClear,
+    final List<Widget> trailingButtons = [];
+
+    if (widget.showClearButton &&
+        _hasText &&
+        widget.enabled &&
+        !widget.readOnly) {
+      trailingButtons.add(
+        SSPIconButton(
+          icon: const Icon(Icons.clear_rounded),
+          semanticLabel: 'Clear search query',
+          iconSize: 18,
+          minimumSize: 36,
+          onPressed: _handleClear,
+        ),
+      );
+    }
+
+    if (trailingButtons.isNotEmpty) {
+      trailingWidget = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: trailingButtons,
       );
     } else if (widget.trailingIcon != null) {
       trailingWidget = widget.trailingIcon;
@@ -265,15 +290,15 @@ class _SSPSearchFieldState extends State<SSPSearchField> {
                   cursorColor: focusBorderColor,
                   decoration: InputDecoration(
                     hintText: effectiveHint,
-                    hintStyle: SSPTypography.bodyMedium.copyWith(
-                      color: hintFg,
-                    ),
+                    hintStyle: SSPTypography.bodyMedium.copyWith(color: hintFg),
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     disabledBorder: InputBorder.none,
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: SSPSpacing.md),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: SSPSpacing.md,
+                    ),
                   ),
                 ),
               ),

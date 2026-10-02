@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/mock_daily_quote_data_source.dart';
+import '../../../../helpers/mock_daily_quote_data_source.dart';
 import 'package:santmat_satsang_prachar/features/daily_quotes/data/repositories/daily_quote_repository_impl.dart';
 
 void main() {

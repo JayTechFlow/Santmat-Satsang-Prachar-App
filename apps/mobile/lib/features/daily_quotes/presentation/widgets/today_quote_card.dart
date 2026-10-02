@@ -18,14 +18,26 @@ class TodayQuoteCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        image: DecorationImage(
-          image: NetworkImage(quote.backgroundImageUrl),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withAlpha(153),
-            BlendMode.darken,
-          ),
-        ),
+        image: quote.backgroundImageUrl.isNotEmpty
+            ? DecorationImage(
+                image: NetworkImage(quote.backgroundImageUrl),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withAlpha(153),
+                  BlendMode.darken,
+                ),
+              )
+            : null,
+        gradient: quote.backgroundImageUrl.isEmpty
+            ? const LinearGradient(
+                colors: [
+                  Color(0xFF78350F), // Dark brown
+                  Color(0xFFEA580C), // Warm orange
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
       ),
       child: InkWell(
         onTap: onTap,

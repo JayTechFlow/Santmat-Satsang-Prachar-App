@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "488234518159-pni31tnd5k4idemf3tau8q0ki11q6rfa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.santmat.santmat_satsang_prachar",
+            "certificate_hash": "99ca5b4d46c398fcd14c8638628db37026d70593"
+          }
+        },
+        {
           "client_id": "488234518159-n8slcs9rk9759g69dq0av83gml8214jq.apps.googleusercontent.com",
           "client_type": 3
         }

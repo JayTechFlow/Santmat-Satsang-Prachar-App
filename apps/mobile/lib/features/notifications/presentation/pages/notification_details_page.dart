@@ -3,7 +3,7 @@ import '../../domain/entities/notification_entity.dart';
 import '../../../../shared/theme/app_spacing.dart';
 import 'package:go_router/go_router.dart';
 import 'package:santmat_satsang_prachar/shared/widgets/ssp_image.dart';
-
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 
 class NotificationDetailsPage extends StatelessWidget {
   final NotificationEntity notification;
@@ -13,7 +13,10 @@ class NotificationDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notification Details')),
+      appBar: const SSPAppBar.standard(
+        title: 'सूचना विवरण',
+        subtitle: 'विस्तृत जानकारी',
+      ),
       body: SingleChildScrollView(
         padding: AppSpacing.p16,
         child: Column(

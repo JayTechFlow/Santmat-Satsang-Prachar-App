@@ -261,20 +261,20 @@ class PermissionEngine {
       Permission(id: 'support.manage', module: 'support', action: 'manage', description: 'Manage support', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin]),
 
       // Mobile User Permissions
-      Permission(id: 'mobile.profile', module: 'mobile', action: 'profile', description: 'Manage own profile', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.search', module: 'mobile', action: 'search', description: 'Search content', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.library', module: 'mobile', action: 'library', description: 'Access library', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.audio', module: 'mobile', action: 'audio', description: 'Play audio', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.books', module: 'mobile', action: 'books', description: 'Read books', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.stuti', module: 'mobile', action: 'stuti', description: 'Access stuti vinati', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.notifications', module: 'mobile', action: 'notifications', description: 'Receive notifications', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.bookmarks', module: 'mobile', action: 'bookmarks', description: 'Manage bookmarks', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.favorites', module: 'mobile', action: 'favorites', description: 'Manage favorites', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.history', module: 'mobile', action: 'history', description: 'View history', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.recommendations', module: 'mobile', action: 'recommendations', description: 'View recommendations', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.playlists', module: 'mobile', action: 'playlists', description: 'Access playlists', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.downloads', module: 'mobile', action: 'downloads', description: 'Manage downloads', defaultRoles: [Role.mobileUser]),
-      Permission(id: 'mobile.settings', module: 'mobile', action: 'settings', description: 'Manage app settings', defaultRoles: [Role.mobileUser]),
+      Permission(id: 'mobile.profile', module: 'mobile', action: 'profile', description: 'Manage own profile', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.search', module: 'mobile', action: 'search', description: 'Search content', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.library', module: 'mobile', action: 'library', description: 'Access library', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.audio', module: 'mobile', action: 'audio', description: 'Play audio', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.books', module: 'mobile', action: 'books', description: 'Read books', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.stuti', module: 'mobile', action: 'stuti', description: 'Access stuti vinati', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.notifications', module: 'mobile', action: 'notifications', description: 'Receive notifications', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.bookmarks', module: 'mobile', action: 'bookmarks', description: 'Manage bookmarks', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.favorites', module: 'mobile', action: 'favorites', description: 'Manage favorites', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.history', module: 'mobile', action: 'history', description: 'View history', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.recommendations', module: 'mobile', action: 'recommendations', description: 'View recommendations', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.playlists', module: 'mobile', action: 'playlists', description: 'Access playlists', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.downloads', module: 'mobile', action: 'downloads', description: 'Manage downloads', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
+      Permission(id: 'mobile.settings', module: 'mobile', action: 'settings', description: 'Manage app settings', defaultRoles: [Role.developerSuperAdmin, Role.clientSuperAdmin, Role.mobileUser]),
     ];
 
     for (final p in permissions) {
@@ -308,6 +308,7 @@ class PermissionEngine {
   ];
 
   bool hasPermission(Role role, String permissionId) {
+    if (role == Role.developerSuperAdmin) return true;
     _initialize();
     final permission = _permissions[permissionId];
     if (permission == null) return false; // Unknown permission = deny (fail closed)

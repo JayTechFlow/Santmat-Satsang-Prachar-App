@@ -63,16 +63,16 @@ class SSPSecondaryButton extends StatelessWidget {
     String? semanticLabel,
     double minimumHeight = SSPSpacing.minTouchTarget,
   }) : this(
-          key: key,
-          label: text,
-          onPressed: onPressed,
-          leadingIcon: leadingIcon,
-          trailingIcon: trailingIcon,
-          isLoading: isLoading,
-          width: width,
-          semanticLabel: semanticLabel,
-          minimumHeight: minimumHeight,
-        );
+         key: key,
+         label: text,
+         onPressed: onPressed,
+         leadingIcon: leadingIcon,
+         trailingIcon: trailingIcon,
+         isLoading: isLoading,
+         width: width,
+         semanticLabel: semanticLabel,
+         minimumHeight: minimumHeight,
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -80,11 +80,17 @@ class SSPSecondaryButton extends StatelessWidget {
     final bool isDisabled = onPressed == null || isLoading;
 
     // Theme-driven token values for Secondary Action (Outlined Treatment)
-    final Color enabledFg = isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary;
-    final Color enabledBorder = isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary;
+    final Color enabledFg = isDark
+        ? SSPColors.darkPrimary
+        : SSPColors.lightPrimary;
+    final Color enabledBorder = isDark
+        ? SSPColors.darkPrimary
+        : SSPColors.lightPrimary;
     final Color enabledBg = Colors.transparent;
 
-    final Color disabledBorder = isDark ? SSPColors.darkOutline : SSPColors.lightOutline;
+    final Color disabledBorder = isDark
+        ? SSPColors.darkOutline
+        : SSPColors.lightOutline;
     final Color disabledFg = isDark
         ? SSPColors.softWhite.withValues(alpha: 0.38)
         : SSPColors.templeBrown.withValues(alpha: 0.38);
@@ -134,18 +140,16 @@ class SSPSecondaryButton extends StatelessWidget {
       textAlign: TextAlign.center,
     );
 
-    final MainAxisSize mainAxisSize =
-        width == SSPButtonWidth.full ? MainAxisSize.max : MainAxisSize.min;
+    final MainAxisSize mainAxisSize = width == SSPButtonWidth.full
+        ? MainAxisSize.max
+        : MainAxisSize.min;
 
     final Widget buttonContent = Row(
       mainAxisSize: mainAxisSize,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (leading != null) ...[
-          leading,
-          const SizedBox(width: SSPSpacing.xs),
-        ],
+        if (leading != null) ...[leading, const SizedBox(width: SSPSpacing.xs)],
         Flexible(
           flex: width == SSPButtonWidth.full ? 1 : 0,
           fit: FlexFit.loose,
@@ -178,9 +182,7 @@ class SSPSecondaryButton extends StatelessWidget {
     );
 
     if (width == SSPButtonWidth.intrinsic) {
-      surface = UnconstrainedBox(
-        child: surface,
-      );
+      surface = UnconstrainedBox(child: surface);
     }
 
     // Wrap with SSPPressable for motion interaction feedback

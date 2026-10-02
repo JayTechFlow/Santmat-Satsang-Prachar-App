@@ -13,9 +13,16 @@ class DependencyInjection {
     appLogger.i('Dependency Injection Initialized');
   }
 
+  // Dev direct-entry (skip auth) is STRICTLY opt-in via:
+  //   flutter run --dart-define=ENABLE_DEV_DIRECT_ENTRY=true
+  // It is off by default in debug so the real auth flow stays reachable.
+  static const bool _devDirectEntry = bool.fromEnvironment('ENABLE_DEV_DIRECT_ENTRY');
+
   static final overrides = [
     appConfigProvider.overrideWithValue(
-      kReleaseMode ? AppConfig.production() : AppConfig.development(),
+      kReleaseMode
+          ? AppConfig.production()
+          : AppConfig.development(enableDevDirectEntry: _devDirectEntry),
     ),
   ];
 }

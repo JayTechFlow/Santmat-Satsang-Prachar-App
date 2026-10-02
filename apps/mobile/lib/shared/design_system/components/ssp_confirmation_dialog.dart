@@ -125,8 +125,7 @@ class SSPConfirmationDialog extends StatelessWidget {
           children: [
             SSPTertiaryButton(
               label: cancelLabel ?? 'Cancel',
-              onPressed:
-                  onCancel ?? (() => Navigator.of(context).pop(false)),
+              onPressed: onCancel ?? (() => Navigator.of(context).pop(false)),
               width: SSPButtonWidth.intrinsic,
             ),
             _DialogActionButton(

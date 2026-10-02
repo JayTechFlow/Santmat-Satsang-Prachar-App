@@ -16,12 +16,8 @@ class FirestoreBookDataSource implements BookDataSource {
 
   @override
   Future<List<BookEntity>> getLatestBooks() async {
-    final snapshot = await _firestoreService.queryCollection(
+    final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.books,
-      (q) => q
-          .where('isRecentlyAdded', isEqualTo: true)
-          .orderBy('publicationDate', descending: true)
-          .limit(20),
     );
     return snapshot.docs
         .map((doc) => BookDto.fromFirestore(doc).toEntity())
@@ -30,9 +26,8 @@ class FirestoreBookDataSource implements BookDataSource {
 
   @override
   Future<List<BookEntity>> getFeaturedBooks() async {
-    final snapshot = await _firestoreService.queryCollection(
+    final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.books,
-      (q) => q.where('isFeatured', isEqualTo: true),
     );
     return snapshot.docs
         .map((doc) => BookDto.fromFirestore(doc).toEntity())
@@ -41,9 +36,8 @@ class FirestoreBookDataSource implements BookDataSource {
 
   @override
   Future<List<BookEntity>> getPopularBooks() async {
-    final snapshot = await _firestoreService.queryCollection(
+    final snapshot = await _firestoreService.getCollection(
       FirestoreCollections.books,
-      (q) => q.where('isPopular', isEqualTo: true),
     );
     return snapshot.docs
         .map((doc) => BookDto.fromFirestore(doc).toEntity())

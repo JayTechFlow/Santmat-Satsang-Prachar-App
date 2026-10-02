@@ -1,22 +1,17 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'secure_storage_service.dart';
 
-final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('sharedPreferencesProvider must be overridden');
-});
+/// Application storage bootstrap.
+///
+/// `sharedPreferencesProvider`, `secureStorageProvider` and
+/// `secureStorageServiceProvider` are defined once, in
+/// `secure_storage_service.dart`, and re-exported here for convenience.
+export 'secure_storage_service.dart'
+    show
+        secureStorageProvider,
+        secureStorageServiceProvider,
+        sharedPreferencesProvider;
 
-final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
-  return const FlutterSecureStorage();
-});
-
-final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
-  final storage = ref.watch(secureStorageProvider);
-  return SecureStorageService(storage);
-});
-
+/// Initializes the on-device storage backend.
 class StorageService {
   static Future<void> init() async {
     await Hive.initFlutter();

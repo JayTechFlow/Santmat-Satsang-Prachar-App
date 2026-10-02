@@ -17,6 +17,18 @@ class StutiVinatiFirebaseDataSource implements StutiVinatiRemoteDataSource {
   }
 
   @override
+  Stream<List<StutiVinatiDto>> watchAll() {
+    return _firestore
+        .collection(_collection)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => StutiVinatiDto.fromJson(doc.data(), doc.id))
+              .toList(),
+        );
+  }
+
+  @override
   Future<StutiVinatiDto?> getById(String id) async {
     final doc = await _firestore.collection(_collection).doc(id).get();
     if (doc.exists && doc.data() != null) {

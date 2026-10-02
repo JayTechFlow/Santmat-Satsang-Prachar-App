@@ -108,7 +108,7 @@ const DataTableComponent = <T extends any>({
   }, [data, keyExtractor, onSelectAll, onClearSelection]);
 
   return (
-    <div className="relative overflow-x-auto rounded-2xl border border-stone-200 shadow-2xs bg-white font-['Mukta']">
+    <div className="relative overflow-x-auto rounded-xl border border-stone-200 shadow-xs bg-white font-['Mukta']">
       <table className="w-full text-left border-collapse">
         <thead className="bg-stone-50 border-b border-stone-200">
           <tr>

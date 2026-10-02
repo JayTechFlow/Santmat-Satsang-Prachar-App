@@ -12,10 +12,10 @@ class HomeBannerDto extends HomeBanner {
   factory HomeBannerDto.fromJson(Map<String, dynamic> json, [String? id]) {
     return HomeBannerDto(
       id: id ?? json['id'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String,
-      linkUrl: json['linkUrl'] as String?,
-      isActive: json['isActive'] as bool,
-      sortOrder: json['sortOrder'] as int,
+      imageUrl: json['imageUrl'] as String? ?? '',
+      linkUrl: json['linkUrl'] as String? ?? json['targetScreen'] as String?,
+      isActive: json['isActive'] as bool? ?? json['active'] as bool? ?? true,
+      sortOrder: json['sortOrder'] as int? ?? json['order'] as int? ?? 0,
     );
   }
 

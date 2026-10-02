@@ -55,7 +55,25 @@ export const contentModeration = functions.https.onCall(async (data, context) =>
     requireAdmin(context);
 
     const { action, contentId, reason, collection: targetCollection } = data;
-    const colName = (targetCollection && typeof targetCollection === 'string') ? targetCollection : 'media';
+    // Whitelist: moderation may only touch content collections. Without this,
+    // an admin callable could write into developer-only collections such as
+    // system_config / roles (Admin SDK bypasses security rules).
+    const MODERATABLE_COLLECTIONS = [
+      'audio', 'stuti_vinati', 'books', 'suvichar', 'media',
+      'events', 'satsangs', 'categories', 'book_categories', 'audio_categories',
+      'banners', 'home_banners', 'featured_content', 'daily_quotes', 'daily_suvichar',
+      'quotes', 'playlists', 'notifications',
+    ];
+    const colName = (targetCollection && typeof targetCollection === 'string')
+      ? targetCollection
+      : 'media';
+
+    if (!MODERATABLE_COLLECTIONS.includes(colName)) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        `Moderation is not permitted on collection '${colName}'.`
+      );
+    }
 
     if (!contentId || typeof contentId !== 'string') {
       throw new functions.https.HttpsError("invalid-argument", "contentId is required and must be a string.");

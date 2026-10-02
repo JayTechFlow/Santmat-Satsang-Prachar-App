@@ -21,7 +21,4 @@ class FunctionRegistry {
 
   // Media
   static const String generateSignedUrl = 'media-generateSignedUrl';
-
-  // Admin
-  static const String getDashboardStats = 'admin-getDashboardStats';
 }

@@ -80,8 +80,12 @@ class SSPIconButton extends StatelessWidget {
       fg = isDark
           ? SSPColors.softWhite.withValues(alpha: 0.38)
           : SSPColors.templeBrown.withValues(alpha: 0.38);
-      bg = variant == SSPIconButtonVariant.filled || variant == SSPIconButtonVariant.tonal
-          ? (isDark ? SSPColors.darkOutlineVariant : SSPColors.lightOutlineVariant)
+      bg =
+          variant == SSPIconButtonVariant.filled ||
+              variant == SSPIconButtonVariant.tonal
+          ? (isDark
+                ? SSPColors.darkOutlineVariant
+                : SSPColors.lightOutlineVariant)
           : Colors.transparent;
       if (variant == SSPIconButtonVariant.outlined) {
         borderSide = BorderSide(
@@ -114,8 +118,12 @@ class SSPIconButton extends StatelessWidget {
           );
           break;
         case SSPIconButtonVariant.tonal:
-          bg = isDark ? SSPColors.darkPrimaryContainer : SSPColors.lightPrimaryContainer;
-          fg = isDark ? SSPColors.darkOnPrimaryContainer : SSPColors.lightOnPrimaryContainer;
+          bg = isDark
+              ? SSPColors.darkPrimaryContainer
+              : SSPColors.lightPrimaryContainer;
+          fg = isDark
+              ? SSPColors.darkOnPrimaryContainer
+              : SSPColors.lightOnPrimaryContainer;
           break;
       }
     }
@@ -147,7 +155,9 @@ class SSPIconButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         shape: BoxShape.circle,
-        border: borderSide != BorderSide.none ? Border.all(color: borderSide.color, width: borderSide.width) : null,
+        border: borderSide != BorderSide.none
+            ? Border.all(color: borderSide.color, width: borderSide.width)
+            : null,
       ),
       alignment: Alignment.center,
       child: content,
@@ -173,10 +183,7 @@ class SSPIconButton extends StatelessWidget {
 
     // Add Tooltip wrapper if specified
     if (tooltip != null && tooltip!.isNotEmpty) {
-      result = Tooltip(
-        message: tooltip!,
-        child: result,
-      );
+      result = Tooltip(message: tooltip!, child: result);
     }
 
     return result;

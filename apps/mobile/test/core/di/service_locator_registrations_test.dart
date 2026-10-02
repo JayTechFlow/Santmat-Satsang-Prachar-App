@@ -7,7 +7,6 @@ import 'package:santmat_satsang_prachar/core/services/connectivity_service.dart'
 import 'package:santmat_satsang_prachar/core/services/network_monitor_service.dart';
 import 'package:santmat_satsang_prachar/core/services/firestore_service.dart';
 import 'package:santmat_satsang_prachar/core/services/firebase_storage_service.dart';
-import 'package:santmat_satsang_prachar/core/services/firebase_auth_service.dart';
 import 'package:santmat_satsang_prachar/core/services/firebase_messaging_service.dart';
 import 'package:santmat_satsang_prachar/core/services/firebase_analytics_service.dart';
 import 'package:santmat_satsang_prachar/core/services/crashlytics_service.dart';
@@ -41,12 +40,6 @@ void main() {
     final container = ProviderContainer();
     final service = container.read(firebaseStorageServiceProvider);
     expect(service, isA<FirebaseStorageService>());
-  });
-
-  test('DI registers FirebaseAuthService', () {
-    final container = ProviderContainer();
-    final service = container.read(firebaseAuthServiceProvider);
-    expect(service, isA<FirebaseAuthService>());
   });
 
   test('DI registers FirebaseMessagingService', () {

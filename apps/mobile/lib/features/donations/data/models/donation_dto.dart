@@ -1,35 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/donation_entity.dart';
 import '../../domain/entities/donation_campaign_entity.dart';
 import '../../domain/entities/donation_category_entity.dart';
-
-class DonationDto {
-  static DonationEntity fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return DonationEntity(
-      id: doc.id,
-      campaignId: data['campaignId'] as String? ?? '',
-      amount: (data['amount'] as num?)?.toDouble() ?? 0.0,
-      currency: data['currency'] as String? ?? '',
-      date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      status: data['status'] as String? ?? '',
-      paymentMethod: data['paymentMethod'] as String? ?? '',
-      transactionId: data['transactionId'] as String? ?? '',
-    );
-  }
-
-  static Map<String, dynamic> toFirestore(DonationEntity entity) {
-    return {
-      'campaignId': entity.campaignId,
-      'amount': entity.amount,
-      'currency': entity.currency,
-      'date': Timestamp.fromDate(entity.date),
-      'status': entity.status,
-      'paymentMethod': entity.paymentMethod,
-      'transactionId': entity.transactionId,
-    };
-  }
-}
 
 class DonationCampaignDto {
   static DonationCampaignEntity fromFirestore(DocumentSnapshot doc) {

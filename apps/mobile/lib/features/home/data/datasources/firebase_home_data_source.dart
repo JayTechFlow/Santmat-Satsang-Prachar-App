@@ -18,19 +18,19 @@ class FirebaseHomeDataSource implements HomeDataSource {
     final futures = await Future.wait([
       _firestoreService.queryCollection(
         FirestoreCollections.dailyQuotes,
-        (ref) => ref.orderBy('createdAt', descending: true).limit(1), // Admin suvichar does not have 'active'
+        (ref) => ref.limit(10),
       ),
       _firestoreService.queryCollection(
         FirestoreCollections.banners,
-        (ref) => ref.where('status', isEqualTo: 'published').orderBy('priority', descending: true), // Match Admin Banners
+        (ref) => ref.limit(10),
       ),
       _firestoreService.queryCollection(
         FirestoreCollections.categories,
-        (ref) => ref.where('status', isEqualTo: 'active').where('showOnHome', isEqualTo: true).orderBy('homeOrder'),
+        (ref) => ref.limit(10),
       ),
       _firestoreService.queryCollection(
         FirestoreCollections.audio,
-        (ref) => ref.orderBy('createdAt', descending: true).limit(5), // Fixed audio query to use createdAt
+        (ref) => ref.where('status', isEqualTo: 'प्रकाशित').limit(10),
       ),
     ]);
 
@@ -39,65 +39,77 @@ class FirebaseHomeDataSource implements HomeDataSource {
     final categoriesSnapshot = futures[2];
     final audiosSnapshot = futures[3];
 
-      DailyQuoteEntity? dailyQuote;
-      if (quotesSnapshot.docs.isNotEmpty) {
-        final doc = quotesSnapshot.docs.first.data() as Map<String, dynamic>;
-        dailyQuote = DailyQuoteEntity(
-          id: quotesSnapshot.docs.first.id,
-          quoteText: doc['content'] ?? '', // Admin writes content
-          author: doc['title'] ?? '', // Admin writes title
-          imageUrl: doc['imageUrl'],
-          date: (doc['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-        );
+    DateTime parseDate(dynamic raw) {
+      if (raw is Timestamp) return raw.toDate();
+      if (raw is String) return DateTime.tryParse(raw) ?? DateTime.now();
+      return DateTime.now();
+    }
+
+    DailyQuoteEntity? dailyQuote;
+    if (quotesSnapshot.docs.isNotEmpty) {
+      final doc = quotesSnapshot.docs.first.data() as Map<String, dynamic>;
+      dailyQuote = DailyQuoteEntity(
+        id: quotesSnapshot.docs.first.id,
+        quoteText: doc['content'] ?? '', // Admin writes content
+        author: doc['title'] ?? '', // Admin writes title
+        imageUrl: doc['imageUrl'],
+        date: parseDate(doc['createdAt']),
+      );
+    }
+
+    final banners = bannersSnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+
+      String? targetRoute;
+      final actionType = data['actionType'] as String?;
+      final actionTarget = data['actionTarget'] as String?;
+
+      if (actionType != null &&
+          actionTarget != null &&
+          actionTarget.isNotEmpty) {
+        if (actionType == 'internal' || actionType == 'link') {
+          targetRoute = actionTarget;
+        } else if (actionType == 'bhajan') {
+          targetRoute = '/audio/$actionTarget';
+        } else if (actionType == 'book') {
+          targetRoute = '/books/$actionTarget';
+        } else if (actionType == 'category') {
+          targetRoute = '/category/$actionTarget';
+        }
       }
 
-      final banners = bannersSnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        
-        String? targetRoute;
-        final actionType = data['actionType'] as String?;
-        final actionTarget = data['actionTarget'] as String?;
-        
-        if (actionType != null && actionTarget != null && actionTarget.isNotEmpty) {
-          if (actionType == 'internal' || actionType == 'link') {
-            targetRoute = actionTarget;
-          } else if (actionType == 'bhajan') {
-            targetRoute = '/audio/$actionTarget';
-          } else if (actionType == 'book') {
-            targetRoute = '/books/$actionTarget';
-          } else if (actionType == 'category') {
-            targetRoute = '/category/$actionTarget';
-          }
-        }
-        
-        return FeaturedBannerEntity(
-          id: doc.id,
-          title: data['title'] ?? '',
-          imageUrl: data['imageUrl'] ?? '',
-          targetRoute: targetRoute,
-        );
-      }).toList();
+      return FeaturedBannerEntity(
+        id: doc.id,
+        title: data['title'] ?? '',
+        imageUrl: data['imageUrl'] ?? '',
+        targetRoute: targetRoute,
+      );
+    }).toList();
 
-      final quickActions = categoriesSnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return QuickActionEntity(
-          id: doc.id,
-          title: data['name'] ?? '',
-          iconName: data['icon'] ?? 'star',
-          route: data['route'] ?? '/',
-        );
-      }).toList();
+    final quickActions = categoriesSnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return QuickActionEntity(
+        id: doc.id,
+        title: data['name'] ?? '',
+        iconName: data['icon'] ?? 'star',
+        route: data['route'] ?? '/',
+      );
+    }).toList();
 
-      final latestAudios = audiosSnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return LatestAudioEntity(
-          id: doc.id,
-          title: data['title'] ?? '',
-          speaker: data['description'] ?? '',
-          audioUrl: data['audioUrl'] ?? '',
-          duration: Duration(minutes: data['durationMinutes'] ?? 0),
-        );
-      }).toList();
+    final latestAudios = audiosSnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final durationSec = (data['durationSeconds'] as num?)?.toInt();
+      final duration = durationSec != null
+          ? Duration(seconds: durationSec)
+          : Duration(minutes: data['durationMinutes'] ?? 0);
+      return LatestAudioEntity(
+        id: doc.id,
+        title: data['title'] ?? '',
+        speaker: data['description'] ?? '',
+        audioUrl: data['audioUrl'] ?? '',
+        duration: duration,
+      );
+    }).toList();
 
     return HomeDashboardEntity(
       notificationCount: 0,

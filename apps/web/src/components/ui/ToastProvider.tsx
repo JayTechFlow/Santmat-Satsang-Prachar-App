@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, type ReactNode } from 'react';
 import { CheckCircle2, XCircle, Info, X } from 'lucide-react';
-import { ToastContext, type ToastType, type ToastMessage } from '../../hooks/useToast';
+import { ToastContext, type ToastType, type ToastMessage } from '../../lib/hooks/useToast';
 
 const Toast = ({ toast, onClose }: { toast: ToastMessage; onClose: (id: string) => void; key?: React.Key }) => {
   useEffect(() => {

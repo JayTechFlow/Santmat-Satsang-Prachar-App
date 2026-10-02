@@ -1,79 +1,86 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
-import '../../domain/entities/stuti_vinati_entity.dart';
-import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
-import 'package:santmat_satsang_prachar/features/audio/presentation/providers/audio_providers.dart';
 
-final stutiVinatiListProvider = FutureProvider<List<StutiVinati>>((ref) async {
+import '../../../../core/di/data_providers.dart';
+import '../../../audio/presentation/providers/audio_providers.dart';
+import '../../domain/entities/stuti_vinati_entity.dart';
+
+final stutiVinatiListProvider = StreamProvider<List<StutiVinati>>((ref) {
   final repository = ref.watch(stutiVinatiRepositoryProvider);
-  return repository.getAll();
+  return repository.watchAll();
 });
+
+class StutiFavoritesNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() {
+    return {'stuti-morning'};
+  }
+
+  void toggleFavorite(String id) {
+    if (state.contains(id)) {
+      state = {...state}..remove(id);
+    } else {
+      state = {...state, id};
+    }
+    ref.read(toggleFavoriteAudioUseCaseProvider).call(id);
+  }
+}
+
+final stutiFavoritesProvider =
+    NotifierProvider<StutiFavoritesNotifier, Set<String>>(
+      StutiFavoritesNotifier.new,
+    );
 
 class StutiVinatiPlaybackState {
   final String? playingId;
   final bool isPlaying;
+  final Duration position;
+  final Duration duration;
+  final StutiVinati? currentStuti;
 
-  const StutiVinatiPlaybackState({this.playingId, this.isPlaying = false});
+  const StutiVinatiPlaybackState({
+    this.playingId,
+    this.isPlaying = false,
+    this.position = Duration.zero,
+    this.duration = Duration.zero,
+    this.currentStuti,
+  });
+
+  StutiVinatiPlaybackState copyWith({
+    String? playingId,
+    bool? isPlaying,
+    Duration? position,
+    Duration? duration,
+    StutiVinati? currentStuti,
+  }) {
+    return StutiVinatiPlaybackState(
+      playingId: playingId ?? this.playingId,
+      isPlaying: isPlaying ?? this.isPlaying,
+      position: position ?? this.position,
+      duration: duration ?? this.duration,
+      currentStuti: currentStuti ?? this.currentStuti,
+    );
+  }
 }
 
 class StutiVinatiPlaybackNotifier extends Notifier<StutiVinatiPlaybackState> {
-  AudioPlayer? _player;
-
   @override
   StutiVinatiPlaybackState build() {
-    _player = ref.watch(audioPlayerProvider);
-
-    if (_player != null) {
-      final sub = _player!.playerStateStream.listen((playerState) {
-        if (playerState.processingState == ProcessingState.completed) {
-          state = StutiVinatiPlaybackState(playingId: state.playingId, isPlaying: false);
-        } else {
-          state = StutiVinatiPlaybackState(
-            playingId: state.playingId,
-            isPlaying: playerState.playing,
-          );
-        }
-      });
-      ref.onDispose(() {
-        sub.cancel();
-      });
-    }
-
     return const StutiVinatiPlaybackState();
   }
 
   Future<void> playPause(StutiVinati stuti) async {
-    if (_player == null) return;
-    
-    if (state.playingId == stuti.id) {
-      if (state.isPlaying) {
-        _player!.pause();
-      } else {
-        _player!.play();
-      }
-    } else {
-      state = StutiVinatiPlaybackState(playingId: stuti.id, isPlaying: true);
-      try {
-        await _player!.setAudioSource(
-          AudioSource.uri(
-            Uri.parse(stuti.audioUrl ?? ''),
-            tag: MediaItem(
-              id: stuti.id,
-              album: "Stuti Vinati",
-              title: stuti.title,
-              artist: "Santmat",
-            ),
-          ),
-        );
-        _player!.play();
-      } catch (e) {
-        state = StutiVinatiPlaybackState(playingId: stuti.id, isPlaying: false);
-      }
-    }
+    final notifier = ref.read(playbackStateProvider.notifier);
+    await notifier.playStuti(stuti);
+  }
+
+  Future<void> seek(Duration newPosition) async {
+    final notifier = ref.read(playbackStateProvider.notifier);
+    notifier.seekTo(newPosition);
   }
 }
 
-final stutiPlaybackProvider = NotifierProvider<StutiVinatiPlaybackNotifier, StutiVinatiPlaybackState>(
-  StutiVinatiPlaybackNotifier.new,
-);
+final stutiPlaybackProvider =
+    NotifierProvider<StutiVinatiPlaybackNotifier, StutiVinatiPlaybackState>(
+      StutiVinatiPlaybackNotifier.new,
+    );

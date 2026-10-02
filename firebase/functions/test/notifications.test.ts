@@ -39,7 +39,7 @@ describe("Push Notifications Callable Functions Unit Tests", () => {
       try {
         const res = await wrapped(
           { token: "device_token_123", topic: "satsangs" },
-          { auth: { uid: "user_1" } } as any
+          { auth: { uid: "admin_1", token: { role: "client_super_admin" } } } as any
         );
 
         assert.strictEqual(res.status, "success");
@@ -72,7 +72,7 @@ describe("Push Notifications Callable Functions Unit Tests", () => {
       try {
         const res = await wrapped(
           { token: "device_token_123", topic: "satsangs" },
-          { auth: { uid: "user_1" } } as any
+          { auth: { uid: "admin_1", token: { role: "client_super_admin" } } } as any
         );
 
         assert.strictEqual(res.status, "success");

@@ -6,6 +6,7 @@ import '../widgets/donation_state_widgets.dart';
 import '../widgets/donation_campaign_card.dart';
 import '../widgets/featured_campaign_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 
 class DonationsHomePage extends ConsumerWidget {
   const DonationsHomePage({super.key});
@@ -15,11 +16,13 @@ class DonationsHomePage extends ConsumerWidget {
     final state = ref.watch(donationsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Donations'),
+      appBar: SSPAppBar.standard(
+        title: 'दान एवं सहयोग',
+        subtitle: 'सत्संग प्रचार एवं सेवा कार्य में सहयोग दें',
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'दान इतिहास',
             onPressed: () => context.push('/donations/history'),
           ),
         ],

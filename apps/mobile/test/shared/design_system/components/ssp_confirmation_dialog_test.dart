@@ -7,12 +7,13 @@ import 'package:santmat_satsang_prachar/shared/design_system/tokens/icons/ssp_ic
 import 'package:santmat_satsang_prachar/shared/design_system/tokens/spacing/ssp_spacing.dart';
 
 void main() {
-  Widget buildTestableWidget(Widget child, {Brightness brightness = Brightness.light}) {
+  Widget buildTestableWidget(
+    Widget child, {
+    Brightness brightness = Brightness.light,
+  }) {
     return MaterialApp(
       theme: ThemeData(brightness: brightness),
-      home: Scaffold(
-        body: Center(child: child),
-      ),
+      home: Scaffold(body: Center(child: child)),
     );
   }
 
@@ -33,7 +34,9 @@ void main() {
       expect(find.text('Are you sure?'), findsOneWidget);
     });
 
-    testWidgets('2. Renders correctly in dark theme', (WidgetTester tester) async {
+    testWidgets('2. Renders correctly in dark theme', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(title: 'Delete?', message: 'Are you sure?'),
@@ -41,7 +44,9 @@ void main() {
         ),
       );
 
-      final AlertDialog dialog = tester.widget<AlertDialog>(find.byType(AlertDialog));
+      final AlertDialog dialog = tester.widget<AlertDialog>(
+        find.byType(AlertDialog),
+      );
       expect(dialog.backgroundColor, SSPColors.darkSurface);
 
       final Icon icon = tester.widget<Icon>(find.byIcon(SSPIcons.info));
@@ -49,7 +54,9 @@ void main() {
       expect(find.text('Delete?'), findsOneWidget);
     });
 
-    testWidgets('3. Renders default action labels', (WidgetTester tester) async {
+    testWidgets('3. Renders default action labels', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(title: 'Delete?', message: 'Are you sure?'),
@@ -61,42 +68,49 @@ void main() {
       expect(find.byType(SSPTertiaryButton), findsOneWidget);
     });
 
-    testWidgets('4. Renders default info icon header at 32px in primary color',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SSPConfirmationDialog(title: 'Delete?', message: 'Are you sure?'),
-        ),
-      );
-
-      final Icon icon = tester.widget<Icon>(find.byIcon(SSPIcons.info));
-      expect(icon.size, 32);
-      expect(icon.color, SSPColors.lightPrimary);
-    });
-
-    testWidgets('5. Destructive dialog uses warning icon, error icon color and error confirm',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SSPConfirmationDialog(
-            title: 'Delete?',
-            message: 'Are you sure?',
-            isDestructive: true,
+    testWidgets(
+      '4. Renders default info icon header at 32px in primary color',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SSPConfirmationDialog(title: 'Delete?', message: 'Are you sure?'),
           ),
-        ),
-      );
+        );
 
-      final Icon icon = tester.widget<Icon>(find.byIcon(SSPIcons.warning));
-      expect(icon.size, 32);
-      expect(icon.color, SSPColors.error);
+        final Icon icon = tester.widget<Icon>(find.byIcon(SSPIcons.info));
+        expect(icon.size, 32);
+        expect(icon.color, SSPColors.lightPrimary);
+      },
+    );
 
-      final Material confirmMaterial = tester.widget<Material>(
-        find
-            .ancestor(of: find.text('Confirm'), matching: find.byType(Material))
-            .first,
-      );
-      expect(confirmMaterial.color, SSPColors.error);
-    });
+    testWidgets(
+      '5. Destructive dialog uses warning icon, error icon color and error confirm',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SSPConfirmationDialog(
+              title: 'Delete?',
+              message: 'Are you sure?',
+              isDestructive: true,
+            ),
+          ),
+        );
+
+        final Icon icon = tester.widget<Icon>(find.byIcon(SSPIcons.warning));
+        expect(icon.size, 32);
+        expect(icon.color, SSPColors.error);
+
+        final Material confirmMaterial = tester.widget<Material>(
+          find
+              .ancestor(
+                of: find.text('Confirm'),
+                matching: find.byType(Material),
+              )
+              .first,
+        );
+        expect(confirmMaterial.color, SSPColors.error);
+      },
+    );
 
     testWidgets('6. Custom icon is rendered', (WidgetTester tester) async {
       await tester.pumpWidget(
@@ -113,7 +127,9 @@ void main() {
       expect(find.byIcon(SSPIcons.info), findsNothing);
     });
 
-    testWidgets('7. Custom confirm and cancel labels are rendered', (WidgetTester tester) async {
+    testWidgets('7. Custom confirm and cancel labels are rendered', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(
@@ -131,12 +147,15 @@ void main() {
       expect(find.text('Cancel'), findsNothing);
     });
 
-    testWidgets('8. Long message wraps without layout overflow', (WidgetTester tester) async {
+    testWidgets('8. Long message wraps without layout overflow', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(
             title: 'Delete?',
-            message: 'Are you sure you want to delete this item? This action cannot be '
+            message:
+                'Are you sure you want to delete this item? This action cannot be '
                 'undone and all associated data, including saved progress, notes and '
                 'favorites, will be permanently removed from your device and from the '
                 'server after this action is confirmed.',
@@ -148,7 +167,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('9. Renders Unicode (Hindi) message and title', (WidgetTester tester) async {
+    testWidgets('9. Renders Unicode (Hindi) message and title', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(
@@ -164,7 +185,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('10. Scales with large text without overflow', (WidgetTester tester) async {
+    testWidgets('10. Scales with large text without overflow', (
+      WidgetTester tester,
+    ) async {
       tester.platformDispatcher.textScaleFactorTestValue = 2.0;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
@@ -172,7 +195,8 @@ void main() {
         buildTestableWidget(
           SSPConfirmationDialog(
             title: 'Delete all saved satsang recordings?',
-            message: 'This action permanently removes every recording from your '
+            message:
+                'This action permanently removes every recording from your '
                 'library. Please confirm that you want to continue.',
             isDestructive: true,
           ),
@@ -184,8 +208,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('11. Actions meet the 48dp minimum touch target height',
-        (WidgetTester tester) async {
+    testWidgets('11. Actions meet the 48dp minimum touch target height', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(title: 'Delete?', message: 'Are you sure?'),
@@ -193,13 +218,21 @@ void main() {
       );
 
       final Size confirmSize = tester.getSize(find.byType(InkWell));
-      expect(confirmSize.height, greaterThanOrEqualTo(SSPSpacing.minTouchTarget));
+      expect(
+        confirmSize.height,
+        greaterThanOrEqualTo(SSPSpacing.minTouchTarget),
+      );
 
       final Size cancelSize = tester.getSize(find.byType(SSPTertiaryButton));
-      expect(cancelSize.height, greaterThanOrEqualTo(SSPSpacing.minTouchTarget));
+      expect(
+        cancelSize.height,
+        greaterThanOrEqualTo(SSPSpacing.minTouchTarget),
+      );
     });
 
-    testWidgets('12. Exposes button semantics on both actions', (WidgetTester tester) async {
+    testWidgets('12. Exposes button semantics on both actions', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPConfirmationDialog(
@@ -230,7 +263,9 @@ void main() {
   });
 
   group('SSPConfirmationDialog.show() Navigation Tests', () {
-    testWidgets('13. show() returns true when confirm is pressed', (WidgetTester tester) async {
+    testWidgets('13. show() returns true when confirm is pressed', (
+      WidgetTester tester,
+    ) async {
       bool? result;
 
       await tester.pumpWidget(
@@ -262,7 +297,9 @@ void main() {
       expect(find.byType(SSPConfirmationDialog), findsNothing);
     });
 
-    testWidgets('14. show() returns false when cancel is pressed', (WidgetTester tester) async {
+    testWidgets('14. show() returns false when cancel is pressed', (
+      WidgetTester tester,
+    ) async {
       bool? result;
 
       await tester.pumpWidget(
@@ -294,8 +331,9 @@ void main() {
       expect(find.byType(SSPConfirmationDialog), findsNothing);
     });
 
-    testWidgets('15. show() returns null when dismissed by barrier tap',
-        (WidgetTester tester) async {
+    testWidgets('15. show() returns null when dismissed by barrier tap', (
+      WidgetTester tester,
+    ) async {
       bool? result;
 
       await tester.pumpWidget(
@@ -327,7 +365,9 @@ void main() {
       expect(find.byType(SSPConfirmationDialog), findsNothing);
     });
 
-    testWidgets('16. onConfirm and onCancel callbacks are invoked', (WidgetTester tester) async {
+    testWidgets('16. onConfirm and onCancel callbacks are invoked', (
+      WidgetTester tester,
+    ) async {
       bool confirmed = false;
       bool cancelled = false;
 
@@ -340,12 +380,13 @@ void main() {
                   onPressed: () {
                     showDialog<bool>(
                       context: context,
-                      builder: (BuildContext dialogContext) => SSPConfirmationDialog(
-                        title: 'Delete?',
-                        message: 'Are you sure?',
-                        onConfirm: () => confirmed = true,
-                        onCancel: () => cancelled = true,
-                      ),
+                      builder: (BuildContext dialogContext) =>
+                          SSPConfirmationDialog(
+                            title: 'Delete?',
+                            message: 'Are you sure?',
+                            onConfirm: () => confirmed = true,
+                            onCancel: () => cancelled = true,
+                          ),
                     );
                   },
                   child: const Text('open'),

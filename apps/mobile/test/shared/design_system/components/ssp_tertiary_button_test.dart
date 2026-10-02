@@ -7,30 +7,28 @@ import 'package:santmat_satsang_prachar/shared/design_system/components/ssp_tert
 import 'package:santmat_satsang_prachar/shared/design_system/tokens/spacing/ssp_spacing.dart';
 
 void main() {
-  Widget buildTestableWidget(Widget child, {Brightness brightness = Brightness.light}) {
+  Widget buildTestableWidget(
+    Widget child, {
+    Brightness brightness = Brightness.light,
+  }) {
     return MaterialApp(
       theme: ThemeData(brightness: brightness),
-      home: Scaffold(
-        body: Center(child: child),
-      ),
+      home: Scaffold(body: Center(child: child)),
     );
   }
 
   group('SSPTertiaryButton Widget Tests', () {
     testWidgets('1. Renders correctly with label', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(
-          SSPTertiaryButton(
-            label: 'Skip',
-            onPressed: () {},
-          ),
-        ),
+        buildTestableWidget(SSPTertiaryButton(label: 'Skip', onPressed: () {})),
       );
 
       expect(find.text('Skip'), findsOneWidget);
     });
 
-    testWidgets('2. Invokes onPressed callback when tapped', (WidgetTester tester) async {
+    testWidgets('2. Invokes onPressed callback when tapped', (
+      WidgetTester tester,
+    ) async {
       bool pressed = false;
       await tester.pumpWidget(
         buildTestableWidget(
@@ -47,14 +45,13 @@ void main() {
       expect(pressed, isTrue);
     });
 
-    testWidgets('3. Disabled state prevents callback execution', (WidgetTester tester) async {
+    testWidgets('3. Disabled state prevents callback execution', (
+      WidgetTester tester,
+    ) async {
       bool pressed = false;
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPTertiaryButton(
-            label: 'Disabled',
-            onPressed: null,
-          ),
+          SSPTertiaryButton(label: 'Disabled', onPressed: null),
         ),
       );
 
@@ -64,29 +61,33 @@ void main() {
       expect(pressed, isFalse);
     });
 
-    testWidgets('4. Loading state prevents callback execution and displays progress indicator',
-        (WidgetTester tester) async {
-      bool pressed = false;
-      await tester.pumpWidget(
-        buildTestableWidget(
-          SSPTertiaryButton(
-            label: 'Loading Action',
-            onPressed: () => pressed = true,
-            isLoading: true,
+    testWidgets(
+      '4. Loading state prevents callback execution and displays progress indicator',
+      (WidgetTester tester) async {
+        bool pressed = false;
+        await tester.pumpWidget(
+          buildTestableWidget(
+            SSPTertiaryButton(
+              label: 'Loading Action',
+              onPressed: () => pressed = true,
+              isLoading: true,
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Loading Action'), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.text('Loading Action'), findsOneWidget);
 
-      await tester.tap(find.text('Loading Action'));
-      await tester.pump(const Duration(milliseconds: 100));
+        await tester.tap(find.text('Loading Action'));
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(pressed, isFalse);
-    });
+        expect(pressed, isFalse);
+      },
+    );
 
-    testWidgets('5. Leading icon renders when provided', (WidgetTester tester) async {
+    testWidgets('5. Leading icon renders when provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPTertiaryButton(
@@ -101,7 +102,9 @@ void main() {
       expect(find.text('Info'), findsOneWidget);
     });
 
-    testWidgets('6. Trailing icon renders when provided', (WidgetTester tester) async {
+    testWidgets('6. Trailing icon renders when provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPTertiaryButton(
@@ -116,13 +119,12 @@ void main() {
       expect(find.text('Details'), findsOneWidget);
     });
 
-    testWidgets('7. Renders in Light Theme correctly', (WidgetTester tester) async {
+    testWidgets('7. Renders in Light Theme correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPTertiaryButton(
-            label: 'Light Tertiary',
-            onPressed: () {},
-          ),
+          SSPTertiaryButton(label: 'Light Tertiary', onPressed: () {}),
           brightness: Brightness.light,
         ),
       );
@@ -130,13 +132,12 @@ void main() {
       expect(find.text('Light Tertiary'), findsOneWidget);
     });
 
-    testWidgets('8. Renders in Dark Theme correctly', (WidgetTester tester) async {
+    testWidgets('8. Renders in Dark Theme correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPTertiaryButton(
-            label: 'Dark Tertiary',
-            onPressed: () {},
-          ),
+          SSPTertiaryButton(label: 'Dark Tertiary', onPressed: () {}),
           brightness: Brightness.dark,
         ),
       );
@@ -144,13 +145,12 @@ void main() {
       expect(find.text('Dark Tertiary'), findsOneWidget);
     });
 
-    testWidgets('9. Enforces minimum touch target of 48dp height', (WidgetTester tester) async {
+    testWidgets('9. Enforces minimum touch target of 48dp height', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPTertiaryButton(
-            label: 'Touch Target',
-            onPressed: () {},
-          ),
+          SSPTertiaryButton(label: 'Touch Target', onPressed: () {}),
         ),
       );
 
@@ -158,7 +158,9 @@ void main() {
       expect(size.height, greaterThanOrEqualTo(SSPSpacing.minTouchTarget));
     });
 
-    testWidgets('10. Semantic label override is applied', (WidgetTester tester) async {
+    testWidgets('10. Semantic label override is applied', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPTertiaryButton(
@@ -169,12 +171,15 @@ void main() {
         ),
       );
 
-      final SemanticsNode node = tester.getSemantics(find.byType(SSPTertiaryButton));
+      final SemanticsNode node = tester.getSemantics(
+        find.byType(SSPTertiaryButton),
+      );
       expect(node.label, contains('Skip tutorial walkthrough'));
     });
 
-    testWidgets('11. Handles long labels with overflow truncation gracefully',
-        (WidgetTester tester) async {
+    testWidgets('11. Handles long labels with overflow truncation gracefully', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SizedBox(
@@ -190,7 +195,9 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('12. Intrinsic width behavior mode sizes to content', (WidgetTester tester) async {
+    testWidgets('12. Intrinsic width behavior mode sizes to content', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SSPTertiaryButton(
@@ -205,26 +212,24 @@ void main() {
       expect(size.width, lessThan(400));
     });
 
-    testWidgets('13. Primary Button remains unaffected by Tertiary Button', (WidgetTester tester) async {
+    testWidgets('13. Primary Button remains unaffected by Tertiary Button', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPPrimaryButton(
-            label: 'Primary Action',
-            onPressed: () {},
-          ),
+          SSPPrimaryButton(label: 'Primary Action', onPressed: () {}),
         ),
       );
 
       expect(find.text('Primary Action'), findsOneWidget);
     });
 
-    testWidgets('14. Secondary Button remains unaffected by Tertiary Button', (WidgetTester tester) async {
+    testWidgets('14. Secondary Button remains unaffected by Tertiary Button', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
-          SSPSecondaryButton(
-            label: 'Secondary Action',
-            onPressed: () {},
-          ),
+          SSPSecondaryButton(label: 'Secondary Action', onPressed: () {}),
         ),
       );
 

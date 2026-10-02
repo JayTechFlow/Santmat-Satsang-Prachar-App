@@ -5,17 +5,48 @@ import 'package:flutter/material.dart';
 class SSPColors {
   const SSPColors._();
 
-  // Raw Brand Colors
-  static const Color deepSaffron = Color(0xFFE65100);
-  static const Color sacredGold = Color(0xFFFFB300);
+  // Raw Client Design & Brand Colors
+  static const Color headerMaroon = Color(0xFF7F1D1D); // App Header Maroon
+
+  // Primary Actions (Saffron / Orange)
+  static const Color deepSaffron = Color(0xFFEA580C);
+  static const Color deepSaffronDark = Color(0xFFC2410C);
+  static const Color orangePillBackground = Color(0xFFFFEDD5);
+
+  // Sacred Gold & Amber Highlights
+  static const Color sacredGold = Color(0xFFF59E0B);
+  static const Color amberHighlight = Color(0xFFFBBF24);
+
+  // Stuti Purple Gradient & Card Actions
+  static const Color purpleStutiPrimary = Color(0xFF7E22CE);
+  static const Color purpleStutiDark = Color(0xFF6B21A8);
+
+  // Light Background & Surfaces
+  static const Color lightBackground = Color(0xFFFFFDF9);
+  static const Color lightBackgroundSecondary = Color(0xFFFAF7F2);
+  static const Color lightSurface = Color(0xFFFFFDF9);
+  static const Color lightSurfaceVariant = Color(0xFFFAF7F2);
+
+  // Dark Background & Surfaces
+  static const Color darkBackground = Color(0xFF181614);
+  static const Color darkSurface = Color(0xFF201D1A);
+  static const Color darkSurfaceVariant = Color(0xFF221F1C);
+
+  // Borders & Dividers
+  static const Color lightOutline = Color(0xFFF0E6D8);
+  static const Color lightOutlineVariant = Color(0xFFF0E6D8);
+  static const Color darkOutline = Color(0xFF2A2622);
+  static const Color darkOutlineVariant = Color(0xFF2A2622);
+
+  // Legacy/Secondary Palette Aliases (preserved for backwards compatibility)
   static const Color sand = Color(0xFFE6D5B8);
   static const Color warmIvory = Color(0xFFFFF8E1);
   static const Color cream = Color(0xFFFFFDD0);
   static const Color templeBrown = Color(0xFF4A2E12);
-  static const Color softWhite = Color(0xFFFAFAFA);
-  static const Color warmBlack = Color(0xFF1A1A1A);
-  static const Color deepCharcoal = Color(0xFF121212);
-  static const Color surfaceCharcoal = Color(0xFF1E1E1E);
+  static const Color softWhite = Color(0xFFFFFDF9);
+  static const Color warmBlack = Color(0xFF181614);
+  static const Color deepCharcoal = Color(0xFF181614);
+  static const Color surfaceCharcoal = Color(0xFF201D1A);
 
   // Semantic Status Colors
   static const Color success = Color(0xFF2E7D32);
@@ -24,44 +55,36 @@ class SSPColors {
   static const Color info = Color(0xFF0288D1);
 
   // Light Color Scheme Tokens
-  static const Color lightPrimary = deepSaffron;
-  static const Color lightOnPrimary = softWhite;
-  static const Color lightPrimaryContainer = warmIvory;
-  static const Color lightOnPrimaryContainer = templeBrown;
-  static const Color lightSecondary = sacredGold;
-  static const Color lightOnSecondary = templeBrown;
-  static const Color lightSecondaryContainer = sand;
-  static const Color lightOnSecondaryContainer = templeBrown;
-  static const Color lightBackground = cream;
-  static const Color lightOnBackground = warmBlack;
-  static const Color lightSurface = softWhite;
-  static const Color lightOnSurface = warmBlack;
-  static const Color lightSurfaceVariant = warmIvory;
-  static const Color lightOnSurfaceVariant = templeBrown;
-  static const Color lightOutline = Color(0xFFE0D7C6);
-  static const Color lightOutlineVariant = Color(0xFFF0EAE1);
+  static const Color lightPrimary = deepSaffron; // #EA580C
+  static const Color lightOnPrimary = Color(0xFFFFFFFF);
+  static const Color lightPrimaryContainer = orangePillBackground; // #FFEDD5
+  static const Color lightOnPrimaryContainer = deepSaffronDark; // #C2410C
+  static const Color lightSecondary = sacredGold; // #F59E0B
+  static const Color lightOnSecondary = Color(0xFF181614);
+  static const Color lightSecondaryContainer = amberHighlight; // #FBBF24
+  static const Color lightOnSecondaryContainer = Color(0xFF181614);
+  static const Color lightOnBackground = Color(0xFF181614);
+  static const Color lightOnSurface = Color(0xFF181614);
+  static const Color lightOnSurfaceVariant = Color(0xFF5C5248);
 
   // Dark Color Scheme Tokens
-  static const Color darkPrimary = deepSaffron;
-  static const Color darkOnPrimary = warmBlack;
-  static const Color darkPrimaryContainer = templeBrown;
-  static const Color darkOnPrimaryContainer = warmIvory;
-  static const Color darkSecondary = sacredGold;
-  static const Color darkOnSecondary = warmBlack;
-  static const Color darkSecondaryContainer = surfaceCharcoal;
-  static const Color darkOnSecondaryContainer = sand;
-  static const Color darkBackground = deepCharcoal;
-  static const Color darkOnBackground = softWhite;
-  static const Color darkSurface = surfaceCharcoal;
-  static const Color darkOnSurface = softWhite;
-  static const Color darkSurfaceVariant = Color(0xFF282828);
-  static const Color darkOnSurfaceVariant = sand;
-  static const Color darkOutline = Color(0xFF3E3E3E);
-  static const Color darkOutlineVariant = Color(0xFF2A2A2A);
+  static const Color darkPrimary = deepSaffron; // #EA580C
+  static const Color darkOnPrimary = Color(0xFFFFFFFF);
+  static const Color darkPrimaryContainer = Color(0xFF431407);
+  static const Color darkOnPrimaryContainer = orangePillBackground; // #FFEDD5
+  static const Color darkSecondary = amberHighlight; // #FBBF24
+  static const Color darkOnSecondary = Color(0xFF181614);
+  static const Color darkSecondaryContainer = Color(0xFF451A03);
+  static const Color darkOnSecondaryContainer = Color(0xFFFDE68A);
+  static const Color darkOnBackground = Color(0xFFFFFDF9);
+  static const Color darkOnSurface = Color(0xFFFFFDF9);
+  static const Color darkOnSurfaceVariant = Color(0xFFD1C7BD);
 
   // Context-aware semantic accessors
   static Color primary(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? darkPrimary : lightPrimary;
+
+  static Color header(BuildContext context) => headerMaroon;
 
   static Color surface(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? darkSurface : lightSurface;
@@ -74,17 +97,21 @@ class SSPColors {
 
   static Color textSecondary(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? softWhite.withValues(alpha: 0.7)
-          : templeBrown.withValues(alpha: 0.8);
+          ? darkOnSurfaceVariant
+          : lightOnSurfaceVariant;
 
   static Color textTertiary(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
-          ? softWhite.withValues(alpha: 0.5)
-          : templeBrown.withValues(alpha: 0.6);
+          ? const Color(0xFF9E958C)
+          : const Color(0xFF8C8074);
 
   static Color outline(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? darkOutline : lightOutline;
 
   static Color divider(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? darkOutlineVariant : lightOutlineVariant;
+
+  static Color stutiPrimary(BuildContext context) => purpleStutiPrimary;
+  static Color stutiDark(BuildContext context) => purpleStutiDark;
 }
+

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/features/daily_quotes/presentation/providers/daily_quotes_providers.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/mock_daily_quote_data_source.dart';
+import '../../../../helpers/mock_daily_quote_data_source.dart';
 import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
 void main() {

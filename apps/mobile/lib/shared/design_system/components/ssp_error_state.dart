@@ -49,11 +49,7 @@ class SSPErrorState extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
-      child: Icon(
-        icon ?? SSPIcons.error,
-        size: 40,
-        color: errorColor,
-      ),
+      child: Icon(icon ?? SSPIcons.error, size: 40, color: errorColor),
     );
 
     return Semantics(
@@ -87,10 +83,7 @@ class SSPErrorState extends StatelessWidget {
           ),
           if (onRetry != null) ...[
             SSPSpacing.gapH24,
-            SSPTertiaryButton(
-              label: retryLabel ?? 'Retry',
-              onPressed: onRetry,
-            ),
+            SSPTertiaryButton(label: retryLabel ?? 'Retry', onPressed: onRetry),
           ],
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../tokens/animation/ssp_animation.dart';
 import '../tokens/colors/ssp_colors.dart';
 import '../tokens/radius/ssp_radius.dart';
@@ -90,6 +91,9 @@ class SSPTextInputField extends StatefulWidget {
   /// Whether a loading spinner should be displayed in the suffix position.
   final bool isLoading;
 
+  /// Optional list of custom input formatters.
+  final List<TextInputFormatter>? inputFormatters;
+
   const SSPTextInputField({
     super.key,
     this.controller,
@@ -118,6 +122,7 @@ class SSPTextInputField extends StatefulWidget {
     this.leadingIcon,
     this.trailingIcon,
     this.isLoading = false,
+    this.inputFormatters,
   });
 
   @override
@@ -158,7 +163,9 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
     if (widget.controller != oldWidget.controller) {
       oldWidget.controller?.removeListener(_onTextControllerChanged);
       if (widget.controller == null && _internalController == null) {
-        _internalController = TextEditingController(text: oldWidget.controller?.text ?? '');
+        _internalController = TextEditingController(
+          text: oldWidget.controller?.text ?? '',
+        );
       }
       _effectiveController.addListener(_onTextControllerChanged);
       _currentLength = _effectiveController.text.length;
@@ -210,19 +217,30 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final bool hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
+    final bool hasError =
+        widget.errorText != null && widget.errorText!.isNotEmpty;
 
     // Theme color derivations using SSP design system tokens
-    final Color bg = isDark ? SSPColors.darkSurfaceVariant : SSPColors.lightSurfaceVariant;
-    final Color textFg = isDark ? SSPColors.darkOnSurface : SSPColors.lightOnSurface;
+    final Color bg = isDark
+        ? SSPColors.darkSurfaceVariant
+        : SSPColors.lightSurfaceVariant;
+    final Color textFg = isDark
+        ? SSPColors.darkOnSurface
+        : SSPColors.lightOnSurface;
     final Color hintFg = isDark
         ? SSPColors.softWhite.withValues(alpha: 0.5)
         : SSPColors.templeBrown.withValues(alpha: 0.5);
-    final Color disabledBg = isDark ? SSPColors.darkOutlineVariant : SSPColors.lightOutlineVariant;
+    final Color disabledBg = isDark
+        ? SSPColors.darkOutlineVariant
+        : SSPColors.lightOutlineVariant;
 
-    final Color focusBorderColor = isDark ? SSPColors.darkPrimary : SSPColors.lightPrimary;
+    final Color focusBorderColor = isDark
+        ? SSPColors.darkPrimary
+        : SSPColors.lightPrimary;
     final Color errorBorderColor = SSPColors.error;
-    final Color defaultBorderColor = isDark ? SSPColors.darkOutline : SSPColors.lightOutline;
+    final Color defaultBorderColor = isDark
+        ? SSPColors.darkOutline
+        : SSPColors.lightOutline;
 
     Color currentBorderColor;
     if (hasError) {
@@ -260,7 +278,9 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
       );
     } else if (widget.obscureText && widget.showPasswordToggle) {
       trailingWidget = SSPIconButton(
-        icon: Icon(_isObscured ? Icons.visibility_off_rounded : Icons.visibility_rounded),
+        icon: Icon(
+          _isObscured ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+        ),
         semanticLabel: _isObscured ? 'Show password' : 'Hide password',
         iconSize: 20,
         minimumSize: 36,
@@ -271,7 +291,8 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
     }
 
     final String effectiveHint = widget.hintText ?? '';
-    final String effectiveSemantics = widget.semanticLabel ?? widget.label ?? effectiveHint;
+    final String effectiveSemantics =
+        widget.semanticLabel ?? widget.label ?? effectiveHint;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -298,7 +319,9 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
           enabled: widget.enabled,
           readOnly: widget.readOnly,
           obscured: _isObscured,
-          label: hasError ? '$effectiveSemantics, Error: ${widget.errorText}' : effectiveSemantics,
+          label: hasError
+              ? '$effectiveSemantics, Error: ${widget.errorText}'
+              : effectiveSemantics,
           hint: effectiveHint,
           child: AnimatedContainer(
             duration: SSPAnimation.fast,
@@ -313,7 +336,8 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
             ),
             padding: const EdgeInsets.symmetric(horizontal: SSPSpacing.md),
             child: Row(
-              crossAxisAlignment: (widget.maxLines == null || widget.maxLines! > 1)
+              crossAxisAlignment:
+                  (widget.maxLines == null || widget.maxLines! > 1)
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
               children: [
@@ -339,9 +363,12 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
                     keyboardType: widget.keyboardType,
                     textInputAction: widget.textInputAction,
                     textCapitalization: widget.textCapitalization,
+                    inputFormatters: widget.inputFormatters,
                     maxLines: _isObscured ? 1 : widget.maxLines,
                     minLines: widget.minLines,
-                    maxLength: widget.maxLength,
+                    maxLength: widget.inputFormatters != null
+                        ? null
+                        : widget.maxLength,
                     onChanged: widget.onChanged,
                     onFieldSubmitted: widget.onSubmitted,
                     onTap: widget.onTap,
@@ -352,7 +379,9 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
                     cursorColor: focusBorderColor,
                     decoration: InputDecoration(
                       hintText: effectiveHint,
-                      hintStyle: SSPTypography.bodyMedium.copyWith(color: hintFg),
+                      hintStyle: SSPTypography.bodyMedium.copyWith(
+                        color: hintFg,
+                      ),
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -360,8 +389,11 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
                       errorBorder: InputBorder.none,
                       focusedErrorBorder: InputBorder.none,
                       isDense: true,
-                      counterText: '', // Suppress default counter UI; handled cleanly below
-                      contentPadding: const EdgeInsets.symmetric(vertical: SSPSpacing.md),
+                      counterText:
+                          '', // Suppress default counter UI; handled cleanly below
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: SSPSpacing.md,
+                      ),
                     ),
                   ),
                 ),
@@ -382,7 +414,9 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
         ),
 
         // Bottom section for Helper Text, Error Text, and Character Counter
-        if (hasError || (widget.helperText != null && widget.helperText!.isNotEmpty) || (widget.maxLength != null && widget.showCharacterCounter)) ...[
+        if (hasError ||
+            (widget.helperText != null && widget.helperText!.isNotEmpty) ||
+            (widget.maxLength != null && widget.showCharacterCounter)) ...[
           const SizedBox(height: SSPSpacing.xs),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +434,9 @@ class _SSPTextInputFieldState extends State<SSPTextInputField> {
                 Text(
                   '$_currentLength/${widget.maxLength}',
                   style: SSPTypography.bodySmall.copyWith(
-                    color: _currentLength > widget.maxLength! ? errorBorderColor : hintFg,
+                    color: _currentLength > widget.maxLength!
+                        ? errorBorderColor
+                        : hintFg,
                   ),
                 ),
               ],

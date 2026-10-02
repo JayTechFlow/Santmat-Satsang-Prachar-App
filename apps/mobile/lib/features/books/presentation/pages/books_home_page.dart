@@ -8,6 +8,7 @@ import '../widgets/book_category_section.dart';
 import '../widgets/continue_reading_card.dart';
 import '../widgets/book_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 
 class BooksHomePage extends ConsumerWidget {
@@ -16,22 +17,26 @@ class BooksHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(booksHomeStateProvider);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.books),
+      appBar: SSPAppBar.standard(
+        title: l10n?.books ?? 'पुस्तकें (Books)',
+        subtitle: 'धार्मिक ग्रंथ एवं साहित्य',
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'खोजें',
             onPressed: () => context.push('/search'),
           ),
           IconButton(
-            icon: const Icon(Icons.bookmark),
+            icon: const Icon(Icons.bookmark_outline_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'बुकमार्क',
             onPressed: () => context.push('/books/bookmarks'),
           ),
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'इतिहास',
             onPressed: () => context.push('/books/history'),
           ),
         ],
@@ -109,7 +114,7 @@ class BooksHomePage extends ConsumerWidget {
                     ),
                   SliverToBoxAdapter(
                     child: BookCategorySection(
-                      title: l10n.categories,
+                      title: l10n?.categories ?? 'श्रेणियाँ (Categories)',
                       categories: state.categories,
                       onCategoryTap: (category) =>
                           context.push('/books/category/${category.id}'),

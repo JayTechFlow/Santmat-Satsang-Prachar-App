@@ -7,6 +7,14 @@
     "build:functions": "npm --prefix firebase/functions run build",
     "build:admin": "npm --prefix apps/web run build",
     "lint:admin": "npm --prefix apps/web run lint",
-    "test:admin": "npm --prefix apps/web run test"
+    "test:admin": "npm --prefix apps/web run test",
+    "test:functions": "npm --prefix firebase/functions run test",
+    "emulators:test": "firebase emulators:start --only auth,firestore,storage,database=false --project demo-santmat-wave5-security 2>/dev/null || firebase emulators:start --only auth,firestore,storage --project demo-santmat-wave5-security",
+    "test:security:rules": "node --test firebase/security-tests/security.rules.test.mjs",
+    "test:security": "firebase emulators:exec --only auth,firestore,storage --project demo-santmat-wave5-security \"node --test firebase/security-tests/security.rules.test.mjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase-tools": "^13.35.1"
   }
 }

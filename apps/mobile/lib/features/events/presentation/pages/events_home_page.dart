@@ -6,6 +6,7 @@ import '../widgets/events_state_widgets.dart';
 import '../widgets/event_card.dart';
 import '../widgets/featured_event_card.dart';
 import '../../../../shared/theme/app_spacing.dart';
+import '../../../../shared/design_system/components/ssp_app_bar.dart';
 
 class EventsHomePage extends ConsumerWidget {
   const EventsHomePage({super.key});
@@ -15,15 +16,18 @@ class EventsHomePage extends ConsumerWidget {
     final state = ref.watch(eventsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Events & Programs'),
+      appBar: SSPAppBar.standard(
+        title: 'कार्यक्रम एवं सत्संग',
+        subtitle: 'आगामी सत्संग एवं विशेष धार्मिक आयोजन',
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'खोजें',
             onPressed: () => context.push('/search'),
           ),
           IconButton(
-            icon: const Icon(Icons.event_available),
+            icon: const Icon(Icons.event_available_rounded, color: Color(0xFFFDE68A)),
+            tooltip: 'मेरे कार्यक्रम',
             onPressed: () => context.push('/events/my-events'),
           ),
         ],
