@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router/app_router.dart';
 import 'theme.dart';
 import '../core/localization/locale_provider.dart';
+import '../core/analytics/analytics_heartbeat.dart';
 
 import '../shared/theme/app_theme_provider.dart';
 import '../shared/theme/devanagari_font_scale_provider.dart';
@@ -34,7 +35,10 @@ class App extends ConsumerWidget {
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(fontScale),
           ),
-          child: child,
+          // Emits the activity heartbeat the Admin "Active Users" metric relies
+          // on. Wrapped here so it covers the whole app lifecycle regardless of
+          // which screen is active.
+          child: AnalyticsHeartbeat(child: child),
         );
       },
       localizationsDelegates: const [

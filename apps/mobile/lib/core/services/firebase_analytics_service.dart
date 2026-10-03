@@ -6,31 +6,45 @@ class FirebaseAnalyticsService {
   FirebaseAnalyticsService({FirebaseAnalytics? analytics})
     : _analyticsOverride = analytics;
 
-  FirebaseAnalytics get _analytics =>
-      _analyticsOverride ?? FirebaseAnalytics.instance;
+  FirebaseAnalytics? get _analytics {
+    if (_analyticsOverride != null) return _analyticsOverride;
+    try {
+      return FirebaseAnalytics.instance;
+    } catch (_) {
+      return null;
+    }
+  }
 
   Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
-    await _analytics.logEvent(name: name, parameters: parameters);
+    try {
+      await _analytics?.logEvent(name: name, parameters: parameters);
+    } catch (_) {}
   }
 
   Future<void> logScreenView({
     required String screenName,
     String? screenClass,
   }) async {
-    await _analytics.logScreenView(
-      screenName: screenName,
-      screenClass: screenClass,
-    );
+    try {
+      await _analytics?.logScreenView(
+        screenName: screenName,
+        screenClass: screenClass,
+      );
+    } catch (_) {}
   }
 
   Future<void> setUserId(String? id) async {
-    await _analytics.setUserId(id: id);
+    try {
+      await _analytics?.setUserId(id: id);
+    } catch (_) {}
   }
 
   Future<void> setUserProperty({
     required String name,
     required String? value,
   }) async {
-    await _analytics.setUserProperty(name: name, value: value);
+    try {
+      await _analytics?.setUserProperty(name: name, value: value);
+    } catch (_) {}
   }
 }

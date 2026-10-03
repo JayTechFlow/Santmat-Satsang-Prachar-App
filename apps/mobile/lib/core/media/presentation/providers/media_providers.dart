@@ -11,6 +11,7 @@ import 'package:santmat_satsang_prachar/core/media/domain/value_objects/media_st
 import 'package:santmat_satsang_prachar/core/media/domain/value_objects/media_type.dart';
 import 'package:santmat_satsang_prachar/core/storage/offline/offline_media_service.dart';
 import 'package:santmat_satsang_prachar/core/analytics/playback_analytics_service.dart';
+import 'package:santmat_satsang_prachar/core/analytics/playback_session_reporter.dart';
 import 'package:santmat_satsang_prachar/core/storage/storage_service.dart';
 
 final mediaRemoteDataSourceProvider = Provider<IMediaRemoteDataSource>((ref) {
@@ -37,8 +38,15 @@ final mediaRepositoryProvider = Provider<IMediaRepository>((ref) {
   return MediaRepositoryImpl(ref.watch(mediaRemoteDataSourceProvider));
 });
 
+final playbackSessionReporterProvider = Provider<PlaybackSessionReporter>((ref) {
+  return PlaybackSessionReporter();
+});
+
 final playbackAnalyticsServiceProvider = Provider<PlaybackAnalyticsService>((ref) {
-  return PlaybackAnalyticsService(ref.watch(firebaseAnalyticsServiceProvider));
+  return PlaybackAnalyticsService(
+    ref.watch(firebaseAnalyticsServiceProvider),
+    sessionReporter: ref.watch(playbackSessionReporterProvider),
+  );
 });
 
 final offlineMediaServiceProvider = Provider<OfflineMediaService>((ref) {

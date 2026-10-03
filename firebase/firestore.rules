@@ -50,7 +50,7 @@ service cloud.firestore {
                     || isDeveloperSuperAdmin()
                     || (isClientSuperAdmin() && request.resource.data.get('role', '') != 'developer_super_admin' && !request.resource.data.get('roleIds', []).hasAny(['developer_super_admin']));
 
-      allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['admin', 'role', 'roleIds', 'accountStatus', 'status']))
+      allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['admin', 'role', 'roleIds', 'accountStatus', 'status', 'lastActiveAt']))
                     || isDeveloperSuperAdmin()
                     || (isClientSuperAdmin() && request.auth.uid != userId
                         && resource.data.get('role', '') != 'developer_super_admin'
@@ -236,5 +236,22 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
+
+    // ── Analytics event pipeline (Reports) ────────────────────────────────
+    // These collections are written and read ONLY by Cloud Functions using the
+    // Admin SDK, which bypasses these rules. They are explicitly denied to
+    // clients rather than relying on the catch-all above, so that a future
+    // refactor cannot accidentally open an analytics collection and let a
+    // client forge play counts, listening time or activity heartbeats.
+    //
+    // Write path:  recordPlaybackSession / touchActiveUser callables, which
+    //              force uid from context.auth and never trust the payload.
+    // Read path:   getAnalyticsSummary callable (admin-only) and the
+    //              aggregation engine.
+    match /playback_events/{docId}   { allow read, write: if false; }
+    match /interaction_logs/{docId}  { allow read, write: if false; }
+    match /telemetry_events/{docId}  { allow read, write: if false; }
+    match /analytics_daily/{docId}   { allow read, write: if false; }
+    match /analytics_summary/{docId} { allow read, write: if false; }
   }
 }

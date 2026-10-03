@@ -414,6 +414,7 @@ class PlaybackNotifier extends Notifier<PlaybackStateEntity> {
             title: audio.title,
             mediaType: 'audio',
             category: audio.category.name,
+            durationSeconds: audio.duration.inSeconds,
           );
     } catch (e) {
       if (!_isActive || currentReqId != _requestId) return;
@@ -455,6 +456,7 @@ class PlaybackNotifier extends Notifier<PlaybackStateEntity> {
             title: state.currentAudio!.title,
             mediaType: 'audio',
             category: state.currentAudio!.category.name,
+            durationSeconds: state.currentAudio!.duration.inSeconds,
           );
     }
   }
@@ -477,10 +479,14 @@ class PlaybackNotifier extends Notifier<PlaybackStateEntity> {
 
   Future<void> stop() async {
     _requestId++;
+    final currentId = state.currentAudio?.id;
     await _player?.stop();
     _queue = [];
     _currentIndex = -1;
     ref.read(playerSurfaceProvider.notifier).collapse();
+    if (currentId != null) {
+      ref.read(playbackAnalyticsServiceProvider).logMediaStop(id: currentId);
+    }
     state = const PlaybackStateEntity();
   }
 
