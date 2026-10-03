@@ -19,6 +19,36 @@ export interface StorageAudioItem {
   updatedAt?: string;
 }
 
+export interface StorageFileItem {
+  name: string;
+  storagePath: string;
+  downloadUrl?: string;
+  size: number;
+  contentType: string;
+  updatedAt?: string;
+  md5Hash?: string;
+}
+
+export interface StorageFolderContent {
+  currentPath: string;
+  prefixes: string[];
+  files: StorageFileItem[];
+}
+
+export const KNOWN_STORAGE_FOLDERS = [
+  'audio',
+  'banners',
+  'thumbnails',
+  'books',
+  'images',
+  'avatars',
+  'suvichar',
+  'documents',
+  'events',
+  'public',
+  'prayers'
+];
+
 export class StorageService {
   /**
    * Upload file to Firebase Storage with progress tracking callback
@@ -120,6 +150,144 @@ export class StorageService {
     } catch (error: any) {
       console.error('Storage list audio error:', error);
       return { success: false, error: error.message || 'Failed to list audio files' };
+    }
+  }
+
+  /**
+   * List single folder contents for Folder Browser view.
+   * If folderPath is empty or root '/', returns known top-level directories.
+   */
+  async listFolder(folderPath: string = ''): Promise<ServiceResponse<StorageFolderContent>> {
+    const cleanPath = folderPath.replace(/^\/+|\/+$/g, '');
+
+    // At root level, provide known application root prefixes
+    if (!cleanPath) {
+      return {
+        success: true,
+        data: {
+          currentPath: '',
+          prefixes: [...KNOWN_STORAGE_FOLDERS],
+          files: []
+        }
+      };
+    }
+
+    try {
+      const targetRef = ref(storage, cleanPath);
+      const res = await listAll(targetRef);
+
+      const subfolders = res.prefixes.map(p => p.fullPath);
+      const files: StorageFileItem[] = [];
+
+      for (const itemRef of res.items) {
+        try {
+          const [meta, url] = await Promise.all([
+            getMetadata(itemRef).catch(() => null),
+            getDownloadURL(itemRef).catch(() => '')
+          ]);
+
+          files.push({
+            name: itemRef.name,
+            storagePath: itemRef.fullPath,
+            downloadUrl: url,
+            size: meta?.size || 0,
+            contentType: meta?.contentType || 'application/octet-stream',
+            updatedAt: meta?.updated || meta?.timeCreated || '',
+            md5Hash: meta?.md5Hash
+          });
+        } catch (metaErr) {
+          files.push({
+            name: itemRef.name,
+            storagePath: itemRef.fullPath,
+            size: 0,
+            contentType: 'application/octet-stream'
+          });
+        }
+      }
+
+      return {
+        success: true,
+        data: {
+          currentPath: cleanPath,
+          prefixes: subfolders,
+          files
+        }
+      };
+    } catch (error: any) {
+      console.warn(`Storage listFolder failed for ${cleanPath}:`, error);
+      return {
+        success: false,
+        error: error.message || `फ़ोल्डर '${cleanPath}' लोड करने में विफल।`
+      };
+    }
+  }
+
+  /**
+   * Recursively scan all known media folders across the Firebase Storage bucket.
+   * Tolerates missing/empty folders gracefully.
+   */
+  async listAllFiles(baseFolders: string[] = KNOWN_STORAGE_FOLDERS): Promise<ServiceResponse<StorageFileItem[]>> {
+    try {
+      const allFiles: StorageFileItem[] = [];
+
+      for (const baseFolder of baseFolders) {
+        const queue: StorageReference[] = [ref(storage, baseFolder)];
+
+        while (queue.length > 0) {
+          const currentRef = queue.shift()!;
+          try {
+            const res = await listAll(currentRef);
+
+            // Queue subfolders (skip nested avatars/thumbnails depth if excessive)
+            for (const prefix of res.prefixes) {
+              queue.push(prefix);
+            }
+
+            // Process files in batches to prevent network congestion
+            const batchSize = 10;
+            for (let i = 0; i < res.items.length; i += batchSize) {
+              const chunk = res.items.slice(i, i + batchSize);
+              const chunkResults = await Promise.all(
+                chunk.map(async (itemRef) => {
+                  try {
+                    const [meta, url] = await Promise.all([
+                      getMetadata(itemRef).catch(() => null),
+                      getDownloadURL(itemRef).catch(() => '')
+                    ]);
+
+                    return {
+                      name: itemRef.name,
+                      storagePath: itemRef.fullPath,
+                      downloadUrl: url,
+                      size: meta?.size || 0,
+                      contentType: meta?.contentType || 'application/octet-stream',
+                      updatedAt: meta?.updated || meta?.timeCreated || '',
+                      md5Hash: meta?.md5Hash
+                    } as StorageFileItem;
+                  } catch (itemErr) {
+                    return {
+                      name: itemRef.name,
+                      storagePath: itemRef.fullPath,
+                      size: 0,
+                      contentType: 'application/octet-stream'
+                    } as StorageFileItem;
+                  }
+                })
+              );
+
+              allFiles.push(...chunkResults);
+            }
+          } catch (dirErr: any) {
+            // Non-fatal: simply skip folders that do not exist yet or are empty
+            console.debug(`Storage scanner: skipped ${currentRef.fullPath}:`, dirErr?.code || dirErr?.message);
+          }
+        }
+      }
+
+      return { success: true, data: allFiles };
+    } catch (error: any) {
+      console.error('Storage listAllFiles error:', error);
+      return { success: false, error: error.message || 'संपूर्ण स्टोरेज फाइलें लोड करने में विफल।' };
     }
   }
 
