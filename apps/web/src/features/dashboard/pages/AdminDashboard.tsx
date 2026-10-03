@@ -13,6 +13,12 @@
  *   - RBAC: PermissionContext for role-based section gating
  */
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import {
+  effectiveRangeDays,
+  RANGE_LABELS,
+  timelineLabel,
+  type TimelineRange,
+} from '../analytics/timelineRange';
 import { useNavigate } from 'react-router-dom';
 import {
   Music,
@@ -42,7 +48,9 @@ import {
 import { useApp } from '../../../app/providers/AppContext';
 import { usePermissions } from '../../../app/providers/PermissionContext';
 import { reportService } from '../services/reportService';
-import type { AnalyticsReportData } from '../services/reportService';
+import type { AnalyticsSummaryPayload } from '../analytics/types';
+import { resolveRange, shiftDayKey, todayUtc } from '../analytics/dateRange';
+import { formatDuration, formatIndian as formatIndianShared } from '../analytics/format';
 import { bookService } from '../../books/services/bookService';
 import { bannerService } from '../../banners/services/bannerService';
 import { StatCard } from '../components/StatCard';
@@ -52,33 +60,12 @@ import { AdminPageHeader } from '../../../components/admin';
 
 // ── Timeline Types ──────────────────────────────────────────────────────────
 
-export type TimelineRange = '7d' | '30d' | '180d' | '1y' | '2y' | '5y' | 'lifetime';
-
-const RANGE_LABELS: Record<TimelineRange, string> = {
-  '7d': 'पिछले 7 दिन (Last 7 Days)',
-  '30d': 'पिछले 30 दिन (Last 30 Days)',
-  '180d': 'पिछले 180 दिन / 6 माह (Last 180 Days)',
-  '1y': 'विगत 1 वर्ष (Last 1 Year)',
-  '2y': 'विगत 2 वर्ष (Last 2 Years)',
-  '5y': 'विगत 5 वर्ष (Last 5 Years)',
-  'lifetime': 'सर्वकालिक / आजीवन (Lifetime Historical Archive)',
-};
-
-const RANGE_DAYS: Record<TimelineRange, number | null> = {
-  '7d': 7,
-  '30d': 30,
-  '180d': 180,
-  '1y': 365,
-  '2y': 730,
-  '5y': 1825,
-  'lifetime': null,
-};
-
 const CATEGORY_COLORS = ['#EA580C', '#D97706', '#B45309', '#9333EA', '#059669', '#0D9488', '#DC2626', '#7C3AED'];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-const formatIndian = (n: number): string => new Intl.NumberFormat('en-IN').format(n);
+const formatIndian = (n: number | null | undefined): string =>
+  n === null || n === undefined ? '—' : new Intl.NumberFormat('en-IN').format(n);
 
 const formatCompact = (n: number): string => {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
@@ -87,9 +74,11 @@ const formatCompact = (n: number): string => {
 };
 
 const formatDateLabel = (dateStr: string): string => {
-  const d = new Date(dateStr);
+  // Analytics day keys are UTC calendar days; formatting them without an
+  // explicit UTC timezone would shift them by a day for most operators.
+  const d = new Date(`${dateStr}T00:00:00.000Z`);
   if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString('hi-IN', { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString('hi-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' });
 };
 
 // ── Main Dashboard ──────────────────────────────────────────────────────────
@@ -107,7 +96,7 @@ export const AdminDashboard: React.FC = () => {
   const [selectedTimeline, setSelectedTimeline] = useState<TimelineRange>('7d');
 
   // ── Analytics (Cloud Function) ──────────────────────────────────────────
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsReportData | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsSummaryPayload | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState<boolean>(true);
   const [analyticsError, setAnalyticsError] = useState<string | null>(null);
 
@@ -116,16 +105,20 @@ export const AdminDashboard: React.FC = () => {
     setAnalyticsLoading(true);
     setAnalyticsError(null);
 
-    const days = RANGE_DAYS[selectedTimeline];
-    const query: { startDate?: string; endDate?: string; limit?: number } = {};
-    if (days) {
-      const end = new Date();
-      const start = new Date(end);
-      start.setDate(start.getDate() - days);
-      query.startDate = start.toISOString().split('T')[0];
-      query.endDate = end.toISOString().split('T')[0];
-      query.limit = days;
-    }
+    // Resolve the window through the shared UTC helper instead of duplicating
+    // local-time date maths here. 'lifetime' and the multi-year presets are
+    // clamped to the server's maximum range instead of requesting a window the
+    // backend would reject.
+    const bounded = effectiveRangeDays(selectedTimeline);
+    const range = resolveRange('custom', {
+      startDate: shiftDayKey(todayUtc(), -(bounded - 1)),
+      endDate: todayUtc(),
+    });
+
+    const query: { startDate?: string; endDate?: string; pageSize?: number } = {};
+    query.startDate = range.startDate;
+    query.endDate = range.endDate;
+    query.pageSize = Math.min(bounded, 62);
 
     reportService.getAnalyticsSummary(query).then((res) => {
       if (cancelled) return;
@@ -172,14 +165,17 @@ export const AdminDashboard: React.FC = () => {
   // ── Computed KPIs ──────────────────────────────────────────────────────
 
   const analyticsKpis = useMemo(() => {
-    const daily = analyticsData?.daily ?? [];
-    const totalPlays = daily.reduce((sum, d) => sum + (d.totalPlays ?? 0), 0);
-    const totalSeconds = daily.reduce((sum, d) => sum + (d.totalListenDurationSeconds ?? 0), 0);
-    const totalHours = Math.round(totalSeconds / 3600);
-    const peakActive = daily.reduce((max, d) => Math.max(max, d.uniqueActiveUsers ?? 0), 0);
-    const newRegistrations = daily.reduce((sum, d) => sum + (d.newRegistrations ?? 0), 0);
-
-    return { totalPlays, totalHours, peakActive, newRegistrations };
+    // Period totals come from the server so the dashboard cannot report a
+    // different figure from the Reports page for the same window, and cannot
+    // silently describe a paginated slice as the whole range.
+    const current = analyticsData?.current;
+    const coverage = current?.coverage;
+    return {
+      totalPlays: coverage?.plays ? current.totalPlays : null,
+      totalHours: coverage?.playtime ? Math.round(current.totalListenDurationSeconds / 3600) : null,
+      peakActive: coverage?.activeUsers ? current.uniqueActiveUsers : null,
+      newRegistrations: coverage?.registrations ? current.newRegistrations : null,
+    };
   }, [analyticsData]);
 
   // ── Top 5 Popular Bhajans (sorted by plays, NOT creation date) ─────────
@@ -447,7 +443,7 @@ export const AdminDashboard: React.FC = () => {
         icon={<TrendingUp className="w-4 h-4" />}
         subtitle={
           <span>
-            समयावधि: <strong className="text-stone-800 font-bold">{RANGE_LABELS[selectedTimeline]}</strong>
+            समयावधि: <strong className="text-stone-800 font-bold">{timelineLabel(selectedTimeline)}</strong>
             {analyticsLoading && <span className="text-stone-500 ml-2">लोड हो रहा…</span>}
             {!analyticsLoading && analyticsError && (
               <span className="text-red-600 ml-2" role="alert">{analyticsError}</span>
@@ -495,7 +491,7 @@ export const AdminDashboard: React.FC = () => {
           iconBg="bg-orange-50 border-orange-200 text-orange-600"
         />
         <StatCard
-          value={`${formatIndian(analyticsKpis.totalHours)} घंटे`}
+          value={analyticsKpis.totalHours === null ? '—' : `${formatIndian(analyticsKpis.totalHours)} घंटे`}
           label="सत्संग श्रवण समय (Listening Hours)"
           icon={<Clock className="w-6 h-6" />}
           drillDown="/admin/reports"
@@ -508,7 +504,7 @@ export const AdminDashboard: React.FC = () => {
           value={formatIndian(analyticsKpis.peakActive)}
           label="सक्रिय सत्संगी भक्त (Active Devotees)"
           icon={<Users className="w-6 h-6" />}
-          trend={analyticsKpis.newRegistrations > 0 ? { value: `+${formatIndian(analyticsKpis.newRegistrations)} नए`, positive: true } : undefined}
+          trend={analyticsKpis.newRegistrations !== null && analyticsKpis.newRegistrations > 0 ? { value: `+${formatIndian(analyticsKpis.newRegistrations)} नए`, positive: true } : undefined}
           drillDown="/admin/users"
           loading={analyticsLoading}
           error={!!analyticsError}
@@ -613,7 +609,7 @@ export const AdminDashboard: React.FC = () => {
               </h3>
             </div>
             <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
-              {RANGE_LABELS[selectedTimeline]}
+              {timelineLabel(selectedTimeline)}
             </span>
           </div>
 
