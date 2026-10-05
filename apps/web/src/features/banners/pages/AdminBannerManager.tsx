@@ -105,7 +105,7 @@ export const AdminBannerManager: React.FC = () => {
     if (!slotToDelete) return;
     setIsDeletingSlot(true);
     try {
-      const res = await bannerService.deleteSlot(slotToDelete);
+      const res = await bannerService.deleteSlotBanner(slotToDelete);
       if (res.success) {
         showFeedback('success', `स्लॉट ${slotToDelete} का बैनर सफलतापूर्वक हटा दिया गया।`);
       } else {
@@ -306,8 +306,13 @@ export const AdminBannerManager: React.FC = () => {
         <BannerIntegrityCard
           allBanners={allBanners}
           slotBanners={slotBanners}
+          slots={slotBanners}
           onBannersUpdated={() => {
-            bannerService.getSlotBanners().then((slots) => setSlotBanners(slots));
+            bannerService.getSlotBanners().then((res) => {
+              if (res.success && res.data) {
+                setSlotBanners(res.data);
+              }
+            });
           }}
           onFeedback={showFeedback}
         />

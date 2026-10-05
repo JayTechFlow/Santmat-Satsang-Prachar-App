@@ -18,14 +18,23 @@ import { bannerService, BannerIntegrityReport, CANONICAL_SLOTS } from '../servic
 import { AdminButton, AdminConfirmDialog } from '../../../components/admin';
 
 export interface BannerIntegrityCardProps {
-  slots: Record<BannerSlotNumber, BannerEntity | null>;
+  slots?: Record<BannerSlotNumber, BannerEntity | null>;
+  slotBanners?: Record<BannerSlotNumber, BannerEntity | null>;
+  allBanners?: BannerEntity[];
   onAuditCompleted?: () => void;
+  onBannersUpdated?: () => void;
+  onFeedback?: (type: 'success' | 'error', text: string) => void;
 }
 
 export const BannerIntegrityCard: React.FC<BannerIntegrityCardProps> = ({
   slots,
+  slotBanners,
+  allBanners: _allBanners,
   onAuditCompleted,
+  onBannersUpdated,
+  onFeedback,
 }) => {
+  const effectiveSlots = slots || slotBanners || { 1: null, 2: null, 3: null, 4: null };
   const [report, setReport] = useState<BannerIntegrityReport | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [isPurging, setIsPurging] = useState(false);
@@ -85,6 +94,7 @@ export const BannerIntegrityCard: React.FC<BannerIntegrityCardProps> = ({
         // Re-run audit to verify clean state
         await handleRunAudit();
         onAuditCompleted?.();
+        onBannersUpdated?.();
       } else {
         setStatusMessage({
           type: 'error',
@@ -180,7 +190,7 @@ export const BannerIntegrityCard: React.FC<BannerIntegrityCardProps> = ({
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {CANONICAL_SLOTS.map((slotNum) => {
-              const b = slots[slotNum];
+              const b = effectiveSlots[slotNum];
               const isValid = b && b.active !== false && !!b.imageUrl;
               const isEmpty = !b;
 
