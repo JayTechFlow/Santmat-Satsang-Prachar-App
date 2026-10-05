@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/home_providers.dart';
 import '../widgets/category_action_grid.dart';
-import '../widgets/daily_suvichar_carousel.dart';
+import '../widgets/home_banner_carousel.dart';
 import '../widgets/home_search_bar.dart';
 import '../widgets/latest_bhajans_section.dart';
 import '../../../../shared/design_system/components/ssp_loading_state.dart';
@@ -63,10 +63,12 @@ class HomePage extends ConsumerWidget {
 
                         const SizedBox(height: 16.0),
 
-                        // 2. Daily Suvichar Carousel
-                        const DailySuvicharCarousel(),
+                        // 2. Canonical 16:9 4-Slot Banner Carousel from CMS
+                        if (data.banners.isNotEmpty) ...[
+                          HomeBannerCarousel(banners: data.banners),
+                          const SizedBox(height: 16.0),
+                        ],
 
-                        const SizedBox(height: 16.0),
 
                         // 3. 2-Column Category Grid
                         const CategoryActionGrid(),

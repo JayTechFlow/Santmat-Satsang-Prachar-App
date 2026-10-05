@@ -31,8 +31,7 @@ const List<SuvicharItem> defaultSuvichars = [
     author: 'पूज्य गुरुदेव (महर्षि मेँहीं आश्रम)',
     theme: 'सत्संग महिमा एवं राष्ट्र चेतना',
     date: '15 अगस्त (आज का विचार)',
-    imageUrl:
-        'https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=900&auto=format&fit=crop&q=80',
+    imageUrl: '',
     isSpecialPoster: true,
   ),
   SuvicharItem(
@@ -42,8 +41,7 @@ const List<SuvicharItem> defaultSuvichars = [
     author: 'संत कबीर',
     theme: 'शांति और प्रकाश',
     date: 'दैनिक सुविचार',
-    imageUrl:
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80',
+    imageUrl: '',
   ),
   SuvicharItem(
     id: 'suvichar-3',
@@ -52,8 +50,7 @@ const List<SuvicharItem> defaultSuvichars = [
     author: 'संत दादू दयाल',
     theme: 'नाम स्मरण',
     date: 'दैनिक सुविचार',
-    imageUrl:
-        'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&auto=format&fit=crop&q=80',
+    imageUrl: '',
   ),
   SuvicharItem(
     id: 'suvichar-4',
@@ -62,7 +59,6 @@ const List<SuvicharItem> defaultSuvichars = [
     author: 'संत तुलसीदास',
     theme: 'गुरु भक्ति',
     date: 'दैनिक सुविचार',
-    imageUrl:
-        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
+    imageUrl: '',
   ),
 ];

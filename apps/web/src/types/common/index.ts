@@ -135,13 +135,26 @@ export interface CategoryEntity {
   matchTokens?: string[];
 }
 
+export type BannerSlotNumber = 1 | 2 | 3 | 4;
+
 export interface BannerEntity {
   id: string;
   title: string;
   imageUrl: string;
+  storagePath?: string;
+  thumbnailUrl?: string;
+  thumbnailStoragePath?: string;
   targetScreen?: string;
   active: boolean;
   order?: number;
+  slot?: BannerSlotNumber;
+  width?: number;
+  height?: number;
+  format?: string;
+  sizeBytes?: number;
+  updatedAt?: string;
+  createdAt?: string;
+  updatedBy?: string;
   organizationId?: string;
 }
 

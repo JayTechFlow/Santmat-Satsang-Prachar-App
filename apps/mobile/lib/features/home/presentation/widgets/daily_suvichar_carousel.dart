@@ -112,21 +112,40 @@ class _DailySuvicharCarouselState extends State<DailySuvicharCarousel> {
                     fit: StackFit.expand,
                     children: [
                       // Backdrop Image
-                      Image.network(
-                        item.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: isDark
-                              ? const Color(0xFF292524)
-                              : const Color(0xFFF5F5F4),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_outlined,
-                              color: Colors.grey,
+                      if (item.imageUrl.isNotEmpty)
+                        Image.network(
+                          item.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: isDark
+                                ? const Color(0xFF292524)
+                                : const Color(0xFFF5F5F4),
+                            child: const Center(
+                              child: Icon(
+                                Icons.image_outlined,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: isDark
+                                  ? [
+                                      const Color(0xFF292524),
+                                      const Color(0xFF1C1917),
+                                    ]
+                                  : [
+                                      const Color(0xFFFEF3C7),
+                                      const Color(0xFFFDE68A),
+                                    ],
                             ),
                           ),
                         ),
-                      ),
 
                       // Gradient Overlay for readability
                       Positioned.fill(

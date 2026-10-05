@@ -57,34 +57,67 @@ class FirebaseHomeDataSource implements HomeDataSource {
       );
     }
 
-    final banners = bannersSnapshot.docs.map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
+    final banners = bannersSnapshot.docs
+        .map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
 
-      String? targetRoute;
-      final actionType = data['actionType'] as String?;
-      final actionTarget = data['actionTarget'] as String?;
+          final isActive =
+              (data['active'] as bool? ?? data['isActive'] as bool? ?? true);
+          if (!isActive) return null;
 
-      if (actionType != null &&
-          actionTarget != null &&
-          actionTarget.isNotEmpty) {
-        if (actionType == 'internal' || actionType == 'link') {
-          targetRoute = actionTarget;
-        } else if (actionType == 'bhajan') {
-          targetRoute = '/audio/$actionTarget';
-        } else if (actionType == 'book') {
-          targetRoute = '/books/$actionTarget';
-        } else if (actionType == 'category') {
-          targetRoute = '/category/$actionTarget';
-        }
+          final imageUrl = data['imageUrl'] as String? ?? '';
+          if (imageUrl.isEmpty) return null;
+
+          String? targetRoute;
+          final actionType = data['actionType'] as String?;
+          final actionTarget = data['actionTarget'] as String?;
+
+          if (actionType != null &&
+              actionTarget != null &&
+              actionTarget.isNotEmpty) {
+            if (actionType == 'internal' || actionType == 'link') {
+              targetRoute = actionTarget;
+            } else if (actionType == 'bhajan') {
+              targetRoute = '/audio/$actionTarget';
+            } else if (actionType == 'book') {
+              targetRoute = '/books/$actionTarget';
+            } else if (actionType == 'category') {
+              targetRoute = '/category/$actionTarget';
+            }
+          }
+
+          final rawSlot = data['slot'] ?? data['order'];
+          int slot = 1;
+          if (rawSlot is num) {
+            if (data.containsKey('slot')) {
+              slot = rawSlot.toInt();
+            } else {
+              slot = rawSlot.toInt() + 1;
+            }
+          }
+          if (slot < 1 || slot > 4) slot = 1;
+
+          return FeaturedBannerEntity(
+            id: doc.id,
+            title: data['title'] ?? '',
+            imageUrl: imageUrl,
+            targetRoute:
+                targetRoute ?? (data['targetScreen'] as String?) ?? '/audio',
+            slot: slot,
+          );
+        })
+        .whereType<FeaturedBannerEntity>()
+        .toList();
+
+    // Deduplicate by slot (at most one banner per slot 1..4) and sort deterministically
+    final Map<int, FeaturedBannerEntity> slotMap = {};
+    for (final b in banners) {
+      if (!slotMap.containsKey(b.slot)) {
+        slotMap[b.slot] = b;
       }
-
-      return FeaturedBannerEntity(
-        id: doc.id,
-        title: data['title'] ?? '',
-        imageUrl: data['imageUrl'] ?? '',
-        targetRoute: targetRoute,
-      );
-    }).toList();
+    }
+    final orderedBanners = slotMap.values.toList()
+      ..sort((a, b) => a.slot.compareTo(b.slot));
 
     final quickActions = categoriesSnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
@@ -114,7 +147,7 @@ class FirebaseHomeDataSource implements HomeDataSource {
     return HomeDashboardEntity(
       notificationCount: 0,
       dailyQuote: dailyQuote,
-      banners: banners,
+      banners: orderedBanners,
       quickActions: quickActions,
       latestSatsangs: [],
       upcomingEvents: [],
