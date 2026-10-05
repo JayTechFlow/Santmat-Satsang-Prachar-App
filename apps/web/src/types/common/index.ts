@@ -26,6 +26,7 @@ export interface UserProfile {
   role: UserRole;
   organizationId?: string;
   accountStatus: UserAccountStatus;
+  status?: string;
   phone?: string;
   city?: string;
   spiritualMotto?: string;
@@ -33,6 +34,10 @@ export interface UserProfile {
   dikshaGuru?: string;
   createdAt?: string;
   updatedAt?: string;
+  lastActiveAt?: string;
+  lastLogin?: string;
+  themeMode?: string;
+  languageCode?: string;
 }
 
 // Domain Entity Models

@@ -158,11 +158,13 @@ export function UserProfileDrawer({
                 </div>
 
                 <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2 text-xs">
-                  <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2">समय</span>
+                  <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2">समय एवं गतिविधि (Timeline & Activity)</span>
                   {(
                     [
-                      { Icon: Calendar, label: 'पंजीकरण', val: user.createdAt },
-                      { Icon: Clock, label: 'अंतिम अपडेट', val: user.updatedAt },
+                      { Icon: Calendar, label: 'पंजीकरण (Registered)', val: user.createdAt },
+                      { Icon: Clock, label: 'अंतिम अपडेट (Profile Updated)', val: user.updatedAt },
+                      { Icon: Activity, label: 'अंतिम सक्रियता (Last Active)', val: user.lastActiveAt },
+                      { Icon: Clock, label: 'अंतिम लॉगिन (Last Login)', val: user.lastLogin },
                     ] as const
                   ).map(({ Icon, label, val }, i) => (
                     <div key={i} className="flex items-center justify-between text-stone-700">

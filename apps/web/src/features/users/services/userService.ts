@@ -54,13 +54,18 @@ export class UserService {
               role: data.role || 'mobile_user',
               organizationId: data.organizationId || '',
               accountStatus: data.accountStatus || data.status || 'active',
+              status: data.status || data.accountStatus || 'active',
               phone: data.phone || '',
               city: data.city || '',
               spiritualMotto: data.spiritualMotto || '',
               guruDiksha: data.guruDiksha || '',
               dikshaGuru: data.dikshaGuru || '',
               createdAt: parseFirebaseDate(data.createdAt),
-              updatedAt: parseFirebaseDate(data.updatedAt)
+              updatedAt: parseFirebaseDate(data.updatedAt),
+              lastActiveAt: parseFirebaseDate(data.lastActiveAt),
+              lastLogin: parseFirebaseDate(data.lastLogin || data.lastLoginAt),
+              themeMode: data.themeMode,
+              languageCode: data.languageCode,
             };
           });
           callback(list);
@@ -78,6 +83,43 @@ export class UserService {
     } catch {
       callback([]);
       return () => {};
+    }
+  }
+
+  /**
+   * Fetch users once via getDocs.
+   */
+  async getUsers(): Promise<ServiceResponse<UserProfile[]>> {
+    try {
+      const snap = await getDocs(collection(db, COLLECTION_NAME));
+      const list: UserProfile[] = snap.docs.map((d) => {
+        const data = d.data();
+        return {
+          uid: d.id,
+          email: data.email || '',
+          displayName: data.displayName || data.name || '',
+          photoURL: data.photoURL || '',
+          role: data.role || 'mobile_user',
+          organizationId: data.organizationId || '',
+          accountStatus: data.accountStatus || data.status || 'active',
+          status: data.status || data.accountStatus || 'active',
+          phone: data.phone || '',
+          city: data.city || '',
+          spiritualMotto: data.spiritualMotto || '',
+          guruDiksha: data.guruDiksha || '',
+          dikshaGuru: data.dikshaGuru || '',
+          createdAt: parseFirebaseDate(data.createdAt),
+          updatedAt: parseFirebaseDate(data.updatedAt),
+          lastActiveAt: parseFirebaseDate(data.lastActiveAt),
+          lastLogin: parseFirebaseDate(data.lastLogin || data.lastLoginAt),
+          themeMode: data.themeMode,
+          languageCode: data.languageCode,
+        };
+      });
+      return { success: true, data: list };
+    } catch (error: any) {
+      console.error('getUsers Error:', error);
+      return { success: false, error: error.message || 'Failed to fetch users' };
     }
   }
 

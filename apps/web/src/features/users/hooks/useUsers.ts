@@ -48,12 +48,25 @@ export function useUsers() {
     return userService.deleteUserPermanently(targetUid);
   };
 
+  const refreshUsers = async () => {
+    setLoading(true);
+    const res = await userService.getUsers();
+    if (res.success && res.data) {
+      setUsers(res.data);
+      setError(null);
+    } else if (res.error) {
+      setError(res.error);
+    }
+    setLoading(false);
+  };
+
   const clearError = () => setError(null);
 
   return {
     users,
     loading,
     error,
+    refreshUsers,
     clearError,
     updateUserRole,
     updateUserStatus,
