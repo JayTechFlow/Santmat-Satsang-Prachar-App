@@ -15,10 +15,9 @@ import '../../../../shared/design_system/components/ssp_app_bar.dart';
 /// Features:
 /// 1. Top Devotional Header (SSPAppBar.devotional).
 /// 2. Top Search Bar ("अपने पसंद का भजन सुनें").
-/// 3. Daily Suvichar Carousel (5s auto-scroll, horizontal snap swipe, backdrop image, share, pill action button).
-/// 4. Suvichar Modal Dialog (quote image, author, share, audio playback, next/prev navigation).
-/// 5. 2-Column Category Grid ("ऑडियो" and "स्तुति-बिनती").
-/// 6. Latest Bhajans Section ("नए भजन" with artwork thumbnail, animated equalizer bars when playing, play/pause toggle, and duration label).
+/// 3. 4-Slot Home Banner Carousel (5s auto-scroll, horizontal snap swipe, tap deep-linking).
+/// 4. 2-Column Category Grid ("ऑडियो" and "स्तुति-बिनती").
+/// 5. Latest Bhajans Section ("नए भजन" with artwork thumbnail, animated equalizer bars when playing, play/pause toggle, and duration label).
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 

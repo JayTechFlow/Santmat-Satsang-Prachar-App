@@ -416,7 +416,7 @@ describe("Phase 16 — Negative cases", () => {
 
   it("DENIES mobile_user writing admin-managed content collections", async () => {
     const a = db(userA());
-    for (const c of ["audio", "books", "suvichar", "stuti_vinati", "search_index", "app_settings"]) {
+    for (const c of ["audio", "books", "stuti_vinati", "search_index", "app_settings"]) {
       await assertFails(setDoc(doc(a, `${c}/injected`), { injected: true }));
     }
   });

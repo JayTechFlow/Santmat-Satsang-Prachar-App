@@ -70,16 +70,6 @@ export const AdminAspectRatioPreview: React.FC<AdminAspectRatioPreviewProps> = (
             </div>
           )}
 
-          {profile.id === 'suvichar_poster' && imageUrl && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-3 pointer-events-none">
-              <span className="text-xs font-bold text-amber-300 line-clamp-2">
-                "{title || 'सत्य ही परमात्मा का वास्तविक स्वरूप है।'}"
-              </span>
-              <span className="text-[10px] text-stone-300 mt-0.5">
-                — {subtitle || 'पूज्यपाद महर्षि मेँहीँ परमहंस जी महाराज'}
-              </span>
-            </div>
-          )}
         </div>
 
         <div className="text-[11px] text-stone-400 mt-2 text-center">

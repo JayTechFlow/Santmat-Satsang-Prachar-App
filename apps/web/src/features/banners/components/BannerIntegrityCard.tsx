@@ -321,7 +321,7 @@ export const BannerIntegrityCard: React.FC<BannerIntegrityCardProps> = ({
             <strong className="text-stone-700">स्टोरेज सुरक्षा गारंटी (Storage Safety Guarantee):</strong>
             <p className="mt-0.5">
               यह अखंडता क्लीनर अन्य किसी भी स्टोरेज फोल्डर (जैसे <code>audio/</code>, <code>books/</code>,{' '}
-              <code>avatars/</code>, <code>suvichar/</code>) को कभी भी नहीं छूता। केवल 4 लाइव स्लॉट्स से असंबद्ध
+              <code>avatars/</code>, <code>documents/</code>) को कभी भी नहीं छूता। केवल 4 लाइव स्लॉट्स से असंबद्ध
               पुरानी बैनर फाइलों को ही हटाया जाता है।
             </p>
           </div>

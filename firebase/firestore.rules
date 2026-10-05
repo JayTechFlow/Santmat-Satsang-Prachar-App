@@ -69,13 +69,10 @@ service cloud.firestore {
     match /home_banners/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /banners/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /quick_actions/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
-    match /daily_suvichar/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
-    match /daily_quotes/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /featured_content/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /audio_categories/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /book_categories/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /categories/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
-    match /suvichar/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /audio/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /stuti_vinati/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /books/{docId} { allow read: if true; allow write: if isAnyAdmin(); }

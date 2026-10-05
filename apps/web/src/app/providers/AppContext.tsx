@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../lib/firebase/config';
-import { Bhajan, StutiItem, SuvicharItem, NotificationItem, AdminTab, Playlist, CategoryItem } from '../../types/common/index';
+import { Bhajan, StutiItem, NotificationItem, AdminTab, Playlist, CategoryItem } from '../../types/common/index';
 import { BhajanEntity, StutiEntity, CategoryEntity, NotificationEntity } from '../../types/common/index';
 import { bhajanService } from '../../features/audio/services/bhajanService';
 import { stutiService } from '../../features/stuti/services/stutiService';
-import { suvicharService } from '../../services/shared/suvicharService';
 import { categoryService } from '../../features/categories/services/categoryService';
 import { notificationService } from '../../features/notifications/services/notificationService';
 import { playlistService } from '../../features/playlists/services/playlistService';
@@ -34,10 +33,6 @@ interface AppContextType {
   addCategory: (category: Omit<CategoryItem, 'id'>) => void;
   updateCategory: (id: string, data: Partial<CategoryItem>) => void;
   deleteCategory: (id: string) => void;
-  suvichars: SuvicharItem[];
-  addSuvichar: (suvichar: Omit<SuvicharItem, 'id'>) => void;
-  updateSuvichar: (id: string | number, data: Partial<SuvicharItem>) => void;
-  deleteSuvichar: (id: string | number) => void;
   notifications: NotificationItem[];
   addNotification: (item: Omit<NotificationItem, 'id' | 'date' | 'isRead'>) => void;
   deleteNotification: (id: string) => void;
@@ -65,7 +60,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [bhajans, setBhajans] = useState<Bhajan[]>([]);
   const [stutis, setStutis] = useState<StutiItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [suvichars, setSuvichars] = useState<SuvicharItem[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
@@ -145,16 +139,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         markLoaded();
       }
     );
-    const unsubSuvichars = suvicharService.subscribeSuvichars(
-      (data) => {
-        setSuvichars(data);
-        markLoaded();
-      },
-      () => {
-        setDataError('सुविचार डेटा लोड करने में त्रुटि');
-        markLoaded();
-      }
-    );
     const unsubCategories = categoryService.subscribeCategories(
       (data: CategoryEntity[]) => {
         setCategories(data);
@@ -214,7 +198,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return () => {
       unsubBhajans();
       unsubStuti();
-      unsubSuvichars();
       unsubCategories();
       if (unsubNotifications) unsubNotifications();
       if (unsubPlaylists) {
@@ -301,34 +284,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
     });
     setCategories((prev) => prev.filter((cat) => cat.id !== id));
-  };
-
-  const addSuvichar = (data: Omit<SuvicharItem, 'id'>) => {
-    suvicharService.addSuvichar(data).then((res) => {
-      if (!res.success) {
-        setDataError(res.error || 'सुविचार सहेजने में त्रुटि');
-      }
-    });
-  };
-
-  const updateSuvichar = (id: string | number, data: Partial<SuvicharItem>) => {
-    const { id: _ignoredId, ...updates } = data;
-    void _ignoredId;
-    suvicharService.updateSuvichar(String(id), updates).then((res) => {
-      if (!res.success) {
-        setDataError(res.error || 'सुविचार अपडेट में त्रुटि');
-      }
-    });
-    setSuvichars((prev) => prev.map((item) => (item.id === id ? { ...item, ...data } : item)));
-  };
-
-  const deleteSuvichar = (id: string | number) => {
-    suvicharService.deleteSuvichar(String(id)).then((res) => {
-      if (!res.success) {
-        setDataError(res.error || 'सुविचार हटाने में त्रुटि');
-      }
-    });
-    setSuvichars((prev) => prev.filter((item) => item.id !== id));
   };
 
   const addNotification = (item: Omit<NotificationItem, 'id' | 'date' | 'isRead'>) => {
@@ -436,10 +391,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addCategory,
         updateCategory,
         deleteCategory,
-        suvichars,
-        addSuvichar,
-        updateSuvichar,
-        deleteSuvichar,
         notifications,
         addNotification,
         deleteNotification,

@@ -5,7 +5,6 @@ class FirestoreCollections {
   static const String audio = 'audio';
   static const String books = 'books';
   static const String bookCategories = 'book_categories';
-  static const String dailyQuotes = 'suvichar';
   static const String events = 'events';
   static const String notifications = 'notifications';
   static const String donations = 'donations';

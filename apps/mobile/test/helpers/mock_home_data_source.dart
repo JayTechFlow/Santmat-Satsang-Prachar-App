@@ -1,5 +1,4 @@
 import 'package:santmat_satsang_prachar/features/home/data/datasources/home_data_source.dart';
-import 'package:santmat_satsang_prachar/features/home/domain/entities/daily_quote_entity.dart';
 import 'package:santmat_satsang_prachar/features/home/domain/entities/featured_banner_entity.dart';
 import 'package:santmat_satsang_prachar/features/home/domain/entities/home_dashboard_entity.dart';
 import 'package:santmat_satsang_prachar/features/home/domain/entities/quick_action_entity.dart';
@@ -10,12 +9,6 @@ class MockHomeDataSource implements HomeDataSource {
     await Future.delayed(const Duration(milliseconds: 800));
     return HomeDashboardEntity(
       notificationCount: 3,
-      dailyQuote: DailyQuoteEntity(
-        id: '1',
-        quoteText: 'The mind is everything. What you think you become.',
-        author: 'Buddha',
-        date: DateTime.now(),
-      ),
       banners: [
         FeaturedBannerEntity(id: '1', title: 'Banner 1', imageUrl: 'https://picsum.photos/800/400'),
         FeaturedBannerEntity(id: '2', title: 'Banner 2', imageUrl: 'https://picsum.photos/800/401'),

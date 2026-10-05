@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   bhajan: <Music className="w-4 h-4" />,
   stuti: <BookOpen className="w-4 h-4" />,
-  suvichar: <Sparkles className="w-4 h-4" />,
   event: <Calendar className="w-4 h-4" />,
   special: <MessageCircle className="w-4 h-4" />,
 };
@@ -21,7 +20,6 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
 const TYPE_LABELS: Record<string, string> = {
   bhajan: 'भजन',
   stuti: 'स्तुति',
-  suvichar: 'सुविचार',
   event: 'कार्यक्रम',
   special: 'विशेष',
 };
@@ -29,7 +27,6 @@ const TYPE_LABELS: Record<string, string> = {
 const TYPE_COLORS: Record<string, string> = {
   bhajan: 'bg-amber-100 text-amber-700',
   stuti: 'bg-rose-100 text-rose-700',
-  suvichar: 'bg-violet-100 text-violet-700',
   event: 'bg-blue-100 text-blue-700',
   special: 'bg-orange-100 text-orange-700',
 };

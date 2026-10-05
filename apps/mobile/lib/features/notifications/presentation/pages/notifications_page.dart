@@ -52,7 +52,7 @@ class NotificationsPage extends ConsumerWidget {
     final updatesList = sortedList.where((n) {
       final name = n.category.name.toLowerCase();
       final id = n.category.id.toLowerCase();
-      return name == 'updates' || name == 'अपडेट' || id == 'bhajan' || id == 'stuti' || id == 'suvichar';
+      return name == 'updates' || name == 'अपडेट' || id == 'bhajan' || id == 'stuti';
     }).toList();
     final specialList = sortedList.where((n) {
       final name = n.category.name.toLowerCase();

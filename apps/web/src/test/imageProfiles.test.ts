@@ -13,7 +13,6 @@ describe('Enterprise Image Profiles & Android UI Alignment', () => {
     expect(profileKeys).toContain('stuti_artwork');
     expect(profileKeys).toContain('book_cover');
     expect(profileKeys).toContain('category_icon');
-    expect(profileKeys).toContain('suvichar_poster');
     expect(profileKeys).toContain('avatar');
   });
 
@@ -30,7 +29,7 @@ describe('Enterprise Image Profiles & Android UI Alignment', () => {
     });
 
     it('specifies Android carousel presentation context', () => {
-      expect(profile.androidContext.componentName).toContain('DailySuvicharCarousel');
+      expect(profile.androidContext.componentName).toContain('HomeBanner');
       expect(profile.androidContext.renderMode).toBe('BoxFit.cover');
       expect(profile.androidContext.borderRadiusPx).toBe(20);
     });

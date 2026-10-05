@@ -8,7 +8,7 @@
  * Data sources:
  *   - Analytics: Cloud Function `analytics-getAnalyticsSummary` via reportService
  *   - Content: AppContext realtime subscriptions (bhajans, stutis, categories,
- *              suvichars, notifications, playlists)
+ *              notifications, playlists)
  *   - Books/Banners: One-shot reads via bookService/bannerService
  *   - RBAC: PermissionContext for role-based section gating
  */
@@ -86,7 +86,7 @@ const formatDateLabel = (dateStr: string): string => {
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const {
-    bhajans, stutis, categories, suvichars, notifications, playlists,
+    bhajans, stutis, categories, notifications, playlists,
     playTrack, currentTrack, isPlaying, togglePlay,
     dataLoading: appDataLoading, dataError: appDataError,
   } = useApp();
@@ -319,13 +319,12 @@ export const AdminDashboard: React.FC = () => {
       { label: 'भजन', count: bhajans.length, route: '/admin/bhajan-list', icon: <Music className="w-4 h-4" /> },
       { label: 'स्तुति', count: stutis.length, route: '/admin/stuti-vinati', icon: <BookOpen className="w-4 h-4" /> },
       { label: 'पुस्तकें', count: booksCount ?? 0, route: '/admin/books', icon: <BookMarked className="w-4 h-4" />, loading: booksCount === null },
-      { label: 'सुविचार', count: suvichars.length, route: '/admin/banners', icon: <Sparkles className="w-4 h-4" /> },
       { label: 'बैनर', count: bannersCount ?? 0, route: '/admin/banners', icon: <Image className="w-4 h-4" />, loading: bannersCount === null },
       { label: 'श्रेणियाँ', count: categories.length, route: '/admin/categories', icon: <FolderTree className="w-4 h-4" /> },
       { label: 'प्लेलिस्ट', count: playlists.length, route: '/admin/playlists', icon: <ListMusic className="w-4 h-4" /> },
     ];
     return items;
-  }, [bhajans, stutis, booksCount, suvichars, bannersCount, categories, playlists]);
+  }, [bhajans, stutis, booksCount, bannersCount, categories, playlists]);
 
   // ── Quick Actions (role-gated) ─────────────────────────────────────────
 

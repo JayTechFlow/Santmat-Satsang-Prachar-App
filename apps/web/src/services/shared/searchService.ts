@@ -4,7 +4,7 @@ import { ServiceResponse } from '../../types/common/index';
 
 export interface SearchResultItem {
   id: string;
-  type: 'bhajan' | 'stuti' | 'suvichar' | 'book';
+  type: 'bhajan' | 'stuti' | 'book';
   title: string;
   subtitle?: string;
   category?: string;

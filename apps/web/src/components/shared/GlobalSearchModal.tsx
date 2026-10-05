@@ -11,14 +11,13 @@ import { useNavigate } from 'react-router-dom';
 import { bhajanService } from '../../features/audio/services/bhajanService';
 import { bookService } from '../../features/books/services/bookService';
 import { stutiService } from '../../features/stuti/services/stutiService';
-import { suvicharService } from '../../services/shared/suvicharService';
 import { categoryService } from '../../features/categories/services/categoryService';
 
 export interface SearchResultItem {
   id: string;
   title: string;
   subtitle?: string;
-  type: 'Audio' | 'Book' | 'StutiVinati' | 'Suvichar' | 'Category' | 'User' | 'Playlist';
+  type: 'Audio' | 'Book' | 'StutiVinati' | 'Category' | 'User' | 'Playlist';
   link: string;
 }
 
@@ -45,11 +44,10 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
     setLoading(true);
     try {
       const q = searchQuery.toLowerCase();
-      const [bhajans, books, stutis, suvichars, categories] = await Promise.all([
+      const [bhajans, books, stutis, categories] = await Promise.all([
         bhajanService.getBhajans().catch(() => []),
         bookService.getBooks().catch(() => []),
         stutiService.getStutis().catch(() => []),
-        suvicharService.getSuvichars().catch(() => []),
         categoryService.getCategories().catch(() => []),
       ]);
 
@@ -58,7 +56,6 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
       const bhajanList = Array.isArray(bhajans) ? bhajans : (bhajans.success && bhajans.data ? bhajans.data : []);
       const bookList = Array.isArray(books) ? books : [];
       const stutiList = Array.isArray(stutis) ? stutis : (stutis.success && stutis.data ? stutis.data : []);
-      const suvicharList = Array.isArray(suvichars) ? suvichars : [];
       const categoryList = Array.isArray(categories) ? categories : [];
 
       bhajanList.forEach((b: any) => {
@@ -82,14 +79,6 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
         const contentStr = (s.lyrics || s.content || '').toLowerCase();
         if (titleStr.includes(q) || contentStr.includes(q)) {
           items.push({ id: String(s.id), title: s.title || 'अनाम पाठ', subtitle: s.type || 'स्तुति एवं विनती', type: 'StutiVinati', link: '/admin/stuti-vinati' });
-        }
-      });
-
-      suvicharList.forEach((s: any) => {
-        const titleStr = (s.title || '').toLowerCase();
-        const quoteStr = (s.quote || '').toLowerCase();
-        if (titleStr.includes(q) || quoteStr.includes(q)) {
-          items.push({ id: String(s.id), title: s.title || s.author || 'सुविचार', subtitle: s.quote || 'संत वाणी', type: 'Suvichar', link: '/admin/banners' });
         }
       });
 
@@ -125,7 +114,6 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
       case 'Audio': return <Music className="w-4 h-4 text-amber-600" />;
       case 'Book': return <BookOpen className="w-4 h-4 text-blue-600" />;
       case 'StutiVinati': return <Heart className="w-4 h-4 text-rose-600" />;
-      case 'Suvichar': return <FileText className="w-4 h-4 text-amber-700" />;
       case 'Category': return <Folder className="w-4 h-4 text-emerald-600" />;
       case 'User': return <Users className="w-4 h-4 text-stone-700" />;
       default: return <ListMusic className="w-4 h-4 text-amber-600" />;
@@ -198,7 +186,7 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
             ref={inputRef}
             type="text"
             className="w-full bg-transparent text-sm text-stone-900 font-medium outline-none placeholder-stone-400"
-            placeholder="ऑडियो, ग्रंथ, स्तुति, सुविचार एवं श्रेणियाँ खोजें..."
+            placeholder="ऑडियो, ग्रंथ, स्तुति एवं श्रेणियाँ खोजें..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="खोज"
@@ -219,7 +207,7 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
 
         {/* Category Filters */}
         <div className="flex items-center gap-2 px-5 py-2.5 bg-stone-50 border-b border-stone-100 overflow-x-auto text-xs" role="tablist">
-          {['all', 'audio', 'book', 'stutivinati', 'suvichar', 'category'].map((type) => (
+          {['all', 'audio', 'book', 'stutivinati', 'category'].map((type) => (
             <button
               key={type}
               type="button"
@@ -230,7 +218,7 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
                 selectedType === type ? 'bg-amber-600 text-white shadow-xs' : 'text-stone-600 hover:bg-stone-200/60'
               }`}
             >
-              {type === 'all' ? 'सभी' : type === 'stutivinati' ? 'स्तुति-विनती' : type === 'audio' ? 'ऑडियो' : type === 'book' ? 'ग्रंथ' : type === 'suvichar' ? 'सुविचार' : 'श्रेणी'}
+              {type === 'all' ? 'सभी' : type === 'stutivinati' ? 'स्तुति-विनती' : type === 'audio' ? 'ऑडियो' : type === 'book' ? 'ग्रंथ' : 'श्रेणी'}
             </button>
           ))}
         </div>

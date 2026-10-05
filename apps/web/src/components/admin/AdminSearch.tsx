@@ -25,14 +25,12 @@ import { AdminCard } from './AdminCard';
 const TYPE_ROUTES: Record<SearchResultItem['type'], string> = {
   bhajan: '/admin/bhajan-list',
   stuti: '/admin/stuti-vinati',
-  suvichar: '/admin/banners',
   book: '/admin/books',
 };
 
 const TYPE_LABELS: Record<SearchResultItem['type'], { label: string; className: string; icon: React.ReactNode }> = {
   bhajan: { label: 'भजन', className: 'bg-orange-50 text-orange-800 border-orange-200', icon: <Music className="w-3 h-3" /> },
   stuti: { label: 'स्तुति', className: 'bg-purple-50 text-purple-800 border-purple-200', icon: <BookOpen className="w-3 h-3" /> },
-  suvichar: { label: 'सुविचार', className: 'bg-amber-50 text-amber-800 border-amber-200', icon: <Quote className="w-3 h-3" /> },
   book: { label: 'पुस्तक', className: 'bg-emerald-50 text-emerald-800 border-emerald-200', icon: <BookMarked className="w-3 h-3" /> },
 };
 
@@ -86,7 +84,7 @@ export const AdminSearch: React.FC = () => {
       {/* Canonical Admin Page Header */}
       <AdminPageHeader
         title="संतमत सामग्री खोजें"
-        subtitle="वैश्विक खोज: audio, stuti_vinati, suvichar, books संग्रहों से वास्तविक समय में खोजें"
+        subtitle="वैश्विक खोज: audio, stuti_vinati, books संग्रहों से वास्तविक समय में खोजें"
         badgeText="वैश्विक खोज इंजन"
         badgeVariant="primary"
         icon={<Search className="w-4 h-4 text-orange-600" />}

@@ -31,7 +31,7 @@ import { AdminPageHeader, AdminButton } from '../../../components/admin';
 const MB = 1024 * 1024;
 
 export const AdminSettings: React.FC = () => {
-  const { bhajans, stutis, categories, suvichars, notifications, playlists, dataLoading, dataError } = useApp();
+  const { bhajans, stutis, categories, notifications, playlists, dataLoading, dataError } = useApp();
   const { isDeveloperSuperAdmin, currentRole } = usePermissions();
 
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -83,7 +83,6 @@ export const AdminSettings: React.FC = () => {
     { label: 'कुल भजन', value: bhajans.length },
     { label: 'स्तुति-बिनती', value: stutis.length },
     { label: 'श्रेणियाँ', value: categories.length },
-    { label: 'सुविचार', value: suvichars.length },
     { label: 'सूचनाएँ', value: notifications.length },
     { label: 'प्लेलिस्ट्स', value: playlists.length },
   ];
@@ -320,7 +319,7 @@ export const AdminSettings: React.FC = () => {
           </div>
 
           <p className="text-[0.68rem] text-stone-500 leading-relaxed">
-            ये आँकड़े वास्तविक Firestore संग्रहों (audio, stuti_vinati, categories, suvichars,
+            ये आँकड़े वास्तविक Firestore संग्रहों (audio, stuti_vinati, categories,
             notifications, playlists) से वास्तविक समय में सिंक होते हैं। कोई भी संख्या नकली नहीं है।
           </p>
         </div>

@@ -150,13 +150,6 @@ class PreferenceNotificationSettingsPage extends ConsumerWidget {
                       .updateNotification(pref.copyWith(newSatsangAlerts: v)),
                 ),
                 SwitchPreferenceTile(
-                  title: 'Daily Quotes',
-                  value: pref.dailyQuotes,
-                  onChanged: (v) => ref
-                      .read(preferencesProvider.notifier)
-                      .updateNotification(pref.copyWith(dailyQuotes: v)),
-                ),
-                SwitchPreferenceTile(
                   title: 'Event Reminders',
                   value: pref.eventReminders,
                   onChanged: (v) => ref

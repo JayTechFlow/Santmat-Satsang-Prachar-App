@@ -20,7 +20,6 @@ const ALLOWED_AI_COLLECTIONS = new Set([
   "stuti_vinati",
   "banners",
   "events",
-  "suvichar",
 ]);
 
 const PROTECTED_COLLECTIONS = new Set([

@@ -123,7 +123,7 @@ export default function App() {
                   <Route path="bhajans" element={<AdminBhajanList />} />
                   <Route path="devotees" element={<AdminDevoteesManager />} />
                   <Route path="stuti" element={<AdminStutiManager />} />
-                  <Route path="suvichar" element={<AdminBannerManager />} />
+                  <Route path="suvichar" element={<Navigate to="/admin/banners" replace />} />
                 </Route>
 
                 {/* Catch-all fallback */}

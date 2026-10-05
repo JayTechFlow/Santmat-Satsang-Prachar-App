@@ -61,7 +61,7 @@ export const IMAGE_PROFILES: Record<string, ImageProfile> = {
     maxSizeBytes: 3 * 1024 * 1024, // 3MB
     outputFormat: 'image/webp',
     androidContext: {
-      componentName: 'DailySuvicharCarousel / HomeBanner',
+      componentName: 'HomeBanner',
       renderMode: 'BoxFit.cover',
       borderRadiusPx: 20,
       previewWidthPx: 340,
@@ -201,37 +201,6 @@ export const IMAGE_PROFILES: Record<string, ImageProfile> = {
     },
   },
 
-  suvichar_poster: {
-    id: 'suvichar_poster',
-    name: 'Daily Suvichar Poster',
-    labelHi: 'दैनिक सुविचार पोस्टर',
-    labelEn: 'Daily Spiritual Poster',
-    targetWidth: 1200,
-    targetHeight: 675,
-    aspectRatio: 16 / 9,
-    aspectRatioLabel: '16:9',
-    minWidth: 800,
-    minHeight: 450,
-    maxWidth: 1920,
-    maxHeight: 1080,
-    aspectRatioTolerance: 0.05,
-    fitMode: 'cover',
-    quality: 0.85,
-    maxSizeBytes: 2.5 * 1024 * 1024,
-    outputFormat: 'image/webp',
-    androidContext: {
-      componentName: 'DailySuvicharCarousel (220px Height Card)',
-      renderMode: 'BoxFit.cover',
-      borderRadiusPx: 19,
-      previewWidthPx: 340,
-      previewHeightPx: 191,
-      descriptionHi: 'होम स्क्रीन पर 5-सेकंड ऑटो-स्क्रॉल सुविचार कैरोसेल में ग्रेडिएंट के साथ दिखेगा।',
-    },
-    thumbnailVariants: {
-      thumb: { width: 320, height: 180 },
-      medium: { width: 640, height: 360 },
-    },
-  },
 
   avatar: {
     id: 'avatar',

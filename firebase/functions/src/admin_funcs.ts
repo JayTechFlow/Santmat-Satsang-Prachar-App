@@ -10,7 +10,6 @@ export const getDashboardStats = functions.https.onCall(async (data, context) =>
     const bhajansSnap = await db.collection("audio").get();
     const stutisSnap = await db.collection("stuti_vinati").get();
     const booksSnap = await db.collection("books").get();
-    const suvicharsSnap = await db.collection("suvichar").get();
     const playlistsSnap = await db.collection("playlists").get();
     const categoriesSnap = await db.collection("categories").get();
     const notificationsSnap = await db.collection("notifications").get();
@@ -24,7 +23,6 @@ export const getDashboardStats = functions.https.onCall(async (data, context) =>
       totalBhajans: bhajansSnap.size,
       totalStutis: stutisSnap.size,
       totalBooks: booksSnap.size,
-      totalSuvichars: suvicharsSnap.size,
       totalPlaylists: playlistsSnap.size,
       totalCategories: categoriesSnap.size,
       totalNotifications: notificationsSnap.size,
@@ -41,7 +39,6 @@ export const getDashboardStats = functions.https.onCall(async (data, context) =>
         totalBhajans: overview.totalBhajans,
         totalStutis: overview.totalStutis,
         totalBooks: overview.totalBooks,
-        totalSuvichars: overview.totalSuvichars,
         totalPlaylists: overview.totalPlaylists,
         totalCategories: overview.totalCategories,
         totalNotifications: overview.totalNotifications,
@@ -59,10 +56,10 @@ export const contentModeration = functions.https.onCall(async (data, context) =>
     // an admin callable could write into developer-only collections such as
     // system_config / roles (Admin SDK bypasses security rules).
     const MODERATABLE_COLLECTIONS = [
-      'audio', 'stuti_vinati', 'books', 'suvichar', 'media',
+      'audio', 'stuti_vinati', 'books', 'media',
       'events', 'satsangs', 'categories', 'book_categories', 'audio_categories',
-      'banners', 'home_banners', 'featured_content', 'daily_quotes', 'daily_suvichar',
-      'quotes', 'playlists', 'notifications',
+      'banners', 'home_banners', 'featured_content',
+      'playlists', 'notifications',
     ];
     const colName = (targetCollection && typeof targetCollection === 'string')
       ? targetCollection

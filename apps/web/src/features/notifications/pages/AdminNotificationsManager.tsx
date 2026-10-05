@@ -30,7 +30,7 @@ export const AdminNotificationsManager: React.FC = () => {
 
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
-  const [type, setType] = useState<'suvichar' | 'bhajan' | 'stuti' | 'special' | 'event'>('bhajan');
+  const [type, setType] = useState<'bhajan' | 'stuti' | 'special' | 'event'>('bhajan');
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -88,8 +88,6 @@ export const AdminNotificationsManager: React.FC = () => {
         return <span className="bg-purple-100 text-purple-800 text-[0.65rem] font-bold px-2 py-0.5 rounded-full">स्तुति सूचना</span>;
       case 'bhajan':
         return <span className="bg-orange-100 text-orange-800 text-[0.65rem] font-bold px-2 py-0.5 rounded-full">भजन सूचना</span>;
-      case 'suvichar':
-        return <span className="bg-amber-100 text-amber-800 text-[0.65rem] font-bold px-2 py-0.5 rounded-full">सुविचार</span>;
       case 'special':
         return <span className="bg-emerald-100 text-emerald-800 text-[0.65rem] font-bold px-2 py-0.5 rounded-full">विशेष संदेश</span>;
       default:
@@ -158,7 +156,6 @@ export const AdminNotificationsManager: React.FC = () => {
               >
                 <option value="bhajan">🎵 भजन संबंधित सूचना (New Bhajan)</option>
                 <option value="stuti">🙏 स्तुति-बिनती स्मरण (Stuti Reminder)</option>
-                <option value="suvichar">📖 दैनिक सुविचार वाणी (Daily Quote)</option>
                 <option value="special">✨ विशेष सत्संग संदेश (Special Event)</option>
               </select>
             </div>

@@ -185,14 +185,6 @@ service firebase.storage {
     }
 
 
-    // Suvichar — Daily thought images (admin panel)
-    match /suvichar/{allPaths=**} {
-      allow read: if true;
-      allow create: if isAdmin() && isNewFile() && isValidImage();
-      allow update: if isAdmin() && isValidImage();
-      allow delete: if isAdmin();
-    }
-
     // Book covers — Book cover images (admin panel)
     match /book_covers/{allPaths=**} {
       allow read: if true;

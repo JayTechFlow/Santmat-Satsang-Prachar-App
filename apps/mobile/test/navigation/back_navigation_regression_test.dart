@@ -619,7 +619,6 @@ void main() {
         '/profile/edit',
         '/notifications/details',
         '/books/reader',
-        '/quotes/details/1',
         '/settings/privacy',
       ]) {
         final r = c.resolve(location: path, rootDepth: 2);
@@ -633,7 +632,6 @@ void main() {
       for (final path in [
         '/search',
         '/profile/favorites',
-        '/quotes',
         '/events',
         '/donations',
         '/library',
@@ -677,10 +675,6 @@ void main() {
         '/books/category/1',
         '/books/bookmarks',
         '/books/history',
-        '/quotes',
-        '/quotes/details/1',
-        '/quotes/favorites',
-        '/quotes/history',
         '/search',
         '/events',
         '/events/details/1',

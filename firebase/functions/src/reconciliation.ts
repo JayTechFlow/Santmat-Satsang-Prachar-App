@@ -164,7 +164,7 @@ export const reconcileSystem = functions.https.onCall(async (data, context) => {
     // ---------------------------------------------------------
     // 3. FETCH DOMAIN CONTENT RECORDS
     // ---------------------------------------------------------
-    const contentCollections = ["audio", "stuti_vinati", "books", "banners", "suvichar"];
+    const contentCollections = ["audio", "stuti_vinati", "books", "banners"];
     const contentRecords: any[] = [];
     const mediaPathReferences = new Map<string, Array<{ col: string; id: string; title: string }>>();
 
@@ -189,7 +189,7 @@ export const reconcileSystem = functions.https.onCall(async (data, context) => {
           data: record,
         });
 
-        const title = record.title || record.quote || record.name || `Unnamed (${doc.id})`;
+        const title = record.title || record.name || `Unnamed (${doc.id})`;
 
         // Extract references
         if (colName === "audio") {
@@ -203,8 +203,6 @@ export const reconcileSystem = functions.https.onCall(async (data, context) => {
           addReference(getStoragePathFromUrl(record.pdfUrl), colName, doc.id, title);
           addReference(getStoragePathFromUrl(record.coverUrl), colName, doc.id, title);
         } else if (colName === "banners") {
-          addReference(getStoragePathFromUrl(record.imageUrl), colName, doc.id, title);
-        } else if (colName === "suvichar") {
           addReference(getStoragePathFromUrl(record.imageUrl), colName, doc.id, title);
         }
       });
@@ -300,9 +298,6 @@ export const reconcileSystem = functions.https.onCall(async (data, context) => {
       } else if (col === "banners") {
         if (!data.title) brokenReasons.push("Missing 'title'");
         if (!data.imageUrl) brokenReasons.push("Missing image link ('imageUrl')");
-      } else if (col === "suvichar") {
-        if (!data.quote) brokenReasons.push("Missing 'quote' message");
-        if (!data.author) brokenReasons.push("Missing 'author' attribution");
       }
 
       if (brokenReasons.length > 0) {
@@ -339,8 +334,6 @@ export const reconcileSystem = functions.https.onCall(async (data, context) => {
         addPathCheck(data.pdfUrl);
         addPathCheck(data.coverUrl);
       } else if (col === "banners") {
-        addPathCheck(data.imageUrl);
-      } else if (col === "suvichar") {
         addPathCheck(data.imageUrl);
       }
 

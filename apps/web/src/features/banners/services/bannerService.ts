@@ -693,7 +693,7 @@ export class BannerService {
    *
    * STRICT SAFETY GUARDS:
    * - Only paths strictly starting with `banners/` or `thumbnails/`.
-   * - NEVER touch `audio/`, `books/`, `avatars/`, `suvichar/`, `documents/`, `events/`.
+   * - NEVER touch `audio/`, `books/`, `avatars/`, `documents/`, `events/`.
    * - Must NEVER match ANY of the 4 canonical slot storage paths.
    */
   async purgeOrphanBannerAssets(

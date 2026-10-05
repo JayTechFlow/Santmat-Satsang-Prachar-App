@@ -20,7 +20,7 @@ export function normalizeNotificationEntity(id: string, data: any): Notification
     title: String(data.title || '').trim(),
     message: String(data.message || '').trim(),
     date: String(data.date || new Date().toISOString()).trim(),
-    type: (data.type === 'suvichar' || data.type === 'bhajan' || data.type === 'stuti' || data.type === 'special' || data.type === 'event') ? data.type : 'special',
+    type: (data.type === 'bhajan' || data.type === 'stuti' || data.type === 'special' || data.type === 'event') ? data.type : 'special',
     isRead: data.isRead !== undefined ? Boolean(data.isRead) : false,
     targetRole: data.targetRole ? String(data.targetRole) as any : undefined,
   };

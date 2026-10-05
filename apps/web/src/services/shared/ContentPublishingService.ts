@@ -37,7 +37,7 @@ export interface PublishProgress {
 export type ProgressCallback = (progress: PublishProgress) => void;
 
 export interface PublishRequest {
-  contentType: 'bhajan' | 'banner' | 'stuti' | 'suvichar' | 'book';
+  contentType: 'bhajan' | 'banner' | 'stuti' | 'book';
   payload: Record<string, any>;
   files: {
     audio?: File | null;
@@ -327,8 +327,6 @@ export class ContentPublishingService {
         return 'banners';
       case 'stuti':
         return 'stuti_vinati';
-      case 'suvichar':
-        return 'suvichar';
       case 'book':
         return 'books';
       default:
@@ -351,12 +349,6 @@ export class ContentPublishingService {
         return {
           audioFolder: `audio/stutis`,
           imageFolder: `thumbnails`,
-          pdfFolder: `pdfs`,
-        };
-      case 'suvichar':
-        return {
-          audioFolder: `audio/suvichar`,
-          imageFolder: `banners`,
           pdfFolder: `pdfs`,
         };
       case 'book':
@@ -386,7 +378,7 @@ export class ContentPublishingService {
   private validateRequest(request: PublishRequest): string | null {
     const { contentType, payload, files, existingUrls } = request;
 
-    if (!payload.title && contentType !== 'suvichar') {
+    if (!payload.title) {
       return 'शीर्षक (Title) आवश्यक है।';
     }
 
@@ -425,12 +417,6 @@ export class ContentPublishingService {
       if (!payload.lyrics) return 'स्तुति के बोल (Lyrics) आवश्यक हैं।';
     }
 
-    if (contentType === 'suvichar') {
-      if (!payload.quote) return 'सुविचार/समाचार वाणी आवश्यक है।';
-      if (!files.image && !existingUrls?.image) {
-        return 'सुविचार इमेज आवश्यक है।';
-      }
-    }
 
     if (contentType === 'book') {
       if (!payload.author) return 'लेखक का नाम आवश्यक है।';
@@ -498,14 +484,6 @@ export class ContentPublishingService {
       };
     }
 
-    if (contentType === 'suvichar') {
-      return {
-        ...commonFields,
-        imageUrl: urls.image || commonFields.imageUrl || '',
-        audioUrl: urls.audio || commonFields.audioUrl || '',
-        storagePath: storagePaths.audio || commonFields.storagePath || '',
-      };
-    }
 
     if (contentType === 'book') {
       return {

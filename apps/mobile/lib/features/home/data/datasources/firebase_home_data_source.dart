@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/firebase/firestore_collections.dart';
-import '../../domain/entities/daily_quote_entity.dart';
 import '../../domain/entities/featured_banner_entity.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 import '../../domain/entities/latest_audio_entity.dart';
@@ -17,10 +15,6 @@ class FirebaseHomeDataSource implements HomeDataSource {
   Future<HomeDashboardEntity> getHomeDashboard() async {
     final futures = await Future.wait([
       _firestoreService.queryCollection(
-        FirestoreCollections.dailyQuotes,
-        (ref) => ref.limit(10),
-      ),
-      _firestoreService.queryCollection(
         FirestoreCollections.banners,
         (ref) => ref.limit(10),
       ),
@@ -34,28 +28,9 @@ class FirebaseHomeDataSource implements HomeDataSource {
       ),
     ]);
 
-    final quotesSnapshot = futures[0];
-    final bannersSnapshot = futures[1];
-    final categoriesSnapshot = futures[2];
-    final audiosSnapshot = futures[3];
-
-    DateTime parseDate(dynamic raw) {
-      if (raw is Timestamp) return raw.toDate();
-      if (raw is String) return DateTime.tryParse(raw) ?? DateTime.now();
-      return DateTime.now();
-    }
-
-    DailyQuoteEntity? dailyQuote;
-    if (quotesSnapshot.docs.isNotEmpty) {
-      final doc = quotesSnapshot.docs.first.data() as Map<String, dynamic>;
-      dailyQuote = DailyQuoteEntity(
-        id: quotesSnapshot.docs.first.id,
-        quoteText: doc['content'] ?? '', // Admin writes content
-        author: doc['title'] ?? '', // Admin writes title
-        imageUrl: doc['imageUrl'],
-        date: parseDate(doc['createdAt']),
-      );
-    }
+    final bannersSnapshot = futures[0];
+    final categoriesSnapshot = futures[1];
+    final audiosSnapshot = futures[2];
 
     final banners = bannersSnapshot.docs
         .map((doc) {
@@ -146,7 +121,6 @@ class FirebaseHomeDataSource implements HomeDataSource {
 
     return HomeDashboardEntity(
       notificationCount: 0,
-      dailyQuote: dailyQuote,
       banners: orderedBanners,
       quickActions: quickActions,
       latestSatsangs: [],

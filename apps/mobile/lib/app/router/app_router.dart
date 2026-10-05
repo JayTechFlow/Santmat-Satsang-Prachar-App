@@ -27,8 +27,6 @@ import '../../features/audio/presentation/pages/now_playing_page.dart';
 import '../../features/books/presentation/pages/book_details_page.dart';
 import '../../features/books/presentation/pages/pdf_reader_page.dart';
 import '../../features/books/presentation/pages/books_secondary_pages.dart';
-import '../../features/daily_quotes/presentation/pages/daily_quotes_home_page.dart';
-import '../../features/daily_quotes/presentation/pages/daily_quotes_secondary_pages.dart';
 import '../../features/search/presentation/pages/search_home_page.dart';
 import '../../features/events/presentation/pages/events_home_page.dart';
 import '../../features/events/presentation/pages/events_secondary_pages.dart';
@@ -308,32 +306,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/books/history',
         builder: (context, state) =>
             const CanonicalBackHandler(child: ReadingHistoryPage()),
-      ),
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/quotes',
-        builder: (context, state) =>
-            const CanonicalBackHandler(child: DailyQuotesHomePage()),
-      ),
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/quotes/details/:id',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return CanonicalBackHandler(child: QuoteDetailsPage(quoteId: id));
-        },
-      ),
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/quotes/favorites',
-        builder: (context, state) =>
-            const CanonicalBackHandler(child: FavoriteQuotesPage()),
-      ),
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/quotes/history',
-        builder: (context, state) =>
-            const CanonicalBackHandler(child: QuoteHistoryPage()),
       ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,

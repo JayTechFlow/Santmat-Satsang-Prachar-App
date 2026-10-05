@@ -23,7 +23,6 @@ import 'package:santmat_satsang_prachar/core/auth/permission_context.dart';
 
 import 'mock_audio_data_source.dart';
 import 'mock_book_data_source.dart';
-import 'mock_daily_quote_data_source.dart';
 import 'mock_donation_data_source.dart';
 import 'mock_event_data_source.dart';
 import 'mock_home_data_source.dart';
@@ -401,7 +400,6 @@ List<Override> acceptanceOverrides({
     homeDataSourceProvider.overrideWithValue(MockHomeDataSource()),
     audioDataSourceProvider.overrideWithValue(MockAudioDataSource()),
     bookDataSourceProvider.overrideWithValue(MockBookDataSource()),
-    dailyQuoteDataSourceProvider.overrideWithValue(MockDailyQuoteDataSource()),
     donationDataSourceProvider.overrideWithValue(MockDonationDataSource()),
     eventDataSourceProvider.overrideWithValue(MockEventDataSource()),
     libraryDataSourceProvider.overrideWithValue(MockLibraryDataSource()),

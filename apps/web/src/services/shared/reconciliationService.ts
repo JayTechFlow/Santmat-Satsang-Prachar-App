@@ -164,7 +164,7 @@ export class ReconciliationService {
       }
 
       // 2. QUERY FIRESTORE COLLECTIONS
-      const contentCollections = ['audio', 'books', 'stuti_vinati', 'banners', 'suvichar'];
+      const contentCollections = ['audio', 'books', 'stuti_vinati', 'banners'];
       const contentRecords: Array<{ collection: string; id: string; data: any }> = [];
       const mediaPathReferences: Record<string, ContentReference[]> = {};
 
@@ -187,7 +187,7 @@ export class ReconciliationService {
           snap.forEach(doc => {
             const data = doc.data();
             contentRecords.push({ collection: colName, id: doc.id, data });
-            const title = data.title || data.name || data.quote || `अनाम (${doc.id})`;
+            const title = data.title || data.name || `अनाम (${doc.id})`;
 
             if (colName === 'audio') {
               addReference(data.storagePath, colName, doc.id, title);
@@ -200,7 +200,7 @@ export class ReconciliationService {
             } else if (colName === 'stuti_vinati') {
               addReference(data.storagePath, colName, doc.id, title);
               addReference(data.audioUrl, colName, doc.id, title);
-            } else if (colName === 'banners' || colName === 'suvichar') {
+            } else if (colName === 'banners') {
               addReference(data.imageUrl, colName, doc.id, title);
             }
           });

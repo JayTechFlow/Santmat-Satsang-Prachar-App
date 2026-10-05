@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:santmat_satsang_prachar/features/audio/data/models/audio_dto.dart';
 import 'package:santmat_satsang_prachar/features/books/data/models/book_dto.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/data/models/daily_quote_dto.dart';
 import 'package:santmat_satsang_prachar/features/stuti_vinati/data/models/stuti_vinati_dto.dart';
 import 'package:santmat_satsang_prachar/features/notifications/data/models/notification_dto.dart';
 import 'package:santmat_satsang_prachar/features/home/data/models/home_banners_dto.dart';
@@ -96,27 +95,6 @@ void main() {
       expect(dto.type, equals('morning'));
     });
 
-    test('Suvichar/Daily Quotes Contract: Maps Admin write payload cleanly to QuoteDto', () {
-      final adminSuvicharPayload = {
-        'quote': 'सत्संग ही जीवन का सच्चा आधार है।',
-        'author': 'महर्षि मेँहीं परमहंस जी',
-        'theme': 'साधना एवं सत्संग',
-        'imageUrl': 'https://storage.googleapis.com/test-bucket/suvichar/quote1.jpg',
-        'isSpecialPoster': true,
-        'createdAt': '2026-06-01T06:00:00.000Z',
-      };
-
-      final doc = _FakeDocumentSnapshot('suvichar-101', adminSuvicharPayload);
-      final dto = QuoteDto.fromFirestore(doc);
-      final entity = dto.toEntity();
-
-      expect(entity.id, equals('suvichar-101'));
-      expect(entity.quoteText, equals('सत्संग ही जीवन का सच्चा आधार है।'));
-      expect(entity.author.name, equals('महर्षि मेँहीं परमहंस जी'));
-      expect(entity.category.name, equals('साधना एवं सत्संग'));
-      expect(entity.backgroundImageUrl, equals('https://storage.googleapis.com/test-bucket/suvichar/quote1.jpg'));
-      expect(entity.isFeatured, isTrue);
-    });
 
     test('Book Contract: Maps Admin write payload cleanly to BookDto', () {
       final adminBookPayload = {

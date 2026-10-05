@@ -13,8 +13,6 @@ import 'package:santmat_satsang_prachar/features/audio/data/datasources/firestor
 import 'package:santmat_satsang_prachar/features/authentication/data/datasources/firebase_auth_datasource.dart';
 import 'package:santmat_satsang_prachar/features/books/data/datasources/book_data_source.dart';
 import 'package:santmat_satsang_prachar/features/books/data/datasources/firestore_book_data_source.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/daily_quote_data_source.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/data/datasources/firestore_daily_quote_data_source.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/donation_data_source.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/datasources/firestore_donation_data_source.dart';
 import 'package:santmat_satsang_prachar/features/events/data/datasources/event_data_source.dart';
@@ -36,7 +34,6 @@ import 'package:santmat_satsang_prachar/features/search/data/datasources/search_
 import 'package:santmat_satsang_prachar/features/audio/data/repositories/audio_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/books/data/repositories/book_repository_impl.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/data/repositories/daily_quote_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/donations/data/repositories/donation_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/events/data/repositories/event_repository_impl.dart';
 import 'package:santmat_satsang_prachar/features/home/data/repositories/home_repository_impl.dart';
@@ -52,7 +49,6 @@ import 'package:santmat_satsang_prachar/features/donations/domain/repositories/d
 import 'package:santmat_satsang_prachar/features/satsang/domain/repositories/satsang_repository.dart';
 import 'package:santmat_satsang_prachar/features/library/domain/repositories/library_repository.dart';
 import 'package:santmat_satsang_prachar/features/books/domain/repositories/book_repository.dart';
-import 'package:santmat_satsang_prachar/features/daily_quotes/domain/repositories/daily_quote_repository.dart';
 import 'package:santmat_satsang_prachar/features/search/domain/repositories/search_repository.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/repositories/audio_repository.dart';
 import 'package:santmat_satsang_prachar/features/profile/domain/repositories/profile_repository.dart';
@@ -113,13 +109,6 @@ final bookRepositoryProvider = Provider<BookRepository>((ref) {
   return BookRepositoryImpl(ref.watch(bookDataSourceProvider));
 });
 
-final dailyQuoteDataSourceProvider = Provider<DailyQuoteDataSource>((ref) {
-  return FirestoreDailyQuoteDataSource(ref.watch(firestoreServiceProvider));
-});
-
-final dailyQuoteRepositoryProvider = Provider<DailyQuoteRepository>((ref) {
-  return DailyQuoteRepositoryImpl(ref.watch(dailyQuoteDataSourceProvider));
-});
 
 final searchDataSourceProvider = Provider<SearchDataSource>((ref) {
   return FirestoreSearchDataSource(ref.watch(firestoreServiceProvider));

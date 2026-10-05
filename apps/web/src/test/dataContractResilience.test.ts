@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeBhajanEntity } from '../features/audio/services/bhajanService';
 import { normalizeStutiEntity } from '../features/stuti/services/stutiService';
-import { normalizeSuvicharEntity } from '../services/shared/suvicharService';
 import { normalizeCategoryEntity } from '../features/categories/services/categoryService';
 import { normalizeBookEntity } from '../features/books/services/bookService';
 import { normalizeNotificationEntity } from '../features/notifications/services/notificationService';
@@ -63,20 +62,6 @@ describe('Data Contract Resilience & Normalization Tests', () => {
     });
   });
 
-  describe('normalizeSuvicharEntity', () => {
-    it('should support legacy content mapping to quote, and fall back theme/author', () => {
-      const result = normalizeSuvicharEntity('suvichar-1', {
-        content: 'सत्य ही ईश्वर है', // legacy content field
-        author: null,
-        theme: undefined,
-      });
-
-      expect(result.id).toBe('suvichar-1');
-      expect(result.quote).toBe('सत्य ही ईश्वर है');
-      expect(result.author).toBe('संत वाणी');
-      expect(result.theme).toBe('सत्संग विचार');
-    });
-  });
 
   describe('normalizeCategoryEntity', () => {
     it('should handle empty/missing subcategories array and undefined flags', () => {

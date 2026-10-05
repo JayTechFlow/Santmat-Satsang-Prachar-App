@@ -20,7 +20,6 @@
 ///   TOP-LEVEL SECONDARY (pushed above the shell, Back resolves to HOME)
 ///   ├── `/search`            Search
 ///   ├── `/profile/favorites`  Favorites
-///   ├── `/quotes`            Daily Quotes
 ///   ├── `/events`            Events
 ///   ├── `/donations`         Donations
 ///   └── `/library`           Library
@@ -33,7 +32,6 @@
 ///   │   `/audio/bhajans`, `/audio/category/:id`                 → Audio
 ///   ├── `/books/details/:id`, `/books/reader`, `/books/category/:id`,
 ///   │   `/books/bookmarks`, `/books/history`
-///   ├── `/quotes/*`                                             → Quotes
 ///   ├── `/events/*`                                             → Events
 ///   ├── `/notifications/details`, `/notifications/settings`      → Notifications
 ///   ├── `/donations/*`                                          → Donations
@@ -101,7 +99,6 @@ const Set<String> kSspAuthPaths = <String>{
 const Set<String> kSspTopLevelPaths = <String>{
   '/search',
   '/profile/favorites',
-  '/quotes',
   '/events',
   '/donations',
   '/library',
@@ -134,11 +131,6 @@ const Map<String, String?> kSspNestedParents = <String, String?>{
   '/books/category/:id': null,
   '/books/bookmarks': null,
   '/books/history': null,
-
-  // Daily quotes children
-  '/quotes/details/:id': '/quotes',
-  '/quotes/favorites': '/quotes',
-  '/quotes/history': '/quotes',
 
   // Events children
   '/events/details/:id': '/events',

@@ -75,16 +75,6 @@ export const MEDIA_VALIDATION_CONFIGS: Record<string, MediaValidationConfig> = {
     aspectRatio: 16 / 9,
     aspectRatioTolerance: 0.05,
   },
-  'suvichar': {
-    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-    allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],
-    maxSizeBytes: 2 * 1024 * 1024,
-    maxFilenameLength: 200,
-    maxWidth: 1200,
-    maxHeight: 675,
-    aspectRatio: 16 / 9,
-    aspectRatioTolerance: 0.05,
-  },
   'book_cover': {
     allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
     allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],

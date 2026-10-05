@@ -4,7 +4,6 @@ enum SearchContentType {
   satsang,
   audio,
   books,
-  dailyQuotes,
   events,
   videos,
   downloads,

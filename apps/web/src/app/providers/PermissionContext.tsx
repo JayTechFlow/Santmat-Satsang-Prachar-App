@@ -169,7 +169,6 @@ export const FEATURE_FLAGS: FeatureFlag[] = [
   { id: 'feature.notifications', name: 'Notifications Module', description: 'Enable notifications module', enabled: true, allowedRoles: ['developer_super_admin', 'client_super_admin', 'mobile_user'] },
   { id: 'feature.playlists', name: 'Playlists Module', description: 'Enable playlists module', enabled: true, allowedRoles: ['developer_super_admin', 'client_super_admin', 'mobile_user'] },
   { id: 'feature.analytics', name: 'Analytics Module', description: 'Enable analytics module', enabled: true, allowedRoles: ['developer_super_admin', 'client_super_admin'] },
-  { id: 'feature.suvichar', name: 'Suvichar Module', description: 'Enable suvichar module', enabled: true, allowedRoles: ['developer_super_admin', 'client_super_admin', 'mobile_user'] },
   { id: 'feature.media', name: 'Media Module', description: 'Enable media module', enabled: true, allowedRoles: ['developer_super_admin', 'client_super_admin'] },
   { id: 'feature.recommendations', name: 'Recommendations', description: 'Enable AI recommendations', enabled: true, allowedRoles: ['developer_super_admin', 'client_super_admin', 'mobile_user'] },
   { id: 'feature.offline', name: 'Offline Support', description: 'Enable offline mode', enabled: false, allowedRoles: ['mobile_user'] },

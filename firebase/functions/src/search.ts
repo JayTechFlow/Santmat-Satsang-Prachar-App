@@ -5,11 +5,10 @@ import { requireAuth, db } from "./utils";
  * Collection → SearchResultItem type mapping for the frontend.
  * The AdminSearch component supports exactly 4 types: bhajan, stuti, suvichar, book.
  */
-type CollectionMap = 'audio' | 'stuti_vinati' | 'suvichar' | 'books';
+type CollectionMap = 'audio' | 'stuti_vinati' | 'books';
 const COLLECTION_TYPE: Record<CollectionMap, string> = {
   audio: 'bhajan',
   stuti_vinati: 'stuti',
-  suvichar: 'suvichar',
   books: 'book',
 };
 
@@ -45,18 +44,6 @@ function stutiTokens(doc: any): string[] {
   return parts.filter((t: string, i: number, arr: string[]) => t.length > 1 && arr.indexOf(t) === i);
 }
 
-/**
- * Extract search-relevant tokens from a suvichar document.
- * Fields: title, quote, author, theme.
- */
-function suvicharTokens(doc: any): string[] {
-  const parts: string[] = [];
-  if (doc.title) parts.push(doc.title.toLowerCase());
-  if (doc.quote) parts.push(doc.quote.toLowerCase());
-  if (doc.author) parts.push(doc.author.toLowerCase());
-  if (doc.theme) parts.push(doc.theme.toLowerCase());
-  return parts.filter((t: string, i: number, arr: string[]) => t.length > 1 && arr.indexOf(t) === i);
-}
 
 /**
  * Extract search-relevant tokens from a book document.
@@ -129,10 +116,6 @@ export const globalSearch = functions.https.onCall(async (data, context) => {
     .get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'stuti_vinati' } as any)));
   allItems.push(...stutiDocs);
 
-  // suvichar → suvichar
-  const suvicharDocs = await db.collection("suvichar").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'suvichar' } as any)));
-  allItems.push(...suvicharDocs);
-
   // books → book
   const booksDocs = await db.collection("books").get().then(snap => snap.docs.map(d => ({ id: d.id, ...d.data(), collection: 'books' } as any)));
   allItems.push(...booksDocs);
@@ -147,7 +130,6 @@ export const globalSearch = functions.https.onCall(async (data, context) => {
     const tokenFnsMap: Record<string, (doc: any) => string[]> = {
       bhajan: bhajanTokens,
       stuti: stutiTokens,
-      suvichar: suvicharTokens,
       book: bookTokens,
     };
     const tokenFn = tokenFnsMap[type];
@@ -273,14 +255,6 @@ export const autocomplete = functions.https.onCall(async (data, context) => {
   tagPromises.push(
     db.collection("stuti_vinati")
       .where("type", "in", ["morning", "evening"])
-      .get()
-      .then(snap => snap.docs.map(d => {
-        const q = (d.data() as any).quote || '';
-        return q.split(' ')[0];
-      }).filter(Boolean))
-  );
-  tagPromises.push(
-    db.collection("suvichar")
       .get()
       .then(snap => snap.docs.map(d => {
         const q = (d.data() as any).quote || '';

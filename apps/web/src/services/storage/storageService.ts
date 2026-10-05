@@ -42,7 +42,6 @@ export const KNOWN_STORAGE_FOLDERS = [
   'books',
   'images',
   'avatars',
-  'suvichar',
   'documents',
   'events',
   'public',

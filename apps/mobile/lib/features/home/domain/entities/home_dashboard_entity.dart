@@ -1,4 +1,3 @@
-import 'daily_quote_entity.dart';
 import 'featured_banner_entity.dart';
 import 'featured_book_entity.dart';
 import 'latest_audio_entity.dart';
@@ -8,7 +7,6 @@ import 'upcoming_event_entity.dart';
 
 class HomeDashboardEntity {
   final int notificationCount;
-  final DailyQuoteEntity? dailyQuote;
   final List<FeaturedBannerEntity> banners;
   final List<QuickActionEntity> quickActions;
   final List<LatestSatsangEntity> latestSatsangs;
@@ -18,7 +16,6 @@ class HomeDashboardEntity {
 
   const HomeDashboardEntity({
     required this.notificationCount,
-    this.dailyQuote,
     required this.banners,
     required this.quickActions,
     required this.latestSatsangs,

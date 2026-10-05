@@ -90,17 +90,6 @@ export interface StutiEntity {
   organizationId?: string;
 }
 
-export interface SuvicharEntity {
-  id: string;
-  title?: string;
-  quote: string;
-  author: string;
-  theme: string;
-  imageUrl?: string;
-  date?: string;
-  isSpecialPoster?: boolean;
-  organizationId?: string;
-}
 
 export interface BookEntity {
   id: string;
@@ -163,7 +152,7 @@ export interface NotificationEntity {
   title: string;
   message: string;
   date: string;
-  type: 'suvichar' | 'bhajan' | 'stuti' | 'special' | 'event';
+  type: 'bhajan' | 'stuti' | 'special' | 'event';
   isRead: boolean;
   targetRole?: UserRole | 'all';
   organizationId?: string;
@@ -266,21 +255,6 @@ export interface StutiItem {
 }
 
 /**
- * Daily Suvichar & Spiritual Poster Model
- * Sacred sayings and quotes from revered saints with themes and visual banners.
- */
-export interface SuvicharItem {
-  id: number | string;
-  title?: string;
-  quote: string;
-  author: string;
-  theme: string;
-  imageUrl?: string;
-  date?: string;
-  isSpecialPoster?: boolean;
-}
-
-/**
  * Notification Item Model
  * Satsang announcements, new bhajan alerts, and daily reminders.
  */
@@ -289,7 +263,7 @@ export interface NotificationItem {
   title: string;
   message: string;
   date: string;
-  type: 'suvichar' | 'bhajan' | 'stuti' | 'special' | 'event';
+  type: 'bhajan' | 'stuti' | 'special' | 'event';
   isRead: boolean;
 }
 

@@ -140,21 +140,6 @@ class ProfilePage extends ConsumerWidget {
                               ),
                               onTap: () => context.push('/profile/history'),
                             ),
-                            SSPListItem(
-                              leading: Icon(
-                                Icons.format_quote_rounded,
-                                color: isDark
-                                    ? SSPColors.darkPrimary
-                                    : SSPColors.lightPrimary,
-                              ),
-                              title: 'आज का सुविचार (Daily Quote)',
-                              subtitle: 'दैनिक प्रेरणादायक संत विचार',
-                              trailing: Icon(
-                                SSPIcons.chevronRight,
-                                color: SSPColors.textTertiary(context),
-                              ),
-                              onTap: () => context.push('/quotes'),
-                            ),
                           ],
                         ),
 
