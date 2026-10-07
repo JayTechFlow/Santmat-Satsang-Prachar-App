@@ -108,7 +108,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       {
         id: 'banners',
-        label: 'बैनर एवं सुविचार',
+        label: 'बैनर प्रबंधन',
         path: '/admin/banners',
         icon: Image,
         permission: 'banners.manage',

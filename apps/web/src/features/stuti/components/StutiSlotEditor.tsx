@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../../app/providers/AppContext';
 import { StutiItem, StutiSlot } from '../../../types/common/index';
-import { storageService } from '../../../services/storage/storageService';
 import { contentPublishingService, PublishProgress } from '../../../services/shared/ContentPublishingService';
 import { UploadProgressComponent } from '../../../components/ui/UploadProgress';
 import { mediaValidator, MEDIA_VALIDATION_CONFIGS } from '../../../lib/media/validation/MediaValidator';
@@ -54,11 +53,7 @@ export const StutiSlotEditor: React.FC<StutiSlotEditorProps> = ({ slot, stuti })
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [publishProgress, setPublishProgress] = useState<PublishProgress | null>(null);
-  const [originalStats, setOriginalStats] = useState<{ name: string; size: string; width: number; height: number; format: string } | null>(null);
-  const [optimizedStats, setOptimizedStats] = useState<{ size: string; width: number; height: number; format: string; ratio: number } | null>(null);
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string) => {
@@ -72,94 +67,6 @@ export const StutiSlotEditor: React.FC<StutiSlotEditorProps> = ({ slot, stuti })
     setAudioFile(file);
     setAudioUrl(file.name);
     showToast('स्तुति ऑडियो चयनित (अपलोड लंबित है)');
-  };
-
-  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setOriginalStats(null);
-    setOptimizedStats(null);
-    setValidationErrors([]);
-
-    const initialValidation = await mediaValidator.validate(file, 'image', 'stuti_vinati', true);
-    if (!initialValidation.valid) {
-      const errMsgs = initialValidation.errors.map(e => e.message);
-      setValidationErrors(errMsgs);
-      alert(`इमेज सत्यापन विफल:\n${errMsgs.join('\n')}`);
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setBannerImage(event.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
-
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
-    await new Promise<void>((resolve) => {
-      img.onload = () => {
-        setOriginalStats({
-          name: file.name,
-          size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-          width: img.naturalWidth,
-          height: img.naturalHeight,
-          format: file.type,
-        });
-        resolve();
-      };
-      img.onerror = () => resolve();
-    });
-
-    const config = MEDIA_VALIDATION_CONFIGS['stuti_vinati'];
-    const optRes = await ImageOptimizer.optimize(file, {
-      maxWidth: config.maxWidth,
-      maxHeight: config.maxHeight,
-      quality: 0.82,
-    });
-
-    if (optRes.success && optRes.data) {
-      const stats = optRes.data;
-
-      const finalValidation = await mediaValidator.validate(stats.file, 'image', 'stuti_vinati', false);
-      if (!finalValidation.valid) {
-        const errMsgs = finalValidation.errors.map(e => e.message);
-        setValidationErrors(errMsgs);
-        alert(`इमेज सत्यापन विफल:\n${errMsgs.join('\n')}`);
-        setImageFile(null);
-        setOriginalStats(null);
-        setBannerImage(stuti.bannerImage || '');
-        return;
-      }
-
-      setImageFile(stats.file);
-      const optUrl = URL.createObjectURL(stats.file);
-      setBannerImage(optUrl);
-      setOptimizedStats({
-        size: (stats.optimized.sizeBytes / 1024 / 1024).toFixed(2) + ' MB',
-        width: stats.optimized.width,
-        height: stats.optimized.height,
-        format: stats.optimized.mimeType,
-        ratio: stats.optimized.compressionRatio,
-      });
-      showToast('स्तुति बैनर इमेज अनुकूलित एवं सत्यापित हुई');
-    } else {
-      const finalValidation = await mediaValidator.validate(file, 'image', 'stuti_vinati', false);
-      if (!finalValidation.valid) {
-        const errMsgs = finalValidation.errors.map(e => e.message);
-        setValidationErrors(errMsgs);
-        alert(`इमेज सत्यापन विफल:\n${errMsgs.join('\n')}`);
-        setImageFile(null);
-        setOriginalStats(null);
-        setBannerImage(stuti.bannerImage || '');
-        return;
-      }
-      setImageFile(file);
-      showToast('कस्टम स्तुति बैनर इमेज चयनित (अपलोड लंबित है)');
-    }
   };
 
   const handleApplyCustomUrl = () => {
@@ -217,9 +124,6 @@ export const StutiSlotEditor: React.FC<StutiSlotEditorProps> = ({ slot, stuti })
       showToast(`${meta.label} की जानकारी सफलतापूर्वक अपडेट हो गई!`);
       setAudioFile(null);
       setImageFile(null);
-      setOriginalStats(null);
-      setOptimizedStats(null);
-      setValidationErrors([]);
       setTimeout(() => {
         setPublishProgress(null);
       }, 1500);

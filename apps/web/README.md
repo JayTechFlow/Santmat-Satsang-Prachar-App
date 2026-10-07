@@ -1,20 +1,22 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Admin Dashboard (`apps/web`)
 
-# Run and deploy your AI Studio app
+Admin CMS for SANTMAT SATSANG PARCHAR, served at
+`https://santmatsatsangparchar.in/admin`.
 
-This contains everything you need to run your app locally.
+## Commands
 
-View your app in AI Studio: https://ai.studio/apps/ee9a3d5e-5604-4d00-a632-05f08d6e4f9c
+```bash
+npm install
+npm run dev     # dev server on http://localhost:3000/admin/
+npm run lint    # tsc --noEmit
+npm run test    # vitest
+npm run build   # production bundle (base: /admin/)
+```
 
-## Run Locally
+## Architecture
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- React 19 + TypeScript + Vite + Tailwind v4.
+- Firebase (Auth, Firestore, Storage, Functions) backend.
+- Canonical domain config: `src/config/siteConfig.ts` → `shared/siteConfig.ts`.
+- The admin bundle is assembled into `dist/admin/` by `npm run build:hosting`
+  (repo root) together with the public website (`apps/website`).

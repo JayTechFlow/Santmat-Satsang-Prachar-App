@@ -46,31 +46,3 @@ export const validateToken = functions.https.onCall(async (data, context) => {
       }
     };
   });
-
-export const sessionValidation = functions.https.onCall(async (data, context) => {
-    requireAuth(context);
-
-    const uid = context.auth?.uid;
-
-    try {
-      const token = context.auth?.token;
-      const role = token?.role || 'mobile_user';
-      const email = token?.email || '';
-
-      return {
-        status: "success",
-        data: {
-          uid,
-          role,
-          email,
-          authenticatedAt: new Date().toISOString()
-        }
-      };
-    } catch (e) {
-      logger.warn("Session validation failed", { error: e });
-      return {
-        status: "error",
-        data: { error: "Session validation failed" }
-      };
-    }
-  });

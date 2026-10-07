@@ -16,8 +16,7 @@
  */
 
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-import { requireAdmin, requireAuth, logger, db } from "./utils";
+import { requireAdmin, logger, db } from "./utils";
 import {
   ANALYTICS_COLLECTIONS,
   ANALYTICS_TIMEZONE,
@@ -431,42 +430,4 @@ export const backfillAnalyticsHistory = functions.https.onCall(async (data, cont
   }
 });
 
-/**
- * Legacy telemetry sink retained for backwards compatibility.
- *
- * NOTE: this collection was never wired to any client, which is why Reports
- * previously showed structural zeros. It is no longer part of the Reports
- * contract; writes land in `telemetry_events` for legacy/debug use only and are
- * deliberately NOT read by the aggregation engine.
- */
-export const logAnalyticsEvent = functions.https.onCall(async (data, context) => {
-  requireAuth(context);
-
-  const eventName = typeof (data as any)?.eventName === "string" ? (data as any).eventName.trim() : "";
-  if (!eventName) {
-    throw new functions.https.HttpsError("invalid-argument", "eventName is required.");
-  }
-
-  const uid = context.auth!.uid;
-  const category = typeof (data as any)?.category === "string" ? (data as any).category.slice(0, 64) : "general";
-  const durationRaw = Number((data as any)?.durationSeconds);
-  const durationSeconds = Number.isFinite(durationRaw) && durationRaw > 0 ? Math.min(Math.round(durationRaw), 6 * 60 * 60) : 0;
-
-  try {
-    await db.collection("telemetry_events").add({
-      uid,
-      eventName: eventName.slice(0, 128),
-      category,
-      durationSeconds,
-      metadata: {},
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    });
-    return { status: "success", data: { logged: true, eventName } };
-  } catch (error: unknown) {
-    logger.error(`Failed to log analytics event '${eventName}'`, error);
-    throw new functions.https.HttpsError("internal", "Could not log analytics event.");
-  }
-});
-
-/** Re-exported so `index.ts` keeps a single analytics namespace. */
 export { recordPlaybackSession, touchActiveUser, analyticsIngestionConfig } from "./analytics_ingest";

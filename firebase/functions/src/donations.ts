@@ -10,8 +10,3 @@ export const verifyPayment = functions.https.onCall(async (data, context) => {
     requireAuth(context);
     return { status: "success", data: {} };
 });
-
-export const generateReceipt = functions.https.onCall(async (data, context) => {
-    requireAuth(context);
-    return { status: "success", data: {} };
-});

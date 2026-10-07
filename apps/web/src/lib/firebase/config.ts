@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAuth, GoogleAuthProvider, initializeAuth, browserLocalPersistence, browserPopupRedirectResolver } from 'firebase/auth';
+import { getAuth, initializeAuth, browserLocalPersistence, browserPopupRedirectResolver } from 'firebase/auth';
 import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
@@ -35,7 +35,6 @@ if (globalStorage.__firebaseAuthInstance) {
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = authInstance;
-export const googleProvider = new GoogleAuthProvider();
 export const functions = getFunctions(app, 'us-central1');
 
 export default app;

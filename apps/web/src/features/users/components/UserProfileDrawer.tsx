@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  X, Copy, Check, Calendar, Clock, Mail, Phone, MapPin,
+  X, Copy, Check, Calendar, Clock,
   Shield, ShieldAlert, ShieldCheck, Users, Lock, Unlock,
-  KeyRound, CheckCircle2, UserX, AlertTriangle, Activity, History,
+  KeyRound, CheckCircle2, UserX, Activity, History,
 } from 'lucide-react';
 import type { UserProfile, UserRole } from '../../../types/common/index';
 import { usePermissions } from '../../../app/providers/PermissionContext';
 import { userService } from '../services/userService';
-import { authService } from '../../auth/services/authService';
 import { UserAvatar } from '../../../components/shared/UserAvatar';
 
 const ROLE_CONFIG: Record<UserRole, { label: string; labelEn: string; badgeClass: string; icon: React.FC<{ className?: string }> }> = {
@@ -38,7 +36,6 @@ interface UserProfileDrawerProps {
 export function UserProfileDrawer({
   user, open, onClose, onChangeRole, onStatusChange, onEditProfile, onPasswordReset, onPermanentDelete,
 }: UserProfileDrawerProps) {
-  const navigate = useNavigate();
   const { isDeveloperSuperAdmin, isClientSuperAdmin, user: currentAuthUser } = usePermissions();
   const [tab, setTab] = useState<'profile' | 'security' | 'audit'>('profile');
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -217,7 +214,7 @@ export function UserProfileDrawer({
                       </li>
                     ))}
                     {user.role === 'client_super_admin' && [
-                      'भजन, स्तुति, पुस्तकें, सुविचार एवं मीडिया अपलोड/संपादन',
+                      'भजन, स्तुति, पुस्तकें एवं मीडिया अपलोड/संपादन',
                       'सामान्य Android उपयोगकर्ताओं का निर्माण, संपादन एवं निलंबन',
                       'पुश नोटिफिकेशन ब्रॉडकास्ट एवं एनालिटिक्स अवलोकन',
                     ].map((t, i) => (
@@ -226,7 +223,7 @@ export function UserProfileDrawer({
                       </li>
                     ))}
                     {user.role === 'mobile_user' && [
-                      'भजन, स्तुति, सुविचार एवं आध्यात्मिक पुस्तकों का पठन/श्रवण',
+                      'भजन, स्तुति एवं आध्यात्मिक पुस्तकों का पठन/श्रवण',
                       'स्वयं की निजी प्लेलिस्ट एवं पसंदीदा भजनों का प्रबंधन',
                     ].map((t, i) => (
                       <li key={i} className="flex items-center gap-2 text-emerald-900 bg-emerald-50 p-2 rounded-xl">

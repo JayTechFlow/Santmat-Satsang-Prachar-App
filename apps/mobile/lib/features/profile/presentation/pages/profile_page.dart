@@ -286,7 +286,7 @@ class ProfilePage extends ConsumerWidget {
                                 SharePlus.instance.share(
                                   ShareParams(
                                     text:
-                                        'संतमत सत्संग प्रचार ऐप से जुड़ें। https://santmatsatsang.org',
+                                        'संतमत सत्संग प्रचार ऐप से जुड़ें। https://santmatsatsangparchar.in',
                                   ),
                                 );
                               },
@@ -321,7 +321,7 @@ class ProfilePage extends ConsumerWidget {
                                   context,
                                   title: 'गोपनीयता नीति (Privacy Policy)',
                                   content:
-                                      'संतमत सत्संग प्रचार ऐप आपकी निजता का पूर्ण सम्मान करता है। आपका डेटा सुरक्षित और गोपनीय रखा जाता है।',
+                                      'संतमत सत्संग प्रचार ऐप आपकी निजता का पूर्ण सम्मान करता है। आपका डेटा सुरक्षित और गोपनीय रखा जाता है।\n\nआधिकारिक गोपनीयता नीति:\nhttps://santmatsatsangparchar.in/privacy-policy',
                                 );
                               },
                             ),
@@ -340,7 +340,7 @@ class ProfilePage extends ConsumerWidget {
                                   context,
                                   title: 'नियम एवं शर्तें (Terms & Conditions)',
                                   content:
-                                      'संतमत सत्संग प्रचार ऐप के माध्यम से अध्यात्म, स्तुति, और सत्संग विचारों का प्रसार किया जाता है।',
+                                      'संतमत सत्संग प्रचार ऐप के माध्यम से अध्यात्म, स्तुति, और सत्संग विचारों का प्रसार किया जाता है।\n\nआधिकारिक नियम एवं शर्तें:\nhttps://santmatsatsangparchar.in/terms',
                                 );
                               },
                             ),
@@ -547,9 +547,9 @@ class ProfilePage extends ConsumerWidget {
             SizedBox(height: 8),
             Text('📞 फोन: +91 94312 00000'),
             SizedBox(height: 4),
-            Text('✉️ ईमेल: contact@santmatsatsang.org'),
+            Text('✉️ ईमेल: santmatsatsangprachar@gmail.com'),
             SizedBox(height: 4),
-            Text('🌐 वेबसाइट: www.santmatsatsang.org'),
+            Text('🌐 वेबसाइट: https://santmatsatsangparchar.in'),
           ],
         ),
         actions: [

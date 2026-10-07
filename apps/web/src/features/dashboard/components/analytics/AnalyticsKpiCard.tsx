@@ -36,7 +36,6 @@ export interface AnalyticsKpiCardProps {
   definition?: string;
   source?: string;
   accentClassName?: string;
-  iconClassName?: string;
   footer?: React.ReactNode;
 }
 
@@ -53,7 +52,6 @@ export const AnalyticsKpiCard: React.FC<AnalyticsKpiCardProps> = ({
   definition,
   source,
   accentClassName = 'bg-orange-50 border-orange-200 text-orange-600',
-  iconClassName = 'w-6 h-6',
   footer,
 }) => {
   const delta =

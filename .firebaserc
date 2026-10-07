@@ -5,7 +5,7 @@
   "targets": {
     "santmat-satsang-prachar": {
       "hosting": {
-        "admin": [
+        "site": [
           "santmat-satsang-prachar"
         ]
       }

@@ -314,7 +314,6 @@ export const AdminBannerManager: React.FC = () => {
               }
             });
           }}
-          onFeedback={showFeedback}
         />
       </div>
 

@@ -13,16 +13,10 @@ import {
   Trash2,
   CheckCircle,
   Eye,
-  Calendar,
   Sparkles,
-  Music,
-  Heart,
-  MessageSquare,
-  AlertCircle,
   Clock,
 } from 'lucide-react';
 import { useApp } from '../../../app/providers/AppContext';
-import { NotificationItem } from '../../../types/common/index';
 import { AdminPageHeader, AdminButton } from '../../../components/admin';
 
 export const AdminNotificationsManager: React.FC = () => {

@@ -23,11 +23,10 @@ if (!adminApps.length) {
 }
 
 import firebaseFunctionsTest from "firebase-functions-test";
-import { validateToken, sessionValidation } from "../lib/auth.js";
+import { validateToken } from "../lib/auth.js";
 import { broadcast, sendDirectNotification } from "../lib/notifications.js";
 import { setUserRole } from "../lib/iam.js";
 import { contentModeration, getDashboardStats } from "../lib/admin_funcs.js";
-import { logAnalyticsEvent } from "../lib/analytics.js";
 import { generateUploadUrl } from "../lib/media.js";
 import { createUser, deleteUserPermanently } from "../lib/user_provisioning.js";
 
@@ -135,19 +134,6 @@ describe("Wave 5 — Function authorization security suite", () => {
     );
   });
 
-  it("sessionValidation DENIES suspended user", async () => {
-    const wrapped = testEnv.wrap(sessionValidation);
-    await assertRejectsWith(wrapped(undefined, ctx.suspendedUser), "permission-denied");
-  });
-
-  it("logAnalyticsEvent DENIES suspended user (telemetry write path)", async () => {
-    const wrapped = testEnv.wrap(logAnalyticsEvent);
-    await assertRejectsWith(
-      wrapped({ eventName: "media_play" }, ctx.suspendedUser),
-      "permission-denied"
-    );
-  });
-
   // ------------------------------------------------------------------
   // Phase 16 — malformed payloads / validation
   // ------------------------------------------------------------------
@@ -198,11 +184,6 @@ describe("Wave 5 — Function authorization security suite", () => {
       "invalid-argument"
     );
     await assertRejectsWith(wrapped({ action: "approve" }, ctx.clientAdmin), "invalid-argument");
-  });
-
-  it("logAnalyticsEvent REJECTS missing eventName", async () => {
-    const wrapped = testEnv.wrap(logAnalyticsEvent);
-    await assertRejectsWith(wrapped({}, ctx.mobileUser), "invalid-argument");
   });
 
   it("generateUploadUrl REJECTS path traversal and forbidden folders/content types", async () => {

@@ -1,19 +1,16 @@
 import React, { useState, useRef } from 'react';
 import {
   Upload,
-  Image as ImageIcon,
   Check,
   X,
   AlertCircle,
   Crop,
-  Sparkles,
   Info,
 } from 'lucide-react';
 import {
   ImageProfile,
   getImageProfile,
   validateImageAgainstProfile,
-  ImageValidationResult,
 } from '../../lib/media/profiles/imageProfiles';
 import { AdminImageCropper, CroppedImageOutput } from './AdminImageCropper';
 

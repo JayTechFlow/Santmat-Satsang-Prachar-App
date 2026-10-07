@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Upload,
   Crop,
@@ -8,18 +8,15 @@ import {
   Check,
   X,
   Sparkles,
-  Smartphone,
   ShieldCheck,
   Maximize2,
   Minimize2,
   AlertTriangle,
-  ArrowRight,
   Sliders,
   Image as ImageIcon,
 } from 'lucide-react';
 import { BannerEntity, BannerSlotNumber } from '../../../types/common/index';
 import { bannerService, ReplaceSlotBannerParams } from '../services/bannerService';
-import { IMAGE_PROFILES } from '../../../lib/media/profiles/imageProfiles';
 import { AdminButton, AdminField } from '../../../components/admin';
 
 export interface BannerReplaceModalProps {
@@ -41,7 +38,6 @@ export const BannerReplaceModal: React.FC<BannerReplaceModalProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Flow State
-  const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [imageElement, setImageElement] = useState<HTMLImageElement | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
@@ -62,13 +58,10 @@ export const BannerReplaceModal: React.FC<BannerReplaceModalProps> = ({
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Live Canvas Preview Blob URL
-  const [previewBlobUrl, setPreviewBlobUrl] = useState<string>('');
 
   // Reset modal state on open
   useEffect(() => {
     if (isOpen) {
-      setSourceFile(null);
       setImageElement(null);
       setTitle(currentBanner ? currentBanner.title : `संतमत सत्संग बैनर ${targetSlot}`);
       setTargetScreen(currentBanner?.targetScreen || '/audio');
@@ -79,7 +72,6 @@ export const BannerReplaceModal: React.FC<BannerReplaceModalProps> = ({
       setProgressStep('');
       setProgressPercent(0);
       setErrorMessage(null);
-      setPreviewBlobUrl('');
     }
   }, [isOpen, currentBanner, targetSlot]);
 
@@ -91,7 +83,6 @@ export const BannerReplaceModal: React.FC<BannerReplaceModalProps> = ({
       return;
     }
 
-    setSourceFile(file);
     const objectUrl = URL.createObjectURL(file);
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -230,30 +221,6 @@ export const BannerReplaceModal: React.FC<BannerReplaceModalProps> = ({
     return { masterBlob, thumbBlob };
   };
 
-  // Update Live Preview when parameters change
-  useEffect(() => {
-    if (!imageElement) return;
-
-    let isSubscribed = true;
-    const updatePreview = async () => {
-      try {
-        const { thumbBlob } = await renderCroppedWebpBlobs();
-        if (isSubscribed) {
-          const url = URL.createObjectURL(thumbBlob);
-          setPreviewBlobUrl((prev) => {
-            if (prev) URL.revokeObjectURL(prev);
-            return url;
-          });
-        }
-      } catch (_) {}
-    };
-
-    const timer = setTimeout(updatePreview, 120);
-    return () => {
-      isSubscribed = false;
-      clearTimeout(timer);
-    };
-  }, [imageElement, zoom, pan, fitMode]);
 
   // Execute Slot Replacement with Fail-Safe rollback
   const handleExecuteReplace = async () => {
@@ -406,7 +373,6 @@ export const BannerReplaceModal: React.FC<BannerReplaceModalProps> = ({
                   <button
                     onClick={() => {
                       setImageElement(null);
-                      setSourceFile(null);
                     }}
                     className="text-amber-700 hover:underline flex items-center gap-1 cursor-pointer"
                   >

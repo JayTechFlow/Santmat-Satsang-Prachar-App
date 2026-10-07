@@ -204,52 +204,6 @@ export const onAudioDocumentWrite = functions.firestore
     }
   });
 
-/**
- * Firestore Trigger — onCreate on notifications_queue/{queueId}
- * Trigger for instant notification processing queue entries
- */
-export const onNotificationQueueCreated = functions.firestore
-  .document("notifications_queue/{queueId}")
-  .onCreate(async (snap, context) => {
-    const data = snap.data();
-    if (!data) return;
-
-    const { title, body, topic, tokens, payload } = data;
-
-    try {
-      if (topic) {
-        await admin.messaging().send({
-          topic,
-          notification: { title, body },
-          data: payload || {},
-        });
-      } else if (Array.isArray(tokens) && tokens.length > 0) {
-        await admin.messaging().sendMulticast({
-          tokens,
-          notification: { title, body },
-          data: payload || {},
-        });
-      }
-
-      await snap.ref.update({
-        status: "sent",
-        sentAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      await writeAuditLog("NOTIFICATION_DISPATCHED", "system", {
-        queueId: context.params.queueId,
-        topic: topic || null,
-        recipientCount: tokens?.length || 1,
-      });
-    } catch (error: any) {
-      await snap.ref.update({
-        status: "failed",
-        error: error?.message || "Failed to dispatch notification",
-        failedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      logger.error(`Notification dispatch failed for queue ${context.params.queueId}`, error);
-    }
-  });
 
 /**
  * Scheduled Purge Function — Purges items in status 'trash' older than 30 days.

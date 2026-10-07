@@ -29,12 +29,9 @@ import {
   ShieldCheck,
   Layers,
   Folder,
-  FolderOpen,
   ChevronRight,
   ArrowLeft,
-  Grid,
   List,
-  FileCode,
 } from 'lucide-react';
 import {
   reconciliationService,

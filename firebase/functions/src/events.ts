@@ -20,8 +20,3 @@ export const cancel = functions.https.onCall(async (data, context) => {
     await writeAuditLog("eventCancellation", uid!, { eventId });
     return { status: "success", data: {} };
 });
-
-export const attendance = functions.https.onCall(async (data, context) => {
-    requireAuth(context);
-    return { status: "success", data: {} };
-});

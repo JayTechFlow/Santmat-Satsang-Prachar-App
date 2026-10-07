@@ -1,16 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Crop,
   ZoomIn,
   ZoomOut,
   RotateCcw,
-  Check,
-  Maximize2,
-  Minimize2,
   Sparkles,
-  Smartphone,
-  Sliders,
-  AlertTriangle,
 } from 'lucide-react';
 import { ImageProfile, getImageProfile } from '../../lib/media/profiles/imageProfiles';
 import { AdminAspectRatioPreview } from './AdminAspectRatioPreview';
@@ -60,7 +54,6 @@ export const AdminImageCropper: React.FC<AdminImageCropperProps> = ({
   const [livePreviewUrl, setLivePreviewUrl] = useState<string>('');
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Load source image
   useEffect(() => {

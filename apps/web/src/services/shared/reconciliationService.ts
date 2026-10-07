@@ -1,6 +1,5 @@
 import { collection, getDocs } from 'firebase/firestore';
-import { httpsCallable } from 'firebase/functions';
-import { db, functions } from '../../lib/firebase/config';
+import { db } from '../../lib/firebase/config';
 import { ServiceResponse } from '../../types/common/index';
 import { storageService, StorageFileItem } from '../storage/storageService';
 

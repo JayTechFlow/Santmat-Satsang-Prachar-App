@@ -30,7 +30,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useApp } from '../../../app/providers/AppContext';
-import { storageService, StorageAudioItem } from '../../../services/storage/storageService';
+import { StorageAudioItem } from '../../../services/storage/storageService';
 import { StorageAudioPickerModal } from '../components/StorageAudioPickerModal';
 import { Bhajan } from '../../../types/common/index';
 import { contentPublishingService, PublishProgress } from '../../../services/shared/ContentPublishingService';
@@ -198,7 +198,7 @@ async function extractAudioMetadata(file: File): Promise<ExtractedAudioMeta> {
 
 export const AdminAddBhajan: React.FC = () => {
   const navigate = useNavigate();
-  const { categories, addBhajan, bhajans } = useApp();
+  const { categories, bhajans } = useApp();
 
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
@@ -230,7 +230,6 @@ export const AdminAddBhajan: React.FC = () => {
   const [audioBlobUrl, setAudioBlobUrl] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [existingAudioUrl, setExistingAudioUrl] = useState('');
-  const [existingStoragePath, setExistingStoragePath] = useState('');
   const [customAudioUrlInput, setCustomAudioUrlInput] = useState('');
   const [showAudioUrlInput, setShowAudioUrlInput] = useState(false);
   const [showStoragePickerModal, setShowStoragePickerModal] = useState(false);
@@ -242,7 +241,6 @@ export const AdminAddBhajan: React.FC = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
 
-  const [isSubtitleMode, setIsSubtitleMode] = useState(false);
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [extractedMetadata, setExtractedMetadata] = useState<{
@@ -253,7 +251,6 @@ export const AdminAddBhajan: React.FC = () => {
     source: 'embedded' | 'filename' | 'none';
   } | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
@@ -298,34 +295,6 @@ export const AdminAddBhajan: React.FC = () => {
     }
   };
 
-  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validator = new MediaValidator();
-    const result = await validator.validate(file, MediaType.IMAGE);
-    if (!result.valid) {
-      const msg = result.errors.map((err) => err.message).join('; ');
-      showValidationError('thumbnail', msg);
-      return;
-    }
-
-    setErrors((prev) => {
-      const next = { ...prev };
-      delete next.thumbnail;
-      return next;
-    });
-
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setThumbnailUrl(event.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleAudioFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -350,7 +319,6 @@ export const AdminAddBhajan: React.FC = () => {
     setHasAudioFile(true);
     setAudioFile(file);
     setExistingAudioUrl('');
-    setExistingStoragePath('');
 
     // Attempt metadata extraction
     try {
@@ -432,7 +400,6 @@ export const AdminAddBhajan: React.FC = () => {
     if (customAudioUrlInput.trim()) {
       const url = customAudioUrlInput.trim();
       setExistingAudioUrl(url);
-      setExistingStoragePath('');
       setAudioFileName(url.split('/').pop()?.split('?')[0] || 'मौजूदा स्टोरेज ऑडियो');
       setAudioFileSize(0);
       setAudioFileType('');
@@ -484,7 +451,6 @@ export const AdminAddBhajan: React.FC = () => {
     }
 
     setExistingAudioUrl(item.downloadUrl);
-    setExistingStoragePath(item.storagePath);
     setAudioFileName(item.name);
     setAudioFileSize(item.size);
     setAudioFileType(item.contentType);
@@ -553,7 +519,6 @@ export const AdminAddBhajan: React.FC = () => {
     });
 
     setLyrics(timedLines.join('\n'));
-    setIsSubtitleMode(true);
     setToastMessage('ऑडियो टाइमिंग सबटाइटल (Hindi Timed Subtitles) स्वतः तैयार हो गए!');
     setTimeout(() => setToastMessage(null), 2500);
   };
@@ -576,7 +541,6 @@ export const AdminAddBhajan: React.FC = () => {
       .map((line) => line.replace(/^\[\d{2}:\d{2}(\.\d{2})?\]\s*/, ''))
       .join('\n');
     setLyrics(clean);
-    setIsSubtitleMode(false);
     setToastMessage('टाइमस्टैम्प हटा दिए गए, सामान्य लिरिक्स सक्रिय है');
     setTimeout(() => setToastMessage(null), 2000);
   };
@@ -1043,7 +1007,6 @@ export const AdminAddBhajan: React.FC = () => {
                         setAudioFileSize(0);
                         setAudioFileType('');
                         setExistingAudioUrl('');
-                        setExistingStoragePath('');
                         setExtractedMetadata(null);
                         if (audioBlobUrl) {
                           URL.revokeObjectURL(audioBlobUrl);

@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { usePermissions, useRouteAccess } from '../providers/PermissionContext';
 import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
+import { SITE_CONFIG } from '../../config/siteConfig';
 
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, isAnyAdmin, isSuspended } = usePermissions();
@@ -13,14 +14,13 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
   }
 
   if (!user || !isAnyAdmin || isSuspended) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to={SITE_CONFIG.routes.adminLogin} state={{ from: location }} replace />;
   }
 
   if (!hasAccess) {
-    return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to={SITE_CONFIG.routes.adminDashboard} replace />;
   }
 
   return <>{children}</>;
 };
 
-export const AuthWrapper = ProtectedRoute;

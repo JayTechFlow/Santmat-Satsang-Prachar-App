@@ -5,7 +5,6 @@ import {
   AdminButton,
   AdminField,
 } from '../../../components/admin';
-import { TARGET_SCREEN_LABELS } from './BannerSlotCard';
 
 export interface BannerEditModalProps {
   isOpen: boolean;

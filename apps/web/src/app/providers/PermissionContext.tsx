@@ -422,104 +422,6 @@ export function usePermissions() {
   return ctx;
 }
 
-export function usePermission(permissionId: string) {
-  const { hasPermission } = usePermissions();
-  return hasPermission(permissionId);
-}
-
-export function useFeatureFlag(featureId: string) {
-  const { isFeatureEnabled } = usePermissions();
-  return isFeatureEnabled(featureId);
-}
-
-export function useRoleCheck() {
-  const { isDeveloperSuperAdmin, isClientSuperAdmin, isMobileUser, isAnyAdmin, currentRole, isSuspended } = usePermissions();
-  return {
-    isDeveloperSuperAdmin,
-    isClientSuperAdmin,
-    isMobileUser,
-    isAnyAdmin,
-    currentRole,
-    isSuspended,
-  };
-}
-
-// PermissionGate component
-interface PermissionGateProps {
-  children: ReactNode;
-  fallback?: ReactNode;
-  permission?: string;
-  permissions?: string[];
-  requireAll?: boolean;
-  roles?: AdminRole[];
-  feature?: string;
-}
-
-export function PermissionGate({
-  children,
-  fallback = null,
-  permission,
-  permissions = [],
-  requireAll = true,
-  roles,
-  feature,
-}: PermissionGateProps) {
-  const {
-    hasPermission,
-    hasAnyPermission,
-    hasAllPermissions,
-    isFeatureEnabled,
-    currentRole,
-    isSuspended
-  } = usePermissions();
-
-  if (isSuspended) {
-    return <>{fallback}</>;
-  }
-
-  if (roles && currentRole && !roles.includes(currentRole)) {
-    return <>{fallback}</>;
-  }
-
-  if (permission && !hasPermission(permission)) {
-    return <>{fallback}</>;
-  }
-
-  if (permissions.length > 0) {
-    const check = requireAll ? hasAllPermissions(permissions) : hasAnyPermission(permissions);
-    if (!check) {
-      return <>{fallback}</>;
-    }
-  }
-
-  if (feature && !isFeatureEnabled(feature)) {
-    return <>{fallback}</>;
-  }
-
-  return <>{children}</>;
-}
-
-// Convenience components
-export function DeveloperOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGate roles={['developer_super_admin']} fallback={fallback}>{children}</PermissionGate>;
-}
-
-export function ClientAdminOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGate roles={['client_super_admin']} fallback={fallback}>{children}</PermissionGate>;
-}
-
-export function AdminOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGate roles={['developer_super_admin', 'client_super_admin']} fallback={fallback}>{children}</PermissionGate>;
-}
-
-export function FeatureGate({ children, fallback = null, feature }: { children: ReactNode; fallback?: ReactNode; feature: string }) {
-  return <PermissionGate feature={feature} fallback={fallback}>{children}</PermissionGate>;
-}
-
-export function MobileOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGate roles={['mobile_user']} fallback={fallback}>{children}</PermissionGate>;
-}
-
 export function useRouteAccess(routePath: string) {
   const { hasPermission, isFeatureEnabled, currentRole, isSuspended } = usePermissions();
 
@@ -543,7 +445,6 @@ export function useRouteAccess(routePath: string) {
     '/admin/stuti-vinati': { permissions: ['stuti.manage'], roles: ['developer_super_admin', 'client_super_admin'] },
     '/admin/add-bhajan': { permissions: ['audio.upload'], feature: 'feature.audio', roles: ['developer_super_admin', 'client_super_admin'] },
     '/admin/bhajan-list': { permissions: ['audio.manage'], feature: 'feature.audio', roles: ['developer_super_admin', 'client_super_admin'] },
-    '/admin/bhajans': { permissions: ['audio.manage'], feature: 'feature.audio', roles: ['developer_super_admin', 'client_super_admin'] },
     '/admin/devotees': { permissions: ['users.view'], roles: ['developer_super_admin', 'client_super_admin'] },
     '/admin/stuti': { permissions: ['stuti.manage'], roles: ['developer_super_admin', 'client_super_admin'] },
   };

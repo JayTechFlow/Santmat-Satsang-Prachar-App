@@ -5,10 +5,17 @@
   "scripts": {
     "bootstrap:dev": "npm --prefix firebase/functions run bootstrap:dev --",
     "build:functions": "npm --prefix firebase/functions run build",
+    "build:website": "npm --prefix apps/website run build",
     "build:admin": "npm --prefix apps/web run build",
+    "build:hosting": "node scripts/build-hosting.mjs",
+    "lint:website": "npm --prefix apps/website run lint",
     "lint:admin": "npm --prefix apps/web run lint",
+    "lint": "npm run lint:website && npm run lint:admin",
+    "test:website": "npm --prefix apps/website run test",
     "test:admin": "npm --prefix apps/web run test",
+    "test": "npm run test:website && npm run test:admin",
     "test:functions": "npm --prefix firebase/functions run test",
+    "deploy:hosting": "firebase deploy --only hosting",
     "emulators:test": "firebase emulators:start --only auth,firestore,storage,database=false --project demo-santmat-wave5-security 2>/dev/null || firebase emulators:start --only auth,firestore,storage --project demo-santmat-wave5-security",
     "test:security:rules": "node --test firebase/security-tests/security.rules.test.mjs",
     "test:security": "firebase emulators:exec --only auth,firestore,storage --project demo-santmat-wave5-security \"node --test firebase/security-tests/security.rules.test.mjs\""

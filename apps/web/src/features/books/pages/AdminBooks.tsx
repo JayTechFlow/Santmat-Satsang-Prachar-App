@@ -33,7 +33,6 @@ import {
   AdminModalTitle,
   AdminModalClose,
   AdminModalBody,
-  AdminModalFooter,
 } from '../../../components/admin';
 import { FilterBar } from '../../../components/ui/FilterBar';
 import { Pagination } from '../../../components/ui/Pagination';

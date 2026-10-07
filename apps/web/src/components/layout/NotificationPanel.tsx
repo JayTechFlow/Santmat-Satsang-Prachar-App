@@ -6,7 +6,7 @@
  * type icons, relative timestamps, focus trap, outside click, ESC.
  */
 import { useRef, useEffect, useCallback, useMemo } from 'react';
-import { CheckCheck, Bell, Music, BookOpen, Sparkles, Calendar, MessageCircle, X } from 'lucide-react';
+import { CheckCheck, Bell, Music, BookOpen, Calendar, MessageCircle, X } from 'lucide-react';
 import { useApp } from '../../app/providers/AppContext';
 import { useNavigate } from 'react-router-dom';
 

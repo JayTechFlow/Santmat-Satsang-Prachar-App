@@ -186,7 +186,7 @@ SidebarExpandableGroup.displayName = 'SidebarExpandableGroup';
 // ── Main Sidebar ───────────────────────────────────────────────────────────
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ sidebar }) => {
-  const { collapsed, isOverlay, isVisible, isMobile, closeMobile, closeOverlay } = sidebar;
+  const { collapsed, isOverlay, isVisible, isMobile, closeOverlay } = sidebar;
   const { logout } = usePermissions();
   const navGroups = useFilteredNavGroups();
   const sidebarRef = useRef<HTMLDivElement>(null);

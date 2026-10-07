@@ -3,7 +3,7 @@ import { requireAuth, db } from "./utils";
 
 /**
  * Collection → SearchResultItem type mapping for the frontend.
- * The AdminSearch component supports exactly 4 types: bhajan, stuti, suvichar, book.
+ * The AdminSearch component supports exactly 3 types: bhajan, stuti, book.
  */
 type CollectionMap = 'audio' | 'stuti_vinati' | 'books';
 const COLLECTION_TYPE: Record<CollectionMap, string> = {
@@ -76,7 +76,7 @@ function mapToSearchResultItem(doc: any, type: string): { id: string; type: stri
 }
 
 /**
- * Global Search endpoint — queries the 4 content collections (audio, stuti_vinati, suvichar, books)
+ * Global Search endpoint — queries the 3 content collections (audio, stuti_vinati, books)
  * and returns typed results matching the SearchResultItem frontend contract.
  * No fabricated data — results reflect real indexed content. Empty index yields empty results.
  */
@@ -184,7 +184,7 @@ export const autocomplete = functions.https.onCall(async (data, context) => {
 
   const qLower = q.trim().toLowerCase();
 
-  // Query titles from all 4 collections
+  // Query titles from all 3 collections
   const titleSets: string[][] = [];
 
   titleSets.push(
@@ -198,14 +198,6 @@ export const autocomplete = functions.https.onCall(async (data, context) => {
   titleSets.push(
     await db.collection("stuti_vinati")
       .where("type", "in", ["morning", "evening"])
-      .get()
-      .then(snap => snap.docs
-        .filter(d => (d.data() as any).title)
-        .map(d => (d.data() as any).title as string))
-  );
-
-  titleSets.push(
-    await db.collection("suvichar")
       .get()
       .then(snap => snap.docs
         .filter(d => (d.data() as any).title)
@@ -280,86 +272,4 @@ export const autocomplete = functions.https.onCall(async (data, context) => {
       tags: Array.from(tagSet).slice(0, limit),
     },
   };
-});
-
-/**
- * Get popular / trending search queries.
- * Unchanged — uses popular_searches collection.
- */
-export const trendingSearches = functions.https.onCall(async (data, context) => {
-  requireAuth(context);
-  try {
-    const snapshot = await db
-      .collection("popular_searches")
-      .orderBy("score", "desc")
-      .limit(10)
-      .get();
-    const searches = snapshot.docs.map((doc) => doc.data().query);
-    return { status: "success", data: searches };
-  } catch (e) {
-    return { status: "error", message: "Failed to fetch popular searches" };
-  }
-});
-
-/**
- * Get recommendations for a specific media item.
- * Unchanged — uses recommendation_index built from media collection.
- */
-export const getMediaRecommendations = functions.https.onCall(async (data, context) => {
-  requireAuth(context);
-
-  const { mediaId, limit = 5 } = data as { mediaId: string; limit?: number };
-  if (!mediaId) {
-    throw new functions.https.HttpsError("invalid-argument", "mediaId is required");
-  }
-
-  try {
-    const targetDoc = await db.collection("recommendation_index").doc(mediaId).get();
-    if (!targetDoc.exists) {
-      return { status: "success", data: [] };
-    }
-
-    const target = targetDoc.data()!;
-    const snapshot = await db.collection("recommendation_index").limit(50).get();
-
-    const recommendations: Array<{ id: string; score: number; reason: string }> = [];
-
-    snapshot.docs.forEach((doc) => {
-      if (doc.id === mediaId) return;
-      const item = doc.data();
-
-      let score = 0;
-      const reasons: string[] = [];
-
-      if (item.category && item.category === target.category) {
-        score += 0.4;
-        reasons.push("Same category");
-      }
-
-      if (Array.isArray(item.tags) && Array.isArray(target.tags)) {
-        const shared = item.tags.filter((t: string) => target.tags.includes(t));
-        if (shared.length > 0) {
-          score += shared.length * 0.3;
-          reasons.push(`Shared tags: ${shared.join(", ")}`);
-        }
-      }
-
-      if (score > 0) {
-        recommendations.push({
-          id: doc.id,
-          score: parseFloat(score.toFixed(4)),
-          reason: reasons.join("; "),
-        });
-      }
-    });
-
-    recommendations.sort((a, b) => b.score - a.score);
-
-    return {
-      status: "success",
-      data: recommendations.slice(0, limit),
-    };
-  } catch (error: any) {
-    return { status: "error", message: error?.message ?? "Failed to fetch recommendations" };
-  }
 });

@@ -1,0 +1,21 @@
+# ============================================================
+# robots.txt for SANTMAT SATSANG PARCHAR
+# Primary Public Domain: https://santmatsatsangparchar.in
+# ============================================================
+
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /mobile-app
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms
+Allow: /delete-account
+
+# Disallow indexing of private administrative portal
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+
+# Single Source of Truth Sitemap
+Sitemap: https://santmatsatsangparchar.in/sitemap.xml

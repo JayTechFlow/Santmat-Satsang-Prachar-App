@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../lib/firebase/config';
-import { Bhajan, StutiItem, NotificationItem, AdminTab, Playlist, CategoryItem } from '../../types/common/index';
+import { Bhajan, StutiItem, NotificationItem, Playlist, CategoryItem } from '../../types/common/index';
 import { BhajanEntity, StutiEntity, CategoryEntity, NotificationEntity } from '../../types/common/index';
 import { bhajanService } from '../../features/audio/services/bhajanService';
 import { stutiService } from '../../features/stuti/services/stutiService';
@@ -16,8 +16,6 @@ import { storageService } from '../../services/storage/storageService';
  * HTML5 audio preview. No mock data, no PIN auth, no mobile preview state.
  */
 interface AppContextType {
-  adminTab: AdminTab;
-  setAdminTab: (tab: AdminTab) => void;
 
   // Audio Playback (HTML5 preview of published tracks)
   currentTrack: Bhajan | StutiItem | null;
@@ -28,7 +26,6 @@ interface AppContextType {
   // Data Collections
   bhajans: Bhajan[];
   stutis: StutiItem[];
-  updateStuti: (id: string, data: Partial<StutiItem>) => void;
   categories: CategoryItem[];
   addCategory: (category: Omit<CategoryItem, 'id'>) => void;
   updateCategory: (id: string, data: Partial<CategoryItem>) => void;
@@ -54,7 +51,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [adminTab, setAdminTab] = useState<AdminTab>('dashboard');
 
   // Real data collections (empty initial state — Firestore is the source of truth)
   const [bhajans, setBhajans] = useState<Bhajan[]>([]);
@@ -248,18 +244,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setBhajans((prev) => prev.filter((b) => b.id !== id));
   };
 
-  const updateStuti = (id: string, data: Partial<StutiItem>) => {
-    stutiService.updateStuti(id, data).then((res) => {
-      if (!res.success) {
-        setDataError(res.error || 'स्तुति अपडेट में त्रुटि');
-      }
-    });
-    setStutis((prev) => prev.map((s) => (s.id === id ? { ...s, ...data } : s)));
-    if (currentTrack && currentTrack.id === id) {
-      setCurrentTrack((prev) => (prev ? ({ ...prev, ...data } as StutiItem) : null));
-    }
-  };
-
   const addCategory = (catData: Omit<CategoryItem, 'id'>) => {
     categoryService.addCategory(catData).then((res) => {
       if (!res.success) {
@@ -378,15 +362,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <AppContext.Provider
       value={{
-        adminTab,
-        setAdminTab,
         currentTrack,
         isPlaying,
         playTrack,
         togglePlay,
         bhajans,
         stutis,
-        updateStuti,
         categories,
         addCategory,
         updateCategory,

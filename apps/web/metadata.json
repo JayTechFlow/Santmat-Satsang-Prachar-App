@@ -1,6 +1,0 @@
-{
-  "name": "Santmat Bhajan",
-  "description": "संतमत सत्संग प्रचार मोबाइल ऐप - भजन, स्तुति-बिनती, ऑडियो प्लेयर और एडमिन पैनल",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

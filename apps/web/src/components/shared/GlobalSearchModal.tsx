@@ -6,7 +6,7 @@
  * Focus trap, ESC close, result navigation, loading/empty/error states.
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, X, Music, BookOpen, Heart, FileText, Folder, Users, ListMusic, ArrowRight } from 'lucide-react';
+import { Search, X, Music, BookOpen, Heart, Folder, Users, ListMusic, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { bhajanService } from '../../features/audio/services/bhajanService';
 import { bookService } from '../../features/books/services/bookService';

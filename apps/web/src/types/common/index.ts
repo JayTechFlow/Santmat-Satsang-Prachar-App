@@ -319,7 +319,6 @@ export type ActiveScreen = 'home' | 'bhajan_list' | 'now_playing' | 'stuti' | 'n
 /**
  * Admin Panel Navigation Tabs
  */
-export type AdminTab = 'dashboard' | 'add_bhajan' | 'bhajan_list' | 'stuti_management' | 'categories' | 'users' | 'playlists' | 'notifications' | 'banners' | 'analytics' | 'settings' | 'support' | 'books' | 'search';
 
 /**
  * Preview Device Display Mode

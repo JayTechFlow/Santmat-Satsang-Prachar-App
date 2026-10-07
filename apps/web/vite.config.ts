@@ -5,9 +5,12 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Admin application is served under the /admin/ path of the public origin.
+    base: '/admin/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
+        '@shared': path.resolve(__dirname, '../../shared'),
         '@': path.resolve(__dirname, '.'),
       },
     },

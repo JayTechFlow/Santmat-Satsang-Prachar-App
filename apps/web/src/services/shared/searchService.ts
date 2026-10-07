@@ -13,8 +13,8 @@ export interface SearchResultItem {
 export class SearchService {
   /**
    * Execute a global search via the `search-globalSearch` callable.
-   * The backend returns `{ status, data: { total, items } }` from the
-   * `search_index` collection; empty index yields empty results (real state).
+   * The backend returns `{ status, data: { total, items } }` from the live
+   * content collections (audio, stuti_vinati, books); no results yield empty data.
    */
   async globalSearch(queryText: string): Promise<ServiceResponse<SearchResultItem[]>> {
     if (!queryText.trim()) {

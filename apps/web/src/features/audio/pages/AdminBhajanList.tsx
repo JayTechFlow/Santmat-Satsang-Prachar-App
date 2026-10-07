@@ -27,7 +27,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { useApp } from '../../../app/providers/AppContext';
-import { storageService, StorageAudioItem } from '../../../services/storage/storageService';
+import { storageService } from '../../../services/storage/storageService';
 import { StorageAudioPickerModal } from '../components/StorageAudioPickerModal';
 import { Bhajan } from '../../../types/common/index';
 
@@ -94,7 +94,6 @@ export const AdminBhajanList: React.FC = () => {
   const [newThumbnailUrl, setNewThumbnailUrl] = useState('');
   const [urlInput, setUrlInput] = useState('');
   const [showUrlField, setShowUrlField] = useState(false);
-  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const thumbnailFileInputRef = useRef<HTMLInputElement>(null);
 
   // Full Edit Modal State
@@ -255,9 +254,7 @@ export const AdminBhajanList: React.FC = () => {
         alert('कृपया केवल इमेज (JPG, PNG, WebP) फ़ाइल चुनें।');
         return;
       }
-      setIsUploadingThumbnail(true);
       const res = await storageService.uploadFile(file, 'thumbnails');
-      setIsUploadingThumbnail(false);
       if (res.success && res.data) {
         setNewThumbnailUrl(res.data.downloadUrl);
         showToast('इमेज फ़ायरबेस स्टोरेज में अपलोड हो गई!');
@@ -283,9 +280,7 @@ export const AdminBhajanList: React.FC = () => {
         alert('कृपया केवल इमेज (JPG, PNG, WebP) फ़ाइल चुनें।');
         return;
       }
-      setIsUploadingThumbnail(true);
       const res = await storageService.uploadFile(file, 'thumbnails');
-      setIsUploadingThumbnail(false);
       if (res.success && res.data) {
         setEditImageUrl(res.data.downloadUrl);
         showToast('इमेज फ़ायरबेस स्टोरेज में अपलोड हो गई!');

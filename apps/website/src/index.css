@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/*
+ * ============================================================================
+ * Santmat Satsang Prachar — Design Token Foundation
+ * ============================================================================
+ * Minimal token layer preserving existing visual identity.
+ * Shell components reference these tokens; feature pages remain unchanged.
+ */
+
+@theme {
+  /* ── Brand ─────────────────────────────────────────────────── */
+  --color-brand: #EA580C;
+  --color-brand-hover: #C2410C;
+  --color-brand-light: #FFF7ED;
+  --color-brand-border: #FED7AA;
+
+  /* ── Surfaces ─────────────────────────────────────────────── */
+  --color-surface: #FFFFFF;
+  --color-background: #FBF9F5;
+  --color-background-alt: #FAF8F5;
+
+  /* ── Text ─────────────────────────────────────────────────── */
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #78716C;
+  --color-text-muted: #A8A29E;
+
+  /* ── Semantic ─────────────────────────────────────────────── */
+  --color-danger: #DC2626;
+  --color-danger-light: #FEF2F2;
+  --color-success: #059669;
+  --color-success-light: #ECFDF5;
+  --color-warning: #D97706;
+  --color-warning-light: #FFFBEB;
+
+  /* ── Shell Dimensions ─────────────────────────────────────── */
+  --sidebar-width: 256px;
+  --sidebar-collapsed-width: 64px;
+  --header-height: 64px;
+
+  /* ── Z-Index Layers ──────────────────────────────────────── */
+  --z-header: 20;
+  --z-sidebar-backdrop: 40;
+  --z-popover: 50;
+  --z-modal: 60;
+
+  /* ── Typography ───────────────────────────────────────────── */
+  --font-family-sans: 'Mukta', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Radius System (enterprise, restrained) ──────────────── */
+  --radius-control: 0.625rem;   /* inputs, buttons, selects */
+  --radius-card: 0.75rem;       /* cards, panels */
+  --radius-pill: 9999px;        /* badges, chips, avatars */
+
+  /* ── Focus Ring (accessible, consistent) ─────────────────── */
+  --color-focus: #EA580C;
+}
+
+/*
+ * Global scrollbar styling.
+ */
+
+@layer components {
+  /* ── Scrollbar (subtle, warm) ─────────────────────────────── */
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background-color: #E7E5E4;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover { background-color: #D6D3D1; }
+}

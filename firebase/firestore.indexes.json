@@ -177,20 +177,6 @@
       ]
     },
     {
-      "collectionGroup": "media_processing_jobs",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "mediaId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "media_versions",
       "queryScope": "COLLECTION",
       "fields": [

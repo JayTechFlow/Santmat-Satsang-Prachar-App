@@ -66,11 +66,8 @@ service cloud.firestore {
 
     // Publicly readable collections (read by app users, write by admin)
     match /app_settings/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
-    match /home_banners/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /banners/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /quick_actions/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
-    match /featured_content/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
-    match /audio_categories/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /book_categories/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /categories/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
     match /audio/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
@@ -86,7 +83,6 @@ service cloud.firestore {
                   || isAnyAdmin();
       allow create, update, delete: if isAnyAdmin();
     }
-    match /search_index/{docId} { allow read: if true; allow write: if isAnyAdmin(); }
 
     // Enterprise Media Platform Collections (Sprint M1)
     // Media assets — authenticated users can read public assets; admin manages all
@@ -104,13 +100,6 @@ service cloud.firestore {
       allow write: if isAnyAdmin();
     }
 
-    // Media processing jobs — admin read and write
-    match /media_processing_jobs/{jobId} {
-      allow read, write: if isAnyAdmin();
-    }
-    match /media_jobs/{jobId} {
-      allow read, write: if isAnyAdmin();
-    }
 
     // Media tags — authenticated users can read; admin manages
     match /media_tags/{tagId} {
@@ -170,10 +159,6 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAnyAdmin();
     }
-    match /quotes/{quoteId} {
-      allow read: if true;
-      allow write: if isAnyAdmin();
-    }
     match /donations/{donationId} {
       allow read: if isDocOwner() || isAnyAdmin();
       allow create: if isActive() && request.resource.data.userId == request.auth.uid;
@@ -198,11 +183,6 @@ service cloud.firestore {
                         && request.auth.uid in resource.data.collaborators
                         && request.resource.data.ownerId == resource.data.ownerId);
       allow delete: if isPlaylistOwner() || isAnyAdmin();
-    }
-
-    match /playlist_items/{itemId} {
-      allow read: if isAuthenticated();
-      allow write: if isAnyAdmin();
     }
 
     // Support tickets — authenticated mobile users create their own tickets;

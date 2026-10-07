@@ -194,49 +194,6 @@ describe("Firestore Triggers Unit Tests", () => {
     });
   });
 
-  describe("onNotificationQueueCreated", () => {
-    it("processes and sends multicast push notification from queue", async () => {
-      const wrapped = testEnv.wrap(firestoreTriggers.onNotificationQueueCreated);
-
-      let updateCalled = false;
-      const snap = {
-        data: () => ({
-          title: "Announcement",
-          body: "Satsang starts at 5 PM",
-          tokens: ["token_1", "token_2"],
-        }),
-        ref: {
-          update: async (data: any) => {
-            updateCalled = true;
-            assert.strictEqual(data.status, "sent");
-          },
-        },
-      };
-
-      let multicastSent = false;
-      const originalMulticast = admin.messaging().sendMulticast;
-      admin.messaging().sendMulticast = (async (msg: any) => {
-        multicastSent = true;
-        assert.strictEqual(msg.tokens.length, 2);
-        return { successCount: 2, failureCount: 0, responses: [] };
-      }) as any;
-
-      const originalCollection = admin.firestore().collection;
-      admin.firestore().collection = (() => ({
-        add: async () => ({ id: "audit_3" }),
-      })) as any;
-
-      try {
-        await wrapped(snap as any, { params: { queueId: "queue_1" } });
-        assert.strictEqual(multicastSent, true);
-        assert.strictEqual(updateCalled, true);
-      } finally {
-        admin.messaging().sendMulticast = originalMulticast;
-        admin.firestore().collection = originalCollection;
-      }
-    });
-  });
-
   describe("processScheduledPublishing", () => {
     it("auto-publishes past due scheduled content and leaves future or draft content untouched", async () => {
       const now = new Date("2026-09-14T10:00:00.000Z");

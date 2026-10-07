@@ -15,7 +15,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   effectiveRangeDays,
-  RANGE_LABELS,
   timelineLabel,
   type TimelineRange,
 } from '../analytics/timelineRange';
@@ -37,8 +36,6 @@ import {
   BookOpen,
   BookMarked,
   Image,
-  MessageSquare,
-  Bell,
   ListMusic,
   Shield,
   CircleAlert,
@@ -50,7 +47,6 @@ import { usePermissions } from '../../../app/providers/PermissionContext';
 import { reportService } from '../services/reportService';
 import type { AnalyticsSummaryPayload } from '../analytics/types';
 import { resolveRange, shiftDayKey, todayUtc } from '../analytics/dateRange';
-import { formatDuration, formatIndian as formatIndianShared } from '../analytics/format';
 import { bookService } from '../../books/services/bookService';
 import { bannerService } from '../../banners/services/bannerService';
 import { StatCard } from '../components/StatCard';
@@ -90,7 +86,7 @@ export const AdminDashboard: React.FC = () => {
     playTrack, currentTrack, isPlaying, togglePlay,
     dataLoading: appDataLoading, dataError: appDataError,
   } = useApp();
-  const { hasPermission, isDeveloperSuperAdmin } = usePermissions();
+  const { hasPermission } = usePermissions();
 
   // ── Timeline State ──────────────────────────────────────────────────────
   const [selectedTimeline, setSelectedTimeline] = useState<TimelineRange>('7d');
@@ -143,11 +139,9 @@ export const AdminDashboard: React.FC = () => {
   // ── One-Shot Counts (Books + Banners) ──────────────────────────────────
   const [booksCount, setBooksCount] = useState<number | null>(null);
   const [bannersCount, setBannersCount] = useState<number | null>(null);
-  const [countsLoading, setCountsLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    setCountsLoading(true);
 
     Promise.all([
       bookService.getBooks().catch(() => []),
@@ -156,7 +150,6 @@ export const AdminDashboard: React.FC = () => {
       if (cancelled) return;
       setBooksCount(books.length);
       setBannersCount(banners.length);
-      setCountsLoading(false);
     });
 
     return () => { cancelled = true; };
@@ -364,7 +357,7 @@ export const AdminDashboard: React.FC = () => {
     if (hasPermission('banners.manage')) {
       actions.push({
         label: 'होम बैनर एवं विचार वाणी',
-        description: 'कस्टम इमेज एवं सुविचार बदलें',
+        description: 'कस्टम इमेज बदलें',
         icon: <Layers className="w-5 h-5" />,
         route: '/admin/banners',
         color: 'bg-amber-600',

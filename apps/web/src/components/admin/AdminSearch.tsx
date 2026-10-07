@@ -13,14 +13,12 @@ import {
   Loader2,
   Music,
   BookOpen,
-  Quote,
   BookMarked,
   Inbox,
   AlertTriangle,
 } from 'lucide-react';
 import { searchService, SearchResultItem } from '../../services/shared/searchService';
 import { AdminPageHeader } from './AdminPageHeader';
-import { AdminCard } from './AdminCard';
 
 const TYPE_ROUTES: Record<SearchResultItem['type'], string> = {
   bhajan: '/admin/bhajan-list',
@@ -97,7 +95,7 @@ export const AdminSearch: React.FC = () => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="भजन, स्तुति, सुविचार या पुस्तक खोजें…"
+            placeholder="भजन, स्तुति या पुस्तक खोजें…"
             className="w-full pl-11 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-[0.625rem] text-sm focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/20"
           />
           {loading && <Loader2 className="w-4 h-4 text-[#EA580C] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />}

@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import {
-  ShieldAlert,
   ShieldCheck,
   HardDrive,
   Trash2,
   RefreshCw,
   AlertTriangle,
-  FileText,
   CheckCircle2,
   Lock,
-  Layers,
   Check,
-  HelpCircle,
 } from 'lucide-react';
 import { BannerEntity, BannerSlotNumber } from '../../../types/common/index';
 import { bannerService, BannerIntegrityReport, CANONICAL_SLOTS } from '../services/bannerService';
@@ -23,7 +19,6 @@ export interface BannerIntegrityCardProps {
   allBanners?: BannerEntity[];
   onAuditCompleted?: () => void;
   onBannersUpdated?: () => void;
-  onFeedback?: (type: 'success' | 'error', text: string) => void;
 }
 
 export const BannerIntegrityCard: React.FC<BannerIntegrityCardProps> = ({
@@ -32,7 +27,6 @@ export const BannerIntegrityCard: React.FC<BannerIntegrityCardProps> = ({
   allBanners: _allBanners,
   onAuditCompleted,
   onBannersUpdated,
-  onFeedback,
 }) => {
   const effectiveSlots = slots || slotBanners || { 1: null, 2: null, 3: null, 4: null };
   const [report, setReport] = useState<BannerIntegrityReport | null>(null);

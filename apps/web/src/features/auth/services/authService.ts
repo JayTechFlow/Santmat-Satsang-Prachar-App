@@ -9,14 +9,14 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../../../lib/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
-import { UserProfile, UserRole, ServiceResponse } from '../../../types/common/index';
+import { UserProfile, ServiceResponse } from '../../../types/common/index';
+import { isAdminAllowed, resolvesAdminRole } from './roleGate';
 
 /**
  * Helper to map Firebase Auth error codes to user-friendly safe messages.
  */
 function mapAuthError(error: any): string {
-  const code = error?.code || '';
-  switch (code) {
+  switch (error?.code || '') {
     case 'auth/invalid-credential':
     case 'auth/user-not-found':
     case 'auth/wrong-password':
@@ -36,23 +36,6 @@ function mapAuthError(error: any): string {
       return error?.message || 'प्रमाणीकरण विफल। कृपया पुनः प्रयास करें। (Authentication failed)';
   }
 }
-
-/**
- * Admin claim-gating contract.
- * An account may enter the admin portal only when:
- * 1. The ID token carries an admin claim (`admin === true` or role claim), OR
- * 2. The Firestore user profile carries role `developer_super_admin` or `client_super_admin`,
- * AND the account is not suspended. Non-admin / suspended sessions are signed out immediately.
- */
-const isAdminAllowed = (claims: Record<string, unknown>, firestoreRole?: string): { allowed: boolean; suspended: boolean } => {
-  const role = (claims.role as string) || firestoreRole || '';
-  const isAdmin =
-    claims.admin === true ||
-    role === 'developer_super_admin' ||
-    role === 'client_super_admin';
-  const suspended = claims.accountStatus === 'suspended' || claims.suspended === true;
-  return { allowed: isAdmin && !suspended, suspended };
-};
 
 export class AuthService {
   private mockCallback: ((user: UserProfile | null) => void) | null = null;
@@ -97,7 +80,7 @@ export class AuthService {
           profileData = userSnap.data() as Partial<UserProfile>;
         }
 
-        const role = (claims.role as UserRole) || profileData.role || 'mobile_user';
+        const role = resolvesAdminRole(claims, profileData.role);
         const organizationId = (claims.organizationId as string) || profileData.organizationId || 'default_org';
 
         const { allowed, suspended } = isAdminAllowed(claims, profileData.role);
@@ -176,7 +159,7 @@ export class AuthService {
         profileData = userSnap.data() as Partial<UserProfile>;
       }
 
-      const role = (claims.role as UserRole) || profileData.role || 'mobile_user';
+      const role = resolvesAdminRole(claims, profileData.role);
       const organizationId = (claims.organizationId as string) || profileData.organizationId || 'default_org';
       const { allowed, suspended } = isAdminAllowed(claims, profileData.role);
 
@@ -229,7 +212,7 @@ export class AuthService {
         profileData = userSnap.data() as Partial<UserProfile>;
       }
 
-      const role = (claims.role as UserRole) || profileData.role || 'mobile_user';
+      const role = resolvesAdminRole(claims, profileData.role);
       const organizationId = (claims.organizationId as string) || profileData.organizationId || 'default_org';
       const { allowed, suspended } = isAdminAllowed(claims, profileData.role);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, CheckCircle, Info } from 'lucide-react';
+import { Smartphone, Info } from 'lucide-react';
 import { ImageProfile, getImageProfile } from '../../lib/media/profiles/imageProfiles';
 
 export interface AdminAspectRatioPreviewProps {

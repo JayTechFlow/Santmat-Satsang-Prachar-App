@@ -17,7 +17,6 @@ import {
   HardDrive,
   AlertCircle,
   Clock,
-  Layers,
   FileCheck,
 } from 'lucide-react';
 import { storageService, StorageAudioItem } from '../../../services/storage/storageService';

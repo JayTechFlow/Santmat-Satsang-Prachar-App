@@ -5,13 +5,8 @@ import {
   Edit3,
   RefreshCw,
   Trash2,
-  Calendar,
-  Layers,
-  CheckCircle2,
   Clock,
-  ArrowRight,
   UploadCloud,
-  FileImage,
 } from 'lucide-react';
 import { BannerEntity, BannerSlotNumber } from '../../../types/common/index';
 import { AdminButton } from '../../../components/admin';
