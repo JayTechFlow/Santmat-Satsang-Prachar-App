@@ -43,18 +43,56 @@
           "destination": "/admin/index.html"
         },
         {
-          "source": "/admin/**",
+          "source": "/admin/!(assets)/**",
           "destination": "/admin/index.html"
         },
         {
-          "source": "**",
+          "source": "!(assets)/**",
           "destination": "/index.html"
         }
       ],
       "headers": [
         {
-          "source": "/admin/**",
+          "source": "/admin",
           "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            }
+          ]
+        },
+        {
+          "source": "/admin/",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            }
+          ]
+        },
+        {
+          "source": "/admin/!(assets)/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            },
             {
               "key": "X-Robots-Tag",
               "value": "noindex, nofollow, noarchive"
@@ -70,7 +108,16 @@
           "headers": [
             {
               "key": "Cache-Control",
-              "value": "no-cache"
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/assets/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
             }
           ]
         },

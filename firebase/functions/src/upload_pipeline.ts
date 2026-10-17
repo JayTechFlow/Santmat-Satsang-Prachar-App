@@ -125,7 +125,7 @@ export const processUploadPipeline = functions.https.onCall(async (data, context
         title: title ?? storagePath.split('/').pop(),
         mimeType,
         sizeBytes: sizeBytes ?? 0,
-        category: category ?? 'general',
+        category: category ?? null,
         status: 'queued',
         progressPercentage: 15,
         uploadedBy: userId,

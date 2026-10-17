@@ -2,186 +2,262 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   ShieldCheck,
-  EyeOff,
+  UserCheck,
+  Database,
+  Smartphone,
+  Trash2,
+  Mail,
+  Lock,
+  Bell,
+  Activity,
 } from 'lucide-react';
 import { SITE_CONFIG } from '../../../config/siteConfig';
 import { SEOHead } from '../../../components/shared/SEOHead';
+import { LegalSection } from '../../../components/common/LegalSection';
+import { BusinessInformation } from '../../../components/common/BusinessInformation';
 
 export const PrivacyPolicyPage: React.FC = () => {
   return (
     <>
       <SEOHead
-        title="गोपनीयता नीति | Privacy Policy"
-        description="संतमत सत्संग प्रचार (SANTMAT SATSANG PARCHAR) की आधिकारिक गोपनीयता नीति। उपयोगकर्ता डेटा सुरक्षा, शून्य विज्ञापन नीति, एवं खाता विलोपन अधिकार।"
+        title="Privacy Policy | Official Data Practices & Compliance"
+        description="Official Privacy Policy of SANTMAT SATSANG PARCHAR. Details on Firebase authentication, profile data, playback analytics, telemetry, and account deletion."
         canonicalPath="/privacy-policy"
       />
 
       {/* Header */}
-      <section className="bg-gradient-to-b from-amber-50 to-white border-b border-stone-200 py-12 sm:py-16">
+      <section className="bg-gradient-to-b from-stone-50 via-white to-stone-50/40 border-b border-stone-200 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-100 border border-stone-200/80 text-xs font-semibold text-stone-700 mb-4 shadow-2xs">
             <ShieldCheck className="w-4 h-4 text-amber-700" />
-            <span>आधिकारिक वैधानिक नीति • Legal Document</span>
+            <span>Legal Compliance Document</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-stone-900 tracking-tight mb-3">
-            गोपनीयता नीति (Privacy Policy)
+            Privacy Policy
           </h1>
-          <p className="text-xs sm:text-sm font-bold text-amber-700 uppercase tracking-widest mb-4">
-            {SITE_CONFIG.orgName}
+          <p className="text-xs sm:text-sm font-bold text-amber-800 uppercase tracking-widest mb-3">
+            {SITE_CONFIG.legalEntityName} ({SITE_CONFIG.businessStructure})
           </p>
 
           <p className="text-xs text-stone-500 font-medium">
-            अंतिम अद्यतन (Last Updated): October 2026 • प्रभावी तिथि (Effective Date): October 2026
+            Effective Date: October 2026 • Last Reviewed: October 2026
           </p>
         </div>
       </section>
 
       {/* Main Legal Content */}
       <section className="py-12 sm:py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-stone-700 leading-relaxed text-sm sm:text-base">
-          {/* Intro Box */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3">
-            <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2">
-              <EyeOff className="w-5 h-5 text-amber-700" />
-              <span>मुख्य सिद्धांत (Zero-Monetization Pledge)</span>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-stone-700 leading-relaxed text-xs sm:text-sm">
+          {/* Entity Introduction Box */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <h2 className="text-base font-bold text-stone-900 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-amber-700" />
+              <span>Scope & Business Entity</span>
             </h2>
-            <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
-              <strong>{SITE_CONFIG.orgName}</strong> ("हम", "हमारी संस्था", या "ऐप") के अंतर्गत संचालित
-              आधिकारिक वेबसाइट <a href={SITE_CONFIG.siteUrl} className="font-mono text-amber-800 font-bold hover:underline">https://santmatsatsangparchar.in</a> एवं
-              मोबाइल एप्लिकेशन <strong>{SITE_CONFIG.mobileApp.name}</strong> पूर्णतः आध्यात्मिक, निःशुल्क एवं धार्मिक सेवा के लिए समर्पित हैं।
-              हम किसी भी तीसरे पक्ष के विज्ञापन नेटवर्क (Third-party Ad Networks) का उपयोग नहीं करते हैं,
-              और न ही आपका व्यक्तिगत डेटा किसी को बेचते अथवा साझा करते हैं।
+            <p className="text-stone-600 leading-relaxed">
+              This Privacy Policy applies to the official public business website located at{' '}
+              <a href={SITE_CONFIG.siteUrl} className="font-mono text-amber-800 font-bold hover:underline">
+                https://santmatsatsangparchar.in
+              </a>{' '}
+              and the official Android mobile application <strong>{SITE_CONFIG.mobileApp.englishName}</strong> (
+              <span className="font-mono">{SITE_CONFIG.mobileApp.packageId}</span>), owned and operated by{' '}
+              <strong>{SITE_CONFIG.legalEntityName}</strong>, a registered Sole Proprietorship business in Bihar,
+              India under the proprietorship of <strong>{SITE_CONFIG.proprietorName}</strong>.
             </p>
           </div>
 
-          {/* Section 1 */}
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-2">
-              1. एकत्र की जाने वाली जानकारी (Information We Collect)
-            </h2>
+          {/* Section 1: Information We Collect */}
+          <LegalSection title="1. Information We Collect (Actual Implementation Audit)">
             <p>
-              जब आप हमारे मोबाइल ऐप या वेबसाइट सेवाओं का उपयोग करते हैं, तो हम सेवा संचालन एवं बेहतर अनुभव हेतु निम्नलिखित सीमित जानकारी एकत्र कर सकते हैं:
+              To provide media streaming, authentication, personalized preferences, and reliable app
+              performance, we collect and process the following categories of information:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-stone-600 text-xs sm:text-sm">
+            <div className="space-y-3 pl-2">
+              <div className="p-3.5 rounded-lg bg-stone-50 border border-stone-200/80">
+                <strong className="text-stone-900 block mb-1 flex items-center gap-1.5">
+                  <UserCheck className="w-4 h-4 text-amber-700" />
+                  <span>A. Authentication & Account Credentials</span>
+                </strong>
+                <p className="text-stone-600">
+                  When you sign in using Google Sign-In or Firebase Authentication, we receive your basic profile
+                  identity including your verified email address, full name, profile photo URL, and unique Firebase
+                  User ID (UID). If phone authentication is utilized, your verified mobile number is stored.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-lg bg-stone-50 border border-stone-200/80">
+                <strong className="text-stone-900 block mb-1 flex items-center gap-1.5">
+                  <Database className="w-4 h-4 text-amber-700" />
+                  <span>B. User Profile & App Preferences</span>
+                </strong>
+                <p className="text-stone-600">
+                  Custom user profile names, profile pictures uploaded to Google Cloud / Firebase Storage,
+                  marked favorite tracks, custom playlists, Devanagari font scaling preferences, and dark/light
+                  theme selections stored in Cloud Firestore and local secure storage.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-lg bg-stone-50 border border-stone-200/80">
+                <strong className="text-stone-900 block mb-1 flex items-center gap-1.5">
+                  <Activity className="w-4 h-4 text-amber-700" />
+                  <span>C. Playback Analytics & Active Heartbeat Telemetry</span>
+                </strong>
+                <p className="text-stone-600">
+                  To power playback continuity and dashboard metrics, the mobile application logs audio playback
+                  events (tracks played, seek points, completion state) and emits an periodic{' '}
+                  <span className="font-mono text-stone-800 font-semibold">AnalyticsHeartbeat</span> signal during
+                  active app sessions to track active user counts.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-lg bg-stone-50 border border-stone-200/80">
+                <strong className="text-stone-900 block mb-1 flex items-center gap-1.5">
+                  <Bell className="w-4 h-4 text-amber-700" />
+                  <span>D. Notifications & Messaging Tokens</span>
+                </strong>
+                <p className="text-stone-600">
+                  Firebase Cloud Messaging (FCM) registration tokens are registered to transmit announcements,
+                  daily stuti reminders, and alerts regarding newly published audio tracks.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-lg bg-stone-50 border border-stone-200/80">
+                <strong className="text-stone-900 block mb-1 flex items-center gap-1.5">
+                  <Smartphone className="w-4 h-4 text-amber-700" />
+                  <span>E. Technical Diagnostics & Crash Telemetry</span>
+                </strong>
+                <p className="text-stone-600">
+                  We collect automated application crash logs and diagnostic stack traces via Firebase Crashlytics
+                  along with aggregate app performance telemetry via Firebase Analytics (operating system version,
+                  device model, and non-identifying telemetry).
+                </p>
+              </div>
+            </div>
+          </LegalSection>
+
+          {/* Section 2: Permissions */}
+          <LegalSection title="2. Device Permissions Used by the Mobile Application">
+            <p>
+              The Android mobile application requests only permissions essential for media functionality:
+            </p>
+            <ul className="list-disc pl-5 space-y-2 text-stone-600">
               <li>
-                <strong>प्रमाणीकरण जानकारी (Authentication Data):</strong> Google साइन-इन या फ़ोन नंबर (Firebase Authentication) के माध्यम से आपका नाम, ईमेल पता अथवा फ़ोन नंबर।
+                <strong>FOREGROUND_SERVICE & MEDIA_PLAYBACK:</strong> Allows the audio service (just_audio /
+                AudioService) to maintain playback when the screen is turned off or while other applications are in use.
               </li>
               <li>
-                <strong>उपयोगकर्ता प्रोफ़ाइल (User Profile):</strong> आपके द्वारा निर्धारित नाम और यदि आप चाहें तो स्वेच्छा से अपलोड की गई प्रोफ़ाइल फ़ोटो।
+                <strong>INTERNET & ACCESS_NETWORK_STATE:</strong> Enables streaming audio assets from Google Cloud
+                Storage and fetching real-time database updates from Cloud Firestore.
               </li>
               <li>
-                <strong>साधना एवं प्राथमिकताएं (Preferences & History):</strong> आपकी पसंदीदा भजन सूची (Favorites), सुनने का इतिहास (Audio Listening History), और ऐप भाषा प्राथमिकताएं।
-              </li>
-              <li>
-                <strong>तकनीकी एवं त्रुटि रिपोर्ट (Diagnostics & Crash Reports):</strong> ऐप की स्थिरता बनाए रखने हेतु अनाम क्रैश लॉग (Firebase Crashlytics) तथा मूलभूत उपयोग मेट्रिक्स (Firebase Analytics)।
+                <strong>CAMERA & READ_EXTERNAL_STORAGE (Optional):</strong> Invoked solely if the user voluntarily
+                selects a custom profile picture to upload to their devotee account.
               </li>
             </ul>
-          </div>
+          </LegalSection>
 
-          {/* Section 2 */}
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-2">
-              2. डिवाइस अनुमतियों का उपयोग (Device Permissions Rationale)
-            </h2>
+          {/* Section 3: Third-Party Service Providers */}
+          <LegalSection title="3. Third-Party Service Providers">
             <p>
-              हमारा ऐप केवल उन्हीं अनुमतियों का अनुरोध करता है जो इसके मुख्य आध्यात्मिक कार्यों के लिए नितांत आवश्यक हैं:
+              We rely on trusted Google Cloud and Firebase infrastructure to power backend operations:
             </p>
-            <div className="space-y-3 text-xs sm:text-sm">
-              <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
-                <strong className="text-stone-900 block mb-0.5">
-                  फ़ोरग्राउंड सेवा एवं मीडिया प्लेबैक (Foreground Service - Media Playback):
-                </strong>
-                <span>
-                  स्क्रीन लॉक होने अथवा अन्य ऐप का उपयोग करते समय निर्बाध रूप से सत्संग प्रवचन एवं भजन सुनाने के लिए आवश्यक है।
-                  यह अनुमति केवल सक्रिय प्लेबैक के दौरान ही उपयोग की जाती है।
-                </span>
-              </div>
+            <ul className="list-disc pl-5 space-y-1.5 text-stone-600">
+              <li><strong>Google Sign-In & Firebase Authentication:</strong> User identity and secure session management.</li>
+              <li><strong>Google Cloud Firestore:</strong> Database storage of user profiles, preferences, and playlists.</li>
+              <li><strong>Google Firebase Storage:</strong> Hosting for media catalog audio and user avatars.</li>
+              <li><strong>Firebase Cloud Messaging (FCM):</strong> Push notification delivery.</li>
+              <li><strong>Firebase Analytics & Crashlytics:</strong> Stability diagnostics and aggregate telemetry.</li>
+            </ul>
+          </LegalSection>
 
-              <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
-                <strong className="text-stone-900 block mb-0.5">
-                  कैमरा एवं फोटो लाइब्रेरी (Camera & Gallery):
-                </strong>
-                <span>
-                  केवल तभी अनुरोध किया जाता है जब उपयोगकर्ता अपनी प्रोफ़ाइल फोटो स्वयं बदलना चाहे। यह पूर्णतः वैकल्पिक है।
-                </span>
-              </div>
+          {/* Section 4: Commercial Zero-Monetization Pledge */}
+          <LegalSection title="4. Advertising & Data Brokerage Policy">
+            <p>
+              <strong>We do not sell, rent, monetize, or lease your personal information to any third party.</strong>{' '}
+              We do not integrate third-party advertising networks or commercial marketing trackers. Your data is used
+              strictly to deliver published media and manage your application account.
+            </p>
+          </LegalSection>
 
-              <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
-                <strong className="text-stone-900 block mb-0.5">
-                  सूचनाएं (Push Notifications):
-                </strong>
-                <span>
-                  दैनिक सुविचार, महत्वपूर्ण सत्संग तिथियों एवं नए भजनों के संबंध में पावन संदेश प्रेषित करने के लिए।
-                </span>
-              </div>
+          {/* Section 5: Data Deletion */}
+          <LegalSection title="5. Account & Data Deletion Rights">
+            <p>
+              Users have the absolute right to request permanent deletion of their account and all associated
+              personal data at any time:
+            </p>
+            <div className="p-4 rounded-xl bg-rose-50/70 border border-rose-200 text-rose-950 space-y-2">
+              <strong className="block text-rose-900 flex items-center gap-1.5">
+                <Trash2 className="w-4 h-4 text-rose-600" />
+                <span>Account Deletion Process</span>
+              </strong>
+              <p className="text-xs text-rose-900 leading-relaxed">
+                You can delete your account directly inside the mobile app via <strong>Profile &gt; Account &amp; Security &gt; Delete Account</strong>,
+                or submit an online deletion request via our public web portal at:{' '}
+                <Link
+                  to="/delete-account"
+                  className="font-mono font-bold underline text-rose-800 hover:text-rose-950"
+                >
+                  https://santmatsatsangparchar.in/delete-account
+                </Link>
+              </p>
+              <p className="text-xs text-rose-800">
+                Upon confirmation, your Firebase Auth record, Firestore user document, profile images, playlists,
+                and listening logs are permanently and irreversibly purged from our servers.
+              </p>
             </div>
-          </div>
+          </LegalSection>
 
-          {/* Section 3 */}
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-2">
-              3. डेटा सुरक्षा एवं भंडारण (Data Security & Infrastructure)
-            </h2>
+          {/* Section 6: Security */}
+          <LegalSection title="6. Data Security Measures">
             <p>
-              हम Google Cloud एवं Firebase के विश्वस्तरीय सुरक्षित सर्वर अवसंरचना का उपयोग करते हैं।
-              सभी नेटवर्क संचार TLS 1.3 एन्क्रिप्शन द्वारा सुरक्षित होते हैं और डेटाबेस में संग्रहीत डेटा AES-256
-              एन्क्रिप्शन मानकों के अनुसार सुरक्षित रहता है।
+              All communication between our clients and servers is encrypted in transit using industry-standard
+              Transport Layer Security (TLS/HTTPS). Database access is safeguarded through declarative Firestore
+              and Storage Security Rules that strictly enforce authentication and ownership boundaries.
             </p>
-          </div>
+          </LegalSection>
 
-          {/* Section 4 */}
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-2">
-              4. खाता एवं डेटा विलोपन अधिकार (Account & Data Deletion)
-            </h2>
+          {/* Section 7: Contact */}
+          <LegalSection title="7. Contacting the Business Regarding Privacy">
             <p>
-              Google Play डेवलपर नीतियों एवं भारतीय सूचना प्रौद्योगिकी नियमों के अनुपालन में,
-              प्रत्येक उपयोगकर्ता को अपने खाते और उससे जुड़े सभी व्यक्तिगत डेटा को स्थायी रूप से हटाने का पूर्ण अधिकार है:
+              If you have any questions or concerns regarding this policy or the processing of your data,
+              please contact our official support desk:
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
-                <strong className="text-stone-900 block mb-1">विधि 1: ऐप के भीतर से</strong>
-                <p className="text-xs text-stone-600">
-                  प्रोफ़ाइल (Profile) &gt; खाता एवं सुरक्षा (Account & Security) &gt; <strong>खाता हटाएं (Delete Account)</strong> पर टैप करें। खाता तुरंत हट जाएगा।
-                </p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
-                <strong className="text-stone-900 block mb-1">विधि 2: समर्पित वेब पृष्ठ द्वारा</strong>
-                <p className="text-xs text-stone-600">
-                  आप हमारे वेब विलोपन पृष्ठ <Link to="/delete-account" className="text-amber-700 font-bold hover:underline">Account Deletion Page</Link> पर जाकर भी विलोपन अनुरोध सबमिट कर सकते हैं।
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 5 */}
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold text-stone-900 border-b border-stone-200 pb-2">
-              5. संपर्क सूत्र एवं शिकायत निवारण (Grievance & Contact)
-            </h2>
-            <p>
-              यदि इस गोपनीयता नीति अथवा अपने डेटा से संबंधित कोई भी प्रश्न या जिज्ञासा है,
-              तो आप हमारी संस्था से सीधे संपर्क कर सकते हैं:
-            </p>
-            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 text-xs sm:text-sm space-y-1">
-              <p><strong>संस्था:</strong> {SITE_CONFIG.orgName} ({SITE_CONFIG.orgNameHindi})</p>
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-700 space-y-1">
               <p>
-                <strong>आधिकारिक ईमेल:</strong>{' '}
-                <a href={`mailto:${SITE_CONFIG.contactEmail}`} className="text-amber-800 font-bold hover:underline font-mono">
-                  {SITE_CONFIG.contactEmail}
+                <strong>Business:</strong> {SITE_CONFIG.legalEntityName} ({SITE_CONFIG.businessStructure})
+              </p>
+              <p>
+                <strong>Proprietor:</strong> {SITE_CONFIG.proprietorName}
+              </p>
+              <p>
+                <strong>Email:</strong>{' '}
+                <a
+                  href={`mailto:${SITE_CONFIG.officialEmail}`}
+                  className="text-amber-800 font-bold hover:underline font-mono"
+                >
+                  {SITE_CONFIG.officialEmail}
                 </a>
               </p>
               <p>
-                <strong>आधिकारिक वेबसाइट:</strong>{' '}
-                <span className="font-mono text-stone-900">https://santmatsatsangparchar.in</span>
+                <strong>Phone:</strong>{' '}
+                <a
+                  href={`tel:${SITE_CONFIG.officialPhone}`}
+                  className="text-stone-900 font-semibold font-mono"
+                >
+                  {SITE_CONFIG.officialPhoneFormatted}
+                </a>
               </p>
-              <p><strong>मुख्यालय:</strong> {SITE_CONFIG.ashramHeadquarters}</p>
+              <p>
+                <strong>Address:</strong> {SITE_CONFIG.registeredAddress.full}
+              </p>
             </div>
-          </div>
+          </LegalSection>
         </div>
       </section>
+
+      {/* Business Information */}
+      <BusinessInformation />
     </>
   );
 };

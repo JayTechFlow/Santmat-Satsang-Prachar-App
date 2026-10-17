@@ -1,19 +1,21 @@
 /**
  * ============================================================================
- * संतमत सत्संग प्रचार — Official Domain Configuration (Single Source of Truth)
+ * SANTMAT SATSANG PARCHAR — Official Business Configuration (Single Source of Truth)
  * ============================================================================
  *
- * ONE PUBLIC ORIGIN, TWO SOURCE APPLICATIONS:
+ * SOLE PROPRIETORSHIP BUSINESS:
+ *   Legal Entity Name   : SANTMAT SATSANG PARCHAR
+ *   Business Structure  : Sole Proprietorship
+ *   Proprietor Name     : Pravin kumar
+ *   GSTIN               : 10ITEPK2336G1Z2
+ *   Udyam Registration  : UDYAM-BR-30-0067864
  *
- *   PUBLIC ORGANIZATION WEBSITE : https://santmatsatsangparchar.in        (apps/website)
- *   ADMIN DASHBOARD             : https://santmatsatsangparchar.in/admin  (apps/web)
+ * CANONICAL ORIGIN:
+ *   PUBLIC BUSINESS WEBSITE : https://santmatsatsangparchar.in        (apps/website)
+ *   ADMIN DASHBOARD         : https://santmatsatsangparchar.in/admin  (apps/web)
  *
- * Firebase remains backend/infrastructure only. The user-facing Admin
- * experience never leaves the canonical origin above.
- *
- * This module is the ONLY place where absolute administration URLs are
- * defined. Components must consume SITE_CONFIG / ADMIN_PATH instead of
- * hardcoding full admin URLs.
+ * This module is the central source of truth for business identity,
+ * registration details, routes, and canonical URLs.
  */
 
 /** Canonical public origin (no trailing slash). */
@@ -35,9 +37,67 @@ export const ADMIN_DASHBOARD_PATH = `${ADMIN_PATH}/dashboard`;
 /** Retired admin subdomain — must never be reintroduced in active code. */
 export const RETIRED_ADMIN_SUBDOMAIN = 'admin.santmatsatsangparchar.in';
 
+/**
+ * Firebase default hosting domains.
+ * Root visits ('/') on these domains redirect to the Admin Dashboard (/admin/).
+ */
+export const FIREBASE_DEFAULT_DOMAINS = [
+  'santmat-satsang-prachar.web.app',
+  'santmat-satsang-prachar.firebaseapp.com',
+] as const;
+
+/**
+ * Checks whether a given hostname matches one of the Firebase default hosting domains.
+ */
+export function isFirebaseDefaultDomain(hostname?: string): boolean {
+  if (!hostname && typeof window === 'undefined') return false;
+  const host = (
+    hostname ?? (typeof window !== 'undefined' ? window.location.hostname : '')
+  ).toLowerCase();
+  return (
+    host === 'santmat-satsang-prachar.web.app' ||
+    host === 'santmat-satsang-prachar.firebaseapp.com'
+  );
+}
+
+/**
+ * Evaluates whether a request should redirect to the Admin Dashboard (/admin/).
+ * Only root URLs ('/' or '') on Firebase default domains are redirected.
+ *
+ * Query parameters and URL fragments are preserved.
+ * Non-root paths (including /about, /services, /admin/*, and auth handlers) are NOT redirected.
+ */
+export function getFirebaseRootAdminRedirect(
+  hostname?: string,
+  pathname?: string,
+  search: string = '',
+  hash: string = ''
+): string | null {
+  const host = (
+    hostname ?? (typeof window !== 'undefined' ? window.location.hostname : '')
+  ).toLowerCase();
+  const path =
+    pathname ?? (typeof window !== 'undefined' ? window.location.pathname : '');
+
+  const isDefaultDomain =
+    host === 'santmat-satsang-prachar.web.app' ||
+    host === 'santmat-satsang-prachar.firebaseapp.com';
+  const isRoot = path === '/' || path === '' || path === '/index.html';
+
+  if (isDefaultDomain && isRoot) {
+    const s = search || (typeof window !== 'undefined' ? window.location.search : '');
+    const h = hash || (typeof window !== 'undefined' ? window.location.hash : '');
+    return `${ADMIN_PATH}/${s}${h}`;
+  }
+  return null;
+}
+
 export const SITE_CONFIG = {
-  // Primary public organization domain (single source of truth)
+  // Primary public business domain (single source of truth)
   siteUrl: PUBLIC_SITE_URL,
+
+  // Firebase default hosting domains that redirect root to Admin
+  firebaseDefaultDomains: FIREBASE_DEFAULT_DOMAINS,
 
   // Canonical admin URL on the SAME origin
   adminUrl: ADMIN_PUBLIC_URL,
@@ -46,16 +106,98 @@ export const SITE_CONFIG = {
   // Firebase project id (backend/infrastructure only)
   firebaseProjectId: 'santmat-satsang-prachar',
 
-  // Organization identity
+  // Official Business Identity (Authoritative Source of Truth)
+  legalEntityName: 'SANTMAT SATSANG PARCHAR',
+  businessStructure: 'Sole Proprietorship',
+  proprietorName: 'Pravin kumar',
+  gstin: '10ITEPK2336G1Z2',
+  udyamRegistrationNumber: 'UDYAM-BR-30-0067864',
+  businessNature:
+    'Digital Marketing & sound recording and music publishing activities in studio or elsewhere.',
+
+  // Common aliases for backwards compatibility
   orgName: 'SANTMAT SATSANG PARCHAR',
   orgNameHindi: 'संतमत सत्संग प्रचार',
-  orgLegalName: 'Santmat Satsang Parchar Seva Trust',
-  orgTagline:
-    'महर्षि मँही परमहंस जी महाराज के विचारों, स्तुति-विनती, सत्संग प्रवचन एवं भजनों का आधिकारिक मंच',
+  orgTagline: 'Digital Content, Sound Recording & Music Publishing',
+  taglineHindi: 'डिजिटल कंटेंट, साउंड रिकॉर्डिंग एवं म्यूजिक पब्लिशिंग',
 
-  // Contact details
-  contactEmail: 'santmatsatsangprachar@gmail.com',
-  ashramHeadquarters: 'महर्षि मँही आश्रम, कुप्पाघाट, भागलपुर, बिहार — 812003',
+  // Registered Office Address
+  registeredAddress: {
+    buildingNo: 'WORD NO 14',
+    roadStreet: 'DHARAMPUR',
+    landmark: 'Pack House',
+    city: 'Dharampur',
+    district: 'Samastipur',
+    state: 'Bihar',
+    pincode: '848216',
+    country: 'India',
+    full: 'WORD NO 14, DHARAMPUR, Near Pack House, Dharampur, Samastipur, Bihar 848216, India',
+    compact: 'Dharampur, Samastipur, Bihar 848216, India',
+  },
+
+  // Official Contact Details
+  officialEmail: 'helpsantmatbhajan@gmail.com',
+  contactEmail: 'helpsantmatbhajan@gmail.com',
+  officialPhone: '7050448278',
+  officialPhoneFormatted: '+91 7050448278',
+
+  // Business Activities (Services)
+  businessActivities: [
+    {
+      id: 'digital-content',
+      title: 'Digital Content Production',
+      titleHindi: 'डिजिटल कंटेंट निर्माण',
+      description:
+        'Creation and preparation of digital media content for online publication and distribution.',
+      shortDesc:
+        'High-quality digital audio, text, and media content creation for modern platforms.',
+    },
+    {
+      id: 'digital-marketing',
+      title: 'Digital Marketing',
+      titleHindi: 'डिजिटल मार्केटिंग',
+      description:
+        'Digital content and marketing-oriented media activities.',
+      shortDesc:
+        'Strategic digital media promotion and audience reach across digital channels.',
+    },
+    {
+      id: 'sound-recording',
+      title: 'Sound Recording',
+      titleHindi: 'साउंड रिकॉर्डिंग',
+      description:
+        'Audio recording and production activities conducted in studio or other appropriate environments.',
+      shortDesc:
+        'Professional studio-grade audio capture, voice recording, and acoustic mastering.',
+    },
+    {
+      id: 'music-publishing',
+      title: 'Music Publishing',
+      titleHindi: 'म्यूजिक पब्लिशिंग',
+      description:
+        'Publishing and distributing original recorded music and audio content.',
+      shortDesc:
+        'Catalog management, copyright management, and digital publication of recorded audio.',
+    },
+    {
+      id: 'digital-media-publishing',
+      title: 'Digital Media Publishing',
+      titleHindi: 'डिजिटल मीडिया पब्लिशिंग',
+      description:
+        'Preparing and publishing digital audio and related media content.',
+      shortDesc:
+        'End-to-end publishing workflows for web, streaming, and mobile applications.',
+    },
+    {
+      id: 'audio-distribution',
+      title: 'Audio Content Distribution',
+      titleHindi: 'ऑडियो कंटेंट वितरण',
+      description:
+        'Digital distribution of published audio content through supported platforms and applications.',
+      shortDesc:
+        'Seamless distribution infrastructure powering apps and digital listening channels.',
+    },
+  ],
 
   // Official mobile application settings
   mobileApp: {
@@ -69,12 +211,24 @@ export const SITE_CONFIG = {
      */
     playStoreStatus: 'coming_soon' as const,
     playStoreUrl: null as string | null, // null until published
+    features: [
+      'Recorded devotional audio catalog',
+      'Category-wise audio content organization',
+      'High-quality audio streaming',
+      'Background playback with lock-screen controls',
+      'Sleep timer functionality',
+      'Comprehensive search capabilities',
+      'Favorites and personalized playlists',
+      'Notification alerts for new releases',
+      'In-app audio player with rich seek controls',
+    ],
   },
 
   // Canonical route paths
   routes: {
     home: '/',
     about: '/about',
+    services: '/services',
     mobileApp: '/mobile-app',
     contact: '/contact',
     privacyPolicy: '/privacy-policy',

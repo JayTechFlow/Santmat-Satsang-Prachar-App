@@ -17,9 +17,9 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   structuredData,
 }) => {
   const canonicalUrl = getCanonicalUrl(canonicalPath);
-  const fullTitle = title.includes(SITE_CONFIG.orgName)
+  const fullTitle = title.includes(SITE_CONFIG.legalEntityName)
     ? title
-    : `${title} | ${SITE_CONFIG.orgName}`;
+    : `${title} | ${SITE_CONFIG.legalEntityName}`;
 
   useEffect(() => {
     // 1. Update Title
@@ -53,7 +53,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     setMetaTag('property', 'og:description', description);
     setMetaTag('property', 'og:url', canonicalUrl);
     setMetaTag('property', 'og:type', type);
-    setMetaTag('property', 'og:site_name', SITE_CONFIG.orgName);
+    setMetaTag('property', 'og:site_name', SITE_CONFIG.legalEntityName);
 
     // 5. Twitter Card Tags
     setMetaTag('name', 'twitter:card', 'summary_large_image');
@@ -65,20 +65,30 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       '@context': 'https://schema.org',
       '@graph': [
         {
-          '@type': 'Organization',
-          '@id': `${SITE_CONFIG.siteUrl}/#organization`,
-          name: SITE_CONFIG.orgName,
-          alternateName: SITE_CONFIG.orgNameHindi,
+          '@type': 'LocalBusiness',
+          '@id': `${SITE_CONFIG.siteUrl}/#business`,
+          name: SITE_CONFIG.legalEntityName,
+          description:
+            'Sole Proprietorship business engaged in digital content, digital marketing, sound recording and music publishing activities.',
           url: `${SITE_CONFIG.siteUrl}/`,
-          email: SITE_CONFIG.contactEmail,
+          email: SITE_CONFIG.officialEmail,
+          telephone: `+91${SITE_CONFIG.officialPhone}`,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: `${SITE_CONFIG.registeredAddress.buildingNo}, ${SITE_CONFIG.registeredAddress.roadStreet}, Near ${SITE_CONFIG.registeredAddress.landmark}`,
+            addressLocality: SITE_CONFIG.registeredAddress.city,
+            addressRegion: SITE_CONFIG.registeredAddress.state,
+            postalCode: SITE_CONFIG.registeredAddress.pincode,
+            addressCountry: 'IN',
+          },
         },
         {
           '@type': 'WebSite',
           '@id': `${SITE_CONFIG.siteUrl}/#website`,
           url: `${SITE_CONFIG.siteUrl}/`,
-          name: SITE_CONFIG.orgName,
+          name: SITE_CONFIG.legalEntityName,
           publisher: {
-            '@id': `${SITE_CONFIG.siteUrl}/#organization`,
+            '@id': `${SITE_CONFIG.siteUrl}/#business`,
           },
         },
         ...(structuredData ? [structuredData] : []),

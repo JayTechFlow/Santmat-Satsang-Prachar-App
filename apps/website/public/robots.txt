@@ -6,6 +6,7 @@
 User-agent: *
 Allow: /
 Allow: /about
+Allow: /services
 Allow: /mobile-app
 Allow: /contact
 Allow: /privacy-policy

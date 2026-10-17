@@ -90,6 +90,20 @@ if (fs.existsSync(path.join(outDir, 'robots.txt')) !== true) {
   fail('robots.txt missing from unified output');
 }
 
+// Website entry must include the Firebase default-domain root redirect to /admin/
+if (
+  !websiteHtml.includes('santmat-satsang-prachar.web.app') ||
+  !websiteHtml.includes('santmat-satsang-prachar.firebaseapp.com') ||
+  !websiteHtml.includes('/admin/')
+) {
+  fail('dist/index.html missing Firebase default-domain root redirect to /admin/');
+}
+
+// Admin entry must NOT contain root redirect logic (guarantee loop safety)
+if (adminHtml.includes('santmat-satsang-prachar.web.app')) {
+  fail('dist/admin/index.html must not contain root redirect logic');
+}
+
 // Summary
 const size = (p) => fs.statSync(p).size;
 process.stdout.write('\n────────────────────────────────────────────────────────\n');
