@@ -1,16 +1,50 @@
-# santmat_satsang_prachar
+# Santmat Satsang Prachar Mobile (`apps/mobile`)
 
-A new Flutter project.
+Cross-platform Flutter mobile client for Santmat Satsang Prachar (Android & iOS).
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## Architectural Stack
 
-A few resources to get you started if this is your first Flutter project:
+- **Framework**: Flutter 3.x
+- **Architecture**: Clean Architecture with Feature-First packaging
+- **State Management**: Riverpod (`NotifierProvider` / `AsyncNotifierProvider`)
+- **Routing**: `GoRouter` with auth-guard redirection and deep link handling
+- **Local Persistence**: `Hive` (offline caching of preferences, media metadata, playback states)
+- **Networking**: `Dio` with retry interceptors and auth token refreshes
+- **Backend Integration**: Firebase Authentication, Cloud Firestore, Cloud Storage, Firebase Cloud Messaging
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Essential Commands
+
+```bash
+# Static analysis (must report: No issues found!)
+flutter analyze --no-pub
+
+# Run all automated tests
+flutter test
+
+# Hardware back-navigation verification (physical Android device)
+cd tool/navcheck && python3 back_matrix.py
+
+# Production release builds
+flutter build apk --release
+flutter build appbundle --release
+```
+
+---
+
+## Key Directories
+
+```text
+apps/mobile/
+├── lib/
+│   ├── bootstrap/      # App initialization and Firebase bootstrapping
+│   ├── core/           # Shared domain value objects, utils, and auth guards
+│   ├── features/       # Feature modules (audio, stuti, books, search, profile, auth)
+│   └── shared/         # Design system tokens, canonical widgets, and theme
+├── test/               # Unit, widget, and integration test suites
+└── tool/
+    └── navcheck/       # Physical Android back navigation automated verification matrix
+```
