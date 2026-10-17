@@ -64,7 +64,7 @@ void main() {
     );
     expect(
       repository.lastFilter?.categoryDefinition?.uiLabel,
-      'शाही भजनवाली',
+      'शाही भजनावली',
     );
   });
 

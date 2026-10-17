@@ -70,13 +70,35 @@ void main() {
       ]);
     });
 
-    test('शाही भजनवाली returns only the production शाही भजनावली rows', () {
+    test('शाही भजनावली returns only the production शाही भजनावली rows', () {
       final results = dataSource.searchPublishedAudio(
         searchPublishedBhajans,
         query: '',
         category: SearchCategories.shahiBhajanavali,
       );
       expect(idsOf(results), ['shahi-1', 'shahi-2']);
+    });
+
+    test(
+        'शाही भजनावली resolves both canonical "शाही भजनावली" and legacy "शाही भजनवाली" without duplicates',
+        () {
+      final datasetWithBothSpellings = [
+        ...searchPublishedBhajans,
+        buildSearchFixture(
+          id: 'shahi-legacy-1',
+          title: 'शाही भजन संग्रह',
+          categoryId: 'shahi_bhajanavali',
+          categoryName: 'शाही भजनवाली',
+          speaker: 'संत कबीर',
+        ),
+      ];
+      final results = dataSource.searchPublishedAudio(
+        datasetWithBothSpellings,
+        query: '',
+        category: SearchCategories.shahiBhajanavali,
+      );
+      expect(idsOf(results), ['shahi-1', 'shahi-2', 'shahi-legacy-1']);
+      expect(idsOf(results).toSet(), hasLength(3));
     });
 
     test('पदावली भजन returns only the production पदावली भजन rows', () {
@@ -146,7 +168,7 @@ void main() {
       expect(idsOf(results), ['padavali-2', 'shahi-1', 'shahi-2']);
     });
 
-    test('शाही भजनवाली + "गुरु" never leaks पदावली matches', () {
+    test('शाही भजनावली + "गुरु" never leaks पदावली matches', () {
       final results = dataSource.searchPublishedAudio(
         searchPublishedBhajans,
         query: 'गुरु',
@@ -155,7 +177,7 @@ void main() {
       expect(idsOf(results), ['shahi-1', 'shahi-2']);
     });
 
-    test('शाही भजनवाली + "xyz" yields the empty result set', () {
+    test('शाही भजनावली + "xyz" yields the empty result set', () {
       final results = dataSource.searchPublishedAudio(
         searchPublishedBhajans,
         query: 'xyz',

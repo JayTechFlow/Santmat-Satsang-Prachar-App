@@ -5,8 +5,7 @@ enum MediaCategory {
   banner('banner'),
   avatar('avatar'),
   event('event'),
-  notification('notification'),
-  general('general');
+  notification('notification');
 
   const MediaCategory(this.value);
   final String value;
@@ -14,7 +13,7 @@ enum MediaCategory {
   static MediaCategory fromString(String value) {
     return MediaCategory.values.firstWhere(
       (e) => e.value == value,
-      orElse: () => MediaCategory.general,
+      orElse: () => MediaCategory.bhajan,
     );
   }
 }

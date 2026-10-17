@@ -72,7 +72,7 @@ void main() {
   });
 
   group('C — category selection updates the result set immediately', () {
-    test('शाही भजनवाली', () async {
+    test('शाही भजनावली', () async {
       final container = makeContainer();
       container
           .read(searchProvider.notifier)

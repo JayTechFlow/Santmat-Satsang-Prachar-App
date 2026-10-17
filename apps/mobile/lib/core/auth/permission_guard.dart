@@ -255,6 +255,9 @@ GoRouterRedirect createPermissionRedirect(Ref ref) {
       final isFirstLaunch = asyncSession.value?.isFirstLaunch ?? false;
       final target = isFirstLaunch ? '/onboarding' : '/login';
 
+      if (state.uri.path == '/splash') {
+        return target;
+      }
       if (publicAuthRoutes.contains(state.uri.path)) {
         return null;
       }
@@ -302,6 +305,9 @@ GoRouterRedirect createPermissionRedirect(Ref ref) {
 
     // Suspended or deactivated accounts - redirect to login with error
     if (authStatus == AuthStatus.suspended || authStatus == AuthStatus.accessDenied) {
+      if (state.uri.path == '/splash') {
+        return '/login';
+      }
       if (publicAuthRoutes.contains(state.uri.path)) {
         return null;
       }
@@ -312,6 +318,9 @@ GoRouterRedirect createPermissionRedirect(Ref ref) {
     // auth page so the user can retry (e.g. failed registration/network), and
     // route non-public pages to login for recovery.
     if (authStatus == AuthStatus.error) {
+      if (state.uri.path == '/splash') {
+        return '/login';
+      }
       if (publicAuthRoutes.contains(state.uri.path)) {
         return null;
       }

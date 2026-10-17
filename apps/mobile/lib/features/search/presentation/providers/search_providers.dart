@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:santmat_satsang_prachar/core/di/data_providers.dart';
 
-import '../../data/datasources/firestore_search_data_source.dart';
 import '../../domain/entities/search_category_definition.dart';
 import '../../domain/entities/search_filter_entity.dart';
 import '../../domain/entities/search_result_entity.dart';
@@ -53,10 +52,7 @@ class SearchNotifier extends Notifier<SearchState> {
     // microtask ran, that newer intent wins and must never be overwritten by
     // the default load.
     if (_userInteracted || _requestId != 0) return;
-    runSearch(
-      state.query,
-      category: SearchCategories.defaultCategory.id,
-    );
+    runSearch(state.query, category: SearchCategories.defaultCategory.id);
   }
 
   /// Text input. Searching always combines the query with the *current*
@@ -99,8 +95,7 @@ class SearchNotifier extends Notifier<SearchState> {
     _requestId++;
     final currentRequestId = _requestId;
 
-    final activeFilter =
-        filter ?? SearchFilterEntity.forCategory(category);
+    final activeFilter = filter ?? SearchFilterEntity.forCategory(category);
     state = state.copyWith(
       isLoading: true,
       error: null,
@@ -133,9 +128,7 @@ class SearchNotifier extends Notifier<SearchState> {
   }
 
   List<SearchResultEntity> _boundResults(List<SearchResultEntity>? results) {
-    return (results ?? const <SearchResultEntity>[])
-        .take(FirestoreSearchDataSource.maxResults)
-        .toList(growable: false);
+    return (results ?? const <SearchResultEntity>[]).toList(growable: false);
   }
 
   /// Re-runs the current query/category pair.

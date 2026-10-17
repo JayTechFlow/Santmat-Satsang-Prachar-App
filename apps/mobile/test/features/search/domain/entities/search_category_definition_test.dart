@@ -16,7 +16,7 @@ void main() {
       expect(SearchCategories.all, hasLength(4));
       expect(
         SearchCategories.uiLabels,
-        <String>['सभी भजन', 'शाही भजनवाली', 'पदावली भजन', 'स्वागत गीत'],
+        <String>['सभी भजन', 'शाही भजनावली', 'पदावली भजन', 'स्वागत गीत'],
       );
     });
 
@@ -32,10 +32,12 @@ void main() {
       ]);
     });
 
-    test('the product label is not the "सही भजनावली" variant', () {
-      expect(SearchCategories.shahiBhajanavali.uiLabel, 'शाही भजनवाली');
+    test('the product label is the canonical "शाही भजनावली"', () {
+      expect(SearchCategories.shahiBhajanavali.uiLabel, 'शाही भजनावली');
+      expect(SearchCategories.shahiBhajanavali.uiLabel, isNot('शाही भजनवाली'));
       expect(SearchCategories.shahiBhajanavali.uiLabel, isNot('सही भजनावली'));
       expect(SearchCategories.uiLabels, isNot(contains('सही भजनावली')));
+      expect(SearchCategories.uiLabels, isNot(contains('शाही भजनवाली')));
     });
   });
 
@@ -63,13 +65,21 @@ void main() {
   });
 
   group('A3 — canonical production mapping is preserved', () {
-    test('शाही भजनवाली maps to the existing "शाही भजनावली" data value', () {
+    test('शाही भजनावली maps to both canonical and legacy stored data values', () {
       expect(
         SearchCategories.shahiBhajanavali.canonicalDataValues,
         contains('शाही भजनावली'),
       );
       expect(
+        SearchCategories.shahiBhajanavali.canonicalDataValues,
+        contains('शाही भजनवाली'),
+      );
+      expect(
         SearchCategories.shahiBhajanavali.matches(cat('bhajan', 'शाही भजनावली')),
+        isTrue,
+      );
+      expect(
+        SearchCategories.shahiBhajanavali.matches(cat('bhajan', 'शाही भजनवाली')),
         isTrue,
       );
     });
@@ -152,10 +162,14 @@ void main() {
   });
 
   group('A5 — lookups by label and id', () {
-    test('byUiLabel resolves each exact product label', () {
+    test('byUiLabel resolves each exact product label and legacy alias', () {
       expect(
         SearchCategories.byUiLabel('सभी भजन')?.id,
         SearchCategoryId.allBhajan,
+      );
+      expect(
+        SearchCategories.byUiLabel('शाही भजनावली')?.id,
+        SearchCategoryId.shahiBhajanavali,
       );
       expect(
         SearchCategories.byUiLabel('शाही भजनवाली')?.id,
@@ -180,6 +194,42 @@ void main() {
     test('byId round-trips every registered id', () {
       for (final category in SearchCategories.all) {
         expect(SearchCategories.byId(category.id), same(category));
+      }
+    });
+  });
+
+  group('A6 — the mobile category data model is exactly the four categories',
+      () {
+    test('the transport list has exactly 4 entries in product order', () {
+      final categories = SearchCategories.audioCategories;
+      expect(categories, hasLength(4));
+      expect(
+        categories.map((c) => c.id).toList(),
+        <String>[
+          'allBhajan',
+          'shahiBhajanavali',
+          'padavaliBhajan',
+          'swagatGeet',
+        ],
+      );
+      expect(
+        categories.map((c) => c.name).toList(),
+        <String>['सभी भजन', 'शाही भजनावली', 'पदावली भजन', 'स्वागत गीत'],
+      );
+    });
+
+    test('the Admin/custom "general" category is never part of the model', () {
+      final labels = SearchCategories.audioCategories.map((c) => c.name);
+      final ids = SearchCategories.audioCategories.map((c) => c.id);
+      expect(labels, isNot(contains('General')));
+      expect(ids, isNot(contains(contains('general'))));
+    });
+
+    test('the transport list follows the registry exactly', () {
+      final categories = SearchCategories.audioCategories;
+      for (var i = 0; i < SearchCategories.all.length; i++) {
+        expect(categories[i].id, SearchCategories.all[i].id.name);
+        expect(categories[i].name, SearchCategories.all[i].uiLabel);
       }
     });
   });

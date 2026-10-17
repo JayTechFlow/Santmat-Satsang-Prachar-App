@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/services/firestore_service.dart';
+import '../../../../core/utils/fetch_all_pages.dart';
 import '../../../../core/firebase/firestore_collections.dart';
 import '../../domain/entities/audio_entity.dart';
 import '../../domain/entities/audio_category_entity.dart';
 import '../../domain/entities/audio_filter_entity.dart';
 import '../../domain/entities/recently_played_entity.dart';
 import '../../domain/entities/favorite_audio_entity.dart';
+import '../../../search/domain/entities/search_category_definition.dart';
 import '../models/audio_dto.dart';
 import 'audio_data_source.dart';
 
@@ -19,18 +21,45 @@ class FirestoreAudioDataSource implements AudioDataSource {
 
   String get _userId => _firebaseAuth.currentUser?.uid ?? '';
 
+  /// Page size of a single Firestore request when loading the published
+  /// catalogue. Individual pages stay small; [fetchAllPages] walks every page
+  /// so the song lists and category filters are never truncated at the first
+  /// page (regression: a hard `limit(10)` hid 40 of 50 published tracks).
+  static const int cataloguePageSize = 30;
+
+  /// The complete published catalogue, newest first.
+  ///
+  /// Song-list screens render this list and apply category/search filtering
+  /// client-side, so every eligible published document must be fetched —
+  /// across all pages, not just the first one.
   @override
   Future<List<AudioEntity>> getLatestAudio() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection(FirestoreCollections.audio)
-        .where('status', isEqualTo: 'प्रकाशित')
-        .orderBy('createdAt', descending: true)
-        .limit(10)
-        .get();
+    final docs = await fetchAllPages<
+      QueryDocumentSnapshot<Map<String, dynamic>>,
+      QueryDocumentSnapshot<Map<String, dynamic>>
+    >(
+      pageSize: cataloguePageSize,
+      fetchPage: (cursor) async {
+        Query<Map<String, dynamic>> page = FirebaseFirestore.instance
+            .collection(FirestoreCollections.audio)
+            .where('status', isEqualTo: 'प्रकाशित')
+            .orderBy('createdAt', descending: true)
+            .limit(cataloguePageSize);
+        if (cursor != null) {
+          page = page.startAfterDocument(cursor);
+        }
+        final snapshot = await page.get();
+        return FetchPage(
+          items: snapshot.docs,
+          nextCursor: snapshot.docs.isEmpty ? null : snapshot.docs.last,
+        );
+      },
+    );
 
-    return snapshot.docs
-        .map((doc) => AudioDto.fromFirestore(doc).toEntity())
-        .toList();
+    return distinctBy(
+      docs.map((doc) => AudioDto.fromFirestore(doc).toEntity()),
+      (audio) => audio.id,
+    );
   }
 
   @override
@@ -127,36 +156,11 @@ class FirestoreAudioDataSource implements AudioDataSource {
 
   @override
   Future<List<AudioCategoryEntity>> getCategories() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection(FirestoreCollections.categories)
-        .get();
-
-    final cmsCategories = snapshot.docs.map((doc) {
-      final data = doc.data();
-      return AudioCategoryEntity(
-        id: doc.id,
-        name: (data['name'] as String?)?.trim() ?? doc.id,
-        description: data['description'] as String?,
-        imageUrl: data['icon'] as String?,
-      );
-    }).toList();
-
-    const generalCategory = AudioCategoryEntity(
-      id: 'general',
-      name: 'General',
-      description: 'Default category',
-    );
-
-    final hasGeneral = cmsCategories.any(
-      (c) =>
-          c.name.toLowerCase() == 'general' || c.id.toLowerCase() == 'general',
-    );
-
-    if (!hasGeneral) {
-      return [generalCategory, ...cmsCategories];
-    }
-
-    return cmsCategories;
+    // The mobile category row is a fixed product contract (the four permanent
+    // system categories in [SearchCategories]). The Admin `categories`
+    // collection is a web-only concern and may contain legacy values such as
+    // `general`, which must never surface as a fifth mobile category.
+    return SearchCategories.audioCategories;
   }
 
   @override

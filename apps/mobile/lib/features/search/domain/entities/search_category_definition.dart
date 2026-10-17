@@ -91,6 +91,14 @@ class SearchCategoryDefinition {
     );
   }
 
+  /// This definition as the transport entity used by the audio layer.
+  ///
+  /// The stable [id] (e.g. `allBhajan`) is carried as the entity id so the
+  /// mobile category model never depends on the mutable Admin category
+  /// document ids, and the product [uiLabel] is the display name.
+  AudioCategoryEntity toAudioCategory() =>
+      AudioCategoryEntity(id: id.name, name: uiLabel);
+
   @override
   String toString() => 'SearchCategoryDefinition(${id.name}, $uiLabel)';
 }
@@ -110,13 +118,13 @@ abstract final class SearchCategories {
     order: 0,
   );
 
-  /// "शाही भजनवाली" — maps to the existing production value "शाही भजनावली".
+  /// "शाही भजनावली" — maps to the canonical "शाही भजनावली" and legacy stored "शाही भजनवाली".
   static const SearchCategoryDefinition shahiBhajanavali =
       SearchCategoryDefinition(
         id: SearchCategoryId.shahiBhajanavali,
-        uiLabel: 'शाही भजनवाली',
+        uiLabel: 'शाही भजनावली',
         canonicalDataValues: <String>['शाही भजनावली', 'शाही भजनवाली'],
-        matchTokens: <String>['भजनावली'],
+        matchTokens: <String>['भजनावली', 'भजनवाली'],
         order: 1,
       );
 
@@ -160,6 +168,14 @@ abstract final class SearchCategories {
       .map((category) => category.id)
       .toList(growable: false);
 
+  /// The permanent categories as transport entities, in product order.
+  ///
+  /// This is the single authoritative mobile category list. The audio data
+  /// layer returns exactly this — never the Admin `categories` collection,
+  /// which may contain legacy values such as `general`.
+  static List<AudioCategoryEntity> get audioCategories =>
+      all.map((category) => category.toAudioCategory()).toList(growable: false);
+
   static SearchCategoryDefinition? byId(SearchCategoryId id) {
     for (final category in all) {
       if (category.id == id) return category;
@@ -172,6 +188,12 @@ abstract final class SearchCategories {
     if (normalized.isEmpty) return null;
     for (final category in all) {
       if (normalizeSearchText(category.uiLabel) == normalized) return category;
+    }
+    // Also resolve legacy or canonical data values (e.g. 'शाही भजनवाली')
+    for (final category in all) {
+      for (final value in category.canonicalDataValues) {
+        if (normalizeSearchText(value) == normalized) return category;
+      }
     }
     return null;
   }

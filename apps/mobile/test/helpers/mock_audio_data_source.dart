@@ -4,6 +4,7 @@ import 'package:santmat_satsang_prachar/features/audio/domain/entities/audio_cat
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/audio_filter_entity.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/recently_played_entity.dart';
 import 'package:santmat_satsang_prachar/features/audio/domain/entities/favorite_audio_entity.dart';
+import 'package:santmat_satsang_prachar/features/search/domain/entities/search_category_definition.dart';
 
 class MockAudioDataSource implements AudioDataSource {
   final dummyAudio = AudioEntity(
@@ -32,9 +33,8 @@ class MockAudioDataSource implements AudioDataSource {
   @override Future<AudioEntity> getAudioDetails(String id) async => dummyAudio;
   @override Future<List<AudioEntity>> searchAudio(String query) async => [dummyAudio];
   @override Future<List<AudioEntity>> filterAudio(AudioFilterEntity filter) async => [dummyAudio];
-  @override Future<List<AudioCategoryEntity>> getCategories() async => [
-    const AudioCategoryEntity(id: '1', name: 'General'),
-  ];
+  @override Future<List<AudioCategoryEntity>> getCategories() async =>
+      SearchCategories.audioCategories;
   @override Future<List<FavoriteAudioEntity>> getFavorites() async => [
     FavoriteAudioEntity(audio: dummyAudio, favoritedAt: DateTime.now()),
   ];

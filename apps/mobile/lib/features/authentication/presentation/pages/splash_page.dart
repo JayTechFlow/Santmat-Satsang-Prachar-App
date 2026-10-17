@@ -18,28 +18,34 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _handleSplashTransition();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _evaluateNavigation();
+    });
   }
 
-  void _handleSplashTransition() {
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (!mounted) return;
-      final devDirectEntry = ref.read(appConfigProvider).enableDevDirectEntry;
-      if (devDirectEntry) {
-        context.go('/');
-      } else {
-        final status = ref.read(authStatusProvider);
-        if (status == AuthStatus.authenticated) {
-          context.go('/');
-        } else {
-          context.go('/login');
-        }
-      }
-    });
+  void _evaluateNavigation() {
+    if (!mounted) return;
+    final devDirectEntry = ref.read(appConfigProvider).enableDevDirectEntry;
+    if (devDirectEntry) {
+      context.go('/');
+      return;
+    }
+    final status = ref.read(authStatusProvider);
+    if (status == AuthStatus.authenticated) {
+      context.go('/');
+    } else if (!status.isLoading) {
+      context.go('/login');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthStatus>(authStatusProvider, (previous, next) {
+      if (!next.isLoading) {
+        _evaluateNavigation();
+      }
+    });
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(

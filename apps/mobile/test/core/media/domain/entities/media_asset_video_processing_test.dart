@@ -38,7 +38,7 @@ void main() {
       final asset = MediaAsset(
         id: 'video_301',
         type: MediaType.video,
-        category: MediaCategory.general,
+        category: MediaCategory.bhajan,
         status: MediaStatus.active,
         visibility: MediaVisibility.public,
         folder: MediaFolder.videos,

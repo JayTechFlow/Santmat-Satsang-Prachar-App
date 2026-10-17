@@ -13,7 +13,7 @@ void main() {
       final asset = MediaAsset(
         id: 'test_1',
         type: MediaType.image,
-        category: MediaCategory.general,
+        category: MediaCategory.bhajan,
         status: MediaStatus.pending,
         visibility: MediaVisibility.public,
         folder: MediaFolder.images,
@@ -41,7 +41,7 @@ void main() {
       final asset = MediaAsset(
         id: 'test_2',
         type: MediaType.image,
-        category: MediaCategory.general,
+        category: MediaCategory.bhajan,
         status: MediaStatus.processing,
         visibility: MediaVisibility.public,
         folder: MediaFolder.images,
@@ -68,7 +68,7 @@ void main() {
       final asset = MediaAsset(
         id: 'test_3',
         type: MediaType.image,
-        category: MediaCategory.general,
+        category: MediaCategory.bhajan,
         status: MediaStatus.active,
         visibility: MediaVisibility.public,
         folder: MediaFolder.images,

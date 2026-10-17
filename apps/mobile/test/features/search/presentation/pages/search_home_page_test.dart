@@ -71,7 +71,7 @@ void main() {
 
       expect(chips, <String>[
         'सभी भजन',
-        'शाही भजनवाली',
+        'शाही भजनावली',
         'पदावली भजन',
         'स्वागत गीत',
       ]);
@@ -144,10 +144,10 @@ void main() {
   });
 
   group('C/D — category filtering through the UI', () {
-    testWidgets('शाही भजनवाली shows only that category', (tester) async {
+    testWidgets('शाही भजनावली shows only that category', (tester) async {
       await pumpSearch(tester);
 
-      await tapCategory(tester, 'शाही भजनवाली');
+      await tapCategory(tester, 'शाही भजनावली');
 
       expect(find.byType(SSPAudioTile), findsNWidgets(2));
       expect(find.text('गुरु चरणन की सेवा'), findsOneWidget);
@@ -176,7 +176,7 @@ void main() {
         (tester) async {
       await pumpSearch(tester);
 
-      await tapCategory(tester, 'शाही भजनवाली');
+      await tapCategory(tester, 'शाही भजनावली');
       await tester.enterText(find.byType(TextField), 'गुरु');
       await settle(tester);
 
@@ -208,7 +208,7 @@ void main() {
         (tester) async {
       final container = await pumpSearch(tester);
 
-      await tapCategory(tester, 'शाही भजनवाली');
+      await tapCategory(tester, 'शाही भजनावली');
       await tester.enterText(find.byType(TextField), 'गुरु');
       await settle(tester);
 
