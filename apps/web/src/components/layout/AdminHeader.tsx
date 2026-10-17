@@ -1,10 +1,16 @@
 /**
  * ============================================================================
- * Santmat Satsang Prachar — Enterprise Admin Header
+ * Santmat Satsang Prachar — Enterprise Admin Header (Redesigned)
  * ============================================================================
  * Responsive header: hamburger (mobile), sidebar toggle (tablet),
  * route-aware title, search trigger (⌘K), notification bell, profile avatar.
  * Closes all panels on route change.
+ *
+ * Redesigned with modern UI principles:
+ * - Cleaner visual hierarchy
+ * - Improved spacing and alignment
+ * - Better responsive behavior
+ * - Reduced visual clutter
  */
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { Search, Bell, Menu, PanelLeft } from 'lucide-react';
@@ -13,157 +19,176 @@ import { usePermissions } from '../../app/providers/PermissionContext';
 import { getRouteTitle } from '../../config/navConfig';
 import { ProfilePopover } from './ProfilePopover';
 import { NotificationPanel } from './NotificationPanel';
-import type { SidebarState } from '../../hooks/useSidebarState';
 
 interface AdminHeaderProps {
-  sidebar: SidebarState;
+  onToggleSidebar: () => void;
+  isSidebarOpen: boolean;
   onOpenSearch: () => void;
   routeKey: string;
 }
 
-export const AdminHeader: React.FC<AdminHeaderProps> = ({ sidebar, onOpenSearch, routeKey }) => {
-  const { notifications } = useApp();
+export const AdminHeader: React.FC<AdminHeaderProps> = ({
+  onToggleSidebar,
+  isSidebarOpen,
+  onOpenSearch,
+  routeKey
+}) => {
+  const { unreadNotifications } = useApp();
   const { user } = usePermissions();
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  const title = getRouteTitle(routeKey);
-
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const profileAnchorRef = useRef<HTMLDivElement | null>(null);
-  const notifAnchorRef = useRef<HTMLDivElement | null>(null);
+  const notificationButtonRef = useRef<HTMLDivElement>(null);
+  const profileButtonRef = useRef<HTMLDivElement>(null);
 
-  const closeAll = useCallback(() => {
+  const handleToggleNotifications = useCallback(() => {
+    setNotificationsOpen(prev => !prev);
+    if (profileOpen) setProfileOpen(false);
+  }, [profileOpen]);
+
+  const handleToggleProfile = useCallback(() => {
+    setProfileOpen(prev => !prev);
+    if (notificationsOpen) setNotificationsOpen(false);
+  }, [notificationsOpen]);
+
+  const handleClosePanels = useCallback(() => {
+    setNotificationsOpen(false);
     setProfileOpen(false);
-    setNotifOpen(false);
   }, []);
 
-  const toggleProfile = useCallback(() => {
-    setNotifOpen(false);
-    setProfileOpen((prev) => !prev);
-  }, []);
-
-  const toggleNotif = useCallback(() => {
-    setProfileOpen(false);
-    setNotifOpen((prev) => !prev);
-  }, []);
-
-  // Close all panels on route change
+  // Close panels when route changes
   useEffect(() => {
-    closeAll();
-  }, [routeKey, closeAll]);
+    handleClosePanels();
+  }, [routeKey, handleClosePanels]);
 
-  // Close panels when search opens
+  // Close panels when clicking outside
   useEffect(() => {
-    if (profileOpen || notifOpen) {
-      const handleSearchOpen = () => closeAll();
-      window.addEventListener('open-search', handleSearchOpen);
-      return () => window.removeEventListener('open-search', handleSearchOpen);
-    }
-  }, [profileOpen, notifOpen, closeAll]);
+    const handleClickOutside = (e: MouseEvent) => {
+      // Handle notification panel close
+      if (
+        notificationsOpen &&
+        notificationButtonRef.current &&
+        !notificationButtonRef.current.contains(e.target as Node)
+      ) {
+        const notificationPanel = document.getElementById('notification-panel');
+        if (notificationPanel && !notificationPanel.contains(e.target as Node)) {
+          setNotificationsOpen(false);
+        }
+      }
 
-  const userInitial = (user?.displayName || user?.email || '').charAt(0).toUpperCase() || 'उ';
+      // Handle profile panel close
+      if (
+        profileOpen &&
+        profileButtonRef.current &&
+        !profileButtonRef.current.contains(e.target as Node)
+      ) {
+        const profilePanel = document.getElementById('profile-panel');
+        if (profilePanel && !profilePanel.contains(e.target as Node)) {
+          setProfileOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [notificationsOpen, profileOpen]);
+
+  const routeTitle = getRouteTitle(routeKey);
 
   return (
-    <header
-      className="h-[--header-height] bg-white border-b border-stone-200 px-4 md:px-6 flex items-center justify-between sticky top-0 z-[20] select-none shrink-0"
-      role="banner"
-    >
-      {/* Left: Sidebar controls + Title */}
-      <div className="flex items-center gap-2 md:gap-3 min-w-0">
-        {sidebar.isMobile && (
+    <header className="sticky top-0 z-30 bg-surface border-b border-stone-200/80 shadow-xs">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        {/* Left Section - Mobile Menu & Breadcrumbs */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile menu button */}
           <button
-            onClick={sidebar.toggleMobile}
-            className="p-2 rounded-lg text-stone-600 hover:bg-stone-100 active:bg-stone-200 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label="ओपन साइडबार मेनू"
+            onClick={onToggleSidebar}
+            className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors lg:hidden"
+            aria-label="Toggle navigation menu"
           >
-            <Menu className="w-5 h-5" />
-          </button>
-        )}
-
-        {sidebar.isTablet && (
-          <button
-            onClick={sidebar.toggleCollapsed}
-            className="p-2 rounded-lg text-stone-600 hover:bg-stone-100 active:bg-stone-200 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label="ओपन साइडबार"
-          >
-            <PanelLeft className="w-5 h-5" />
-          </button>
-        )}
-
-        <h1 className="font-['Mukta'] font-extrabold text-base md:text-lg lg:text-xl text-stone-900 truncate">
-          {title}
-        </h1>
-      </div>
-
-      {/* Right: Search + Notifications + Profile */}
-      <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
-        {/* Search Trigger */}
-        <button
-          onClick={onOpenSearch}
-          className="flex items-center gap-2 px-2.5 md:px-3 py-1.5 rounded-full border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 transition-all text-stone-500 min-h-[36px]"
-          title="खोजें (⌘K)"
-          aria-label="खोजें"
-        >
-          <Search className="w-4 h-4 shrink-0" />
-          <span className="hidden md:inline font-['Mukta'] text-xs font-semibold text-stone-400">खोजें</span>
-          <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-stone-100 text-stone-400 rounded text-[0.6rem] font-mono font-bold border border-stone-200">
-            ⌘K
-          </kbd>
-        </button>
-
-        {/* Notifications */}
-        <div className="relative" ref={notifAnchorRef}>
-          <button
-            onClick={toggleNotif}
-            className={`relative p-2 rounded-full transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center ${
-              notifOpen ? 'bg-amber-50 text-amber-700' : 'text-stone-600 hover:bg-stone-100 active:bg-stone-200'
-            }`}
-            aria-label={`सूचनाएँ${unreadCount > 0 ? ` — ${unreadCount} अपठित` : ''}`}
-            aria-expanded={notifOpen}
-            aria-haspopup="dialog"
-            aria-controls={notifOpen ? 'notification-panel' : undefined}
-          >
-            <Bell className="w-5 h-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] bg-orange-600 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center px-1 border-2 border-white">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
+            {isSidebarOpen ? (
+              <PanelLeft className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
             )}
           </button>
-          <NotificationPanel
-            isOpen={notifOpen}
-            onClose={() => setNotifOpen(false)}
-            anchorRef={notifAnchorRef}
-          />
+
+          {/* Page Title */}
+          <h1 className="text-lg font-bold text-stone-900 truncate max-w-[200px] sm:max-w-none">
+            {routeTitle}
+          </h1>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-6 bg-stone-200 mx-0.5" aria-hidden="true" />
-
-        {/* Profile */}
-        <div className="relative" ref={profileAnchorRef}>
+        {/* Right Section - Actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Search Trigger */}
           <button
-            onClick={toggleProfile}
-            className={`flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-full border transition-all min-h-[36px] ${
-              profileOpen
-                ? 'border-amber-300 bg-amber-50'
-                : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100'
-            }`}
-            aria-label="उपयोगकर्ता मेनू"
-            aria-expanded={profileOpen}
-            aria-haspopup="menu"
-            aria-controls={profileOpen ? 'profile-panel' : undefined}
+            onClick={onOpenSearch}
+            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors"
+            aria-label="Open search (⌘K)"
           >
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-[0.6rem] font-bold border border-amber-300 shrink-0">
-              <span>{userInitial}</span>
-            </div>
+            <Search className="w-4 h-4" />
+            <span className="text-sm">खोज...</span>
+            <kbd className="hidden px-1.5 py-0.5 text-xs font-medium text-stone-500 bg-stone-200 rounded ml-1">
+              ⌘K
+            </kbd>
           </button>
-          <ProfilePopover
-            isOpen={profileOpen}
-            onClose={() => setProfileOpen(false)}
-            anchorRef={profileAnchorRef}
-          />
+
+          {/* Mobile Search Icon Only */}
+          <button
+            onClick={onOpenSearch}
+            className="flex sm:hidden p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+            aria-label="Open search"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
+          {/* Notifications */}
+          {user && (
+            <div className="relative" ref={notificationButtonRef}>
+              <button
+                onClick={handleToggleNotifications}
+                className="relative p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+                aria-label="Notifications"
+                aria-expanded={notificationsOpen}
+              >
+                <Bell className="w-5 h-5" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-0.5 right-0.5 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-brand rounded-full">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                )}
+              </button>
+
+              {/* Notifications Panel */}
+              <NotificationPanel
+                isOpen={notificationsOpen}
+                onClose={() => setNotificationsOpen(false)}
+                anchorRef={notificationButtonRef}
+              />
+            </div>
+          )}
+
+          {/* Profile */}
+          {user && (
+            <div className="relative" ref={profileButtonRef}>
+              <button
+                onClick={handleToggleProfile}
+                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-stone-100 transition-colors"
+                aria-label="User profile"
+                aria-expanded={profileOpen}
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm">
+                  {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
+                </div>
+              </button>
+
+              <ProfilePopover
+                isOpen={profileOpen}
+                onClose={() => setProfileOpen(false)}
+                anchorRef={profileButtonRef}
+              />
+            </div>
+          )}
         </div>
       </div>
     </header>

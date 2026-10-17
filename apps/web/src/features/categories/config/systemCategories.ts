@@ -7,7 +7,7 @@
  *
  * Fixed Order:
  * 1. सभी भजन (allBhajan) - Filter-only Sentinel (ALL published items)
- * 2. शाही भजनवाली (shahiBhajanavali) - Maps to production 'शाही भजनावली' & 'शाही भजनवाली'
+ * 2. शाही भजनावली (shahiBhajanavali) - Maps to production 'शाही भजनावली' & 'शाही भजनवाली'
  * 3. पदावली भजन (padavaliBhajan) - Matches 'पदावली भजन'
  * 4. स्वागत गीत (swagatGeet) - Matches 'स्वागत गीत'
  *
@@ -23,7 +23,7 @@ export interface SystemCategoryDefinition {
   uiLabel: string;
   order: number;
   description: string;
-  subCategories: string[];
+  subCategories?: string[];
   canonicalDataValues: string[];
   matchTokens: string[];
   isSystemCategory: true;
@@ -47,14 +47,14 @@ export const ALL_BHAJAN_CATEGORY: SystemCategoryDefinition = {
 };
 
 /**
- * 2. "शाही भजनवाली" — maps to the existing production value "शाही भजनावली" & "शाही भजनवाली".
+ * 2. "शाही भजनावली" — maps to the existing production value "शाही भजनावली" & "शाही भजनवाली".
  */
 export const SHAHI_BHAJANAVALI_CATEGORY: SystemCategoryDefinition = {
   id: 'shahiBhajanavali',
-  uiLabel: 'शाही भजनवाली',
+  uiLabel: 'शाही भजनावली',
   order: 1,
   description: 'परम पूज्य शाही स्वामी जी महाराज के भक्ति पद एवं भजन संग्रह',
-  subCategories: ['आरती एवं वंदना', 'गुरु महिमा', 'संत स्तुति'],
+  subCategories: [],
   canonicalDataValues: ['शाही भजनावली', 'शाही भजनवाली'],
   matchTokens: ['भजनावली', 'शाही'],
   isSystemCategory: true,
@@ -69,7 +69,7 @@ export const PADAVALI_BHAJAN_CATEGORY: SystemCategoryDefinition = {
   uiLabel: 'पदावली भजन',
   order: 2,
   description: 'संत कबीर, महर्षि मेँहीं पदावली एवं अन्य पूज्य संतों के आध्यात्मिक पद',
-  subCategories: ['मानस ध्यान', 'अजपा जाप', 'गुरु पद रज'],
+  subCategories: [],
   canonicalDataValues: ['पदावली भजन'],
   matchTokens: ['पदावली'],
   isSystemCategory: true,
@@ -84,7 +84,7 @@ export const SWAGAT_GEET_CATEGORY: SystemCategoryDefinition = {
   uiLabel: 'स्वागत गीत',
   order: 3,
   description: 'सत्संग समारोह एवं पूज्य गुरुजन आगमन हेतु स्वागत एवं अभिनंदन गीत',
-  subCategories: ['अभिनंदन पद', 'गुरु आगमन'],
+  subCategories: [],
   canonicalDataValues: ['स्वागत गीत'],
   matchTokens: ['स्वागत'],
   isSystemCategory: true,
@@ -154,8 +154,8 @@ export function isAllSentinelCategory(idOrName?: string | null): boolean {
 
 /**
  * Match a bhajan's stored category against a selected filter category.
- * Handles the production alias where stored document category is "शाही भजनावली"
- * while the UI label is "शाही भजनवाली".
+ * Handles the production alias where stored document category may be legacy "शाही भजनवाली"
+ * while the canonical UI label is "शाही भजनावली".
  */
 export function matchesBhajanCategory(
   bhajanCategory: string | undefined | null,
@@ -303,4 +303,36 @@ export function systemCategoryToCategoryItem(def: SystemCategoryDefinition): Cat
     canonicalDataValues: def.canonicalDataValues,
     matchTokens: def.matchTokens,
   };
+}
+
+/**
+ * Resolves any category value (including legacy stored spellings like 'शाही भजनवाली')
+ * to its canonical display label for UI rendering.
+ */
+export function getCategoryDisplayLabel(category?: string | null): string {
+  if (!category) return '';
+  const trimmed = category.trim();
+  if (
+    trimmed === SHAHI_BHAJANAVALI_CATEGORY.uiLabel ||
+    trimmed === 'शाही भजनवाली' ||
+    trimmed === SHAHI_BHAJANAVALI_CATEGORY.id
+  ) {
+    return SHAHI_BHAJANAVALI_CATEGORY.uiLabel;
+  }
+  if (
+    trimmed === PADAVALI_BHAJAN_CATEGORY.uiLabel ||
+    trimmed === PADAVALI_BHAJAN_CATEGORY.id
+  ) {
+    return PADAVALI_BHAJAN_CATEGORY.uiLabel;
+  }
+  if (
+    trimmed === SWAGAT_GEET_CATEGORY.uiLabel ||
+    trimmed === SWAGAT_GEET_CATEGORY.id
+  ) {
+    return SWAGAT_GEET_CATEGORY.uiLabel;
+  }
+  if (isAllSentinelCategory(trimmed)) {
+    return ALL_BHAJAN_CATEGORY.uiLabel;
+  }
+  return trimmed;
 }

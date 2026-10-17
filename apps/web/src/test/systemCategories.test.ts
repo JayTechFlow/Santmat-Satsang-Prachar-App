@@ -21,6 +21,7 @@ import {
   sortCategoriesWithSystemFirst,
   getCreatableCategories,
   systemCategoryToCategoryItem,
+  getCategoryDisplayLabel,
 } from '../features/categories/config/systemCategories';
 import {
   normalizeCategoryEntity,
@@ -41,7 +42,7 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
       expect(SYSTEM_CATEGORIES[0].isSystemCategory).toBe(true);
 
       expect(SYSTEM_CATEGORIES[1].id).toBe('shahiBhajanavali');
-      expect(SYSTEM_CATEGORIES[1].uiLabel).toBe('शाही भजनवाली');
+      expect(SYSTEM_CATEGORIES[1].uiLabel).toBe('शाही भजनावली');
       expect(SYSTEM_CATEGORIES[1].order).toBe(1);
       expect(SYSTEM_CATEGORIES[1].canonicalDataValues).toContain('शाही भजनावली');
       expect(SYSTEM_CATEGORIES[1].canonicalDataValues).toContain('शाही भजनवाली');
@@ -72,13 +73,13 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
         { id: 'allBhajan', name: 'सभी भजन' },
         { id: 'padavaliBhajan', name: 'पदावली भजन' },
         { id: 'custom-2', name: 'आरती संग्रह', order: 5 },
-        { id: 'shahiBhajanavali', name: 'शाही भजनवाली' },
+        { id: 'shahiBhajanavali', name: 'शाही भजनावली' },
       ];
 
       const sorted = sortCategoriesWithSystemFirst(reversedInput);
 
       expect(sorted[0].name).toBe('सभी भजन');
-      expect(sorted[1].name).toBe('शाही भजनवाली');
+      expect(sorted[1].name).toBe('शाही भजनावली');
       expect(sorted[2].name).toBe('पदावली भजन');
       expect(sorted[3].name).toBe('स्वागत गीत');
 
@@ -94,13 +95,13 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
         { id: 'custom-a', name: 'ए श्रेणी' },
         { id: 'swagatGeet', name: 'स्वागत गीत' },
         { id: 'padavaliBhajan', name: 'पदावली भजन' },
-        { id: 'shahiBhajanavali', name: 'शाही भजनवाली' },
+        { id: 'shahiBhajanavali', name: 'शाही भजनावली' },
       ];
 
       const sorted = sortCategoriesWithSystemFirst(input);
 
       expect(sorted[0].name).toBe('सभी भजन');
-      expect(sorted[1].name).toBe('शाही भजनवाली');
+      expect(sorted[1].name).toBe('शाही भजनावली');
       expect(sorted[2].name).toBe('पदावली भजन');
       expect(sorted[3].name).toBe('स्वागत गीत');
       expect(sorted[4].name).toBe('ए श्रेणी');
@@ -122,8 +123,8 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
 
     it('isSystemCategoryName should recognize system category labels', () => {
       expect(isSystemCategoryName('सभी भजन')).toBe(true);
-      expect(isSystemCategoryName('शाही भजनवाली')).toBe(true);
-      expect(isSystemCategoryName('शाही भजनावली')).toBe(true); // backward compatibility alias
+      expect(isSystemCategoryName('शाही भजनावली')).toBe(true);
+      expect(isSystemCategoryName('शाही भजनवाली')).toBe(true); // backward compatibility alias
       expect(isSystemCategoryName('पदावली भजन')).toBe(true);
       expect(isSystemCategoryName('स्वागत गीत')).toBe(true);
       expect(isSystemCategoryName('कस्टम भजन')).toBe(false);
@@ -143,12 +144,21 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
     it('should return true for all tracks when sentinel / empty filter is selected', () => {
       expect(matchesBhajanCategory('शाही भजनावली', '')).toBe(true);
       expect(matchesBhajanCategory('पदावली भजन', 'सभी भजन')).toBe(true);
-      expect(matchesBhajanCategory('general', 'allBhajan')).toBe(true);
+      expect(matchesBhajanCategory(null, 'allBhajan')).toBe(true);
       expect(matchesBhajanCategory('custom', null)).toBe(true);
     });
 
-    it('should match existing production tracks stored with "शाही भजनावली" when filtering by "शाही भजनवाली"', () => {
-      // Production documents store 'category: "शाही भजनावली"'
+    it('should match existing production tracks stored with either "शाही भजनावली" or "शाही भजनवाली" when filtering by canonical "शाही भजनावली"', () => {
+      expect(matchesBhajanCategory('शाही भजनावली', 'शाही भजनावली')).toBe(true);
+      expect(matchesBhajanCategory('शाही भजनवाली', 'शाही भजनावली')).toBe(true);
+      expect(matchesBhajanCategory('शाही भजनावली', 'shahiBhajanavali')).toBe(true);
+      expect(matchesBhajanCategory('शाही भजनवाली', 'shahiBhajanavali')).toBe(true);
+      // Negative check
+      expect(matchesBhajanCategory('पदावली भजन', 'शाही भजनावली')).toBe(false);
+    });
+
+    it('should match existing production tracks stored with "शाही भजनावली" when filtering by legacy "शाही भजनवाली"', () => {
+      // Production documents store 'category: "शाही भजनावली"' or legacy 'शाही भजनवाली'
       expect(matchesBhajanCategory('शाही भजनावली', 'शाही भजनवाली')).toBe(true);
       expect(matchesBhajanCategory('शाही भजनावली', 'shahiBhajanavali')).toBe(true);
       expect(matchesBhajanCategory('शाही भजनवाली', 'शाही भजनवाली')).toBe(true);
@@ -177,6 +187,23 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
     });
   });
 
+  describe('getCategoryDisplayLabel', () => {
+    it('should resolve legacy "शाही भजनवाली" to canonical "शाही भजनावली"', () => {
+      expect(getCategoryDisplayLabel('शाही भजनवाली')).toBe('शाही भजनावली');
+      expect(getCategoryDisplayLabel('शाही भजनावली')).toBe('शाही भजनावली');
+      expect(getCategoryDisplayLabel('shahiBhajanavali')).toBe('शाही भजनावली');
+    });
+
+    it('should preserve other system and custom categories', () => {
+      expect(getCategoryDisplayLabel('पदावली भजन')).toBe('पदावली भजन');
+      expect(getCategoryDisplayLabel('swagatGeet')).toBe('स्वागत गीत');
+      expect(getCategoryDisplayLabel('सभी भजन')).toBe('सभी भजन');
+      expect(getCategoryDisplayLabel('आरती संग्रह')).toBe('आरती संग्रह');
+      expect(getCategoryDisplayLabel('')).toBe('');
+      expect(getCategoryDisplayLabel(null)).toBe('');
+    });
+  });
+
   describe('Creatable Categories (Exclusion of AllBhajan Sentinel)', () => {
     it('getCreatableCategories must exclude "सभी भजन" so tracks cannot be assigned to sentinel', () => {
       const mixed = sortCategoriesWithSystemFirst([
@@ -191,7 +218,7 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
 
       expect(creatable.some((c) => c.name === 'सभी भजन' || c.id === 'allBhajan')).toBe(false);
       expect(creatable).toHaveLength(4);
-      expect(creatable[0].name).toBe('शाही भजनवाली');
+      expect(creatable[0].name).toBe('शाही भजनावली');
       expect(creatable[1].name).toBe('पदावली भजन');
       expect(creatable[2].name).toBe('स्वागत गीत');
       expect(creatable[3].name).toBe('विशेष सत्संग');
@@ -201,13 +228,13 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
   describe('CategoryService Normalization & Merging', () => {
     it('normalizeCategoryEntity should set system properties for system categories', () => {
       const shahi = normalizeCategoryEntity('shahiBhajanavali', {
-        name: 'शाही भजनवाली',
+        name: 'शाही भजनावली',
         description: 'शाही स्वामी जी भजन',
         subCategories: ['आरती'],
       });
 
       expect(shahi.id).toBe('shahiBhajanavali');
-      expect(shahi.name).toBe('शाही भजनवाली');
+      expect(shahi.name).toBe('शाही भजनावली');
       expect(shahi.isSystemCategory).toBe(true);
       expect(shahi.isAllSentinel).toBe(false);
       expect(shahi.active).toBe(true);
@@ -219,7 +246,7 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
 
       expect(merged).toHaveLength(4);
       expect(merged[0].name).toBe('सभी भजन');
-      expect(merged[1].name).toBe('शाही भजनवाली');
+      expect(merged[1].name).toBe('शाही भजनावली');
       expect(merged[2].name).toBe('पदावली भजन');
       expect(merged[3].name).toBe('स्वागत गीत');
     });
@@ -239,7 +266,7 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
 
       expect(merged).toHaveLength(5);
       expect(merged[0].name).toBe('सभी भजन');
-      expect(merged[1].name).toBe('शाही भजनवाली');
+      expect(merged[1].name).toBe('शाही भजनावली');
       expect(merged[2].name).toBe('पदावली भजन');
       expect(merged[3].name).toBe('स्वागत गीत');
       expect(merged[4].name).toBe('प्राणायाम एवं ध्यान');
@@ -271,7 +298,7 @@ describe('Permanent 4-Category System Specifications (Web Admin)', () => {
       expect(res1.error).toContain('स्थायी सिस्टम श्रेणी');
 
       const res2 = await categoryService.addCategory({
-        name: 'शाही भजनवाली',
+        name: 'शाही भजनावली',
         subCategories: [],
       });
       expect(res2.success).toBe(false);

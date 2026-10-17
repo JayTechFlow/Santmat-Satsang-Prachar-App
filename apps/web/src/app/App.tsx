@@ -30,48 +30,75 @@ import { ErrorBoundary } from '../components/ui/ErrorBoundary';
 import { ToastProvider } from '../components/ui/ToastProvider';
 import { SITE_CONFIG } from '../config/siteConfig';
 
+/**
+ * Helper to lazy load components with automatic retry/reload when dynamic import fails
+ * (e.g. due to new deployment updating asset chunk hashes while user has active session).
+ */
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  componentImport: () => Promise<{ default: T }>
+) {
+  return lazy(async () => {
+    const pageHasAlreadyBeenReloaded = JSON.parse(
+      sessionStorage.getItem('retry-lazy-refreshed') || 'false'
+    );
+    try {
+      const component = await componentImport();
+      sessionStorage.removeItem('retry-lazy-refreshed');
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenReloaded) {
+        sessionStorage.setItem('retry-lazy-refreshed', 'true');
+        window.location.reload();
+        return new Promise<{ default: T }>(() => {});
+      }
+      sessionStorage.removeItem('retry-lazy-refreshed');
+      throw error;
+    }
+  });
+}
+
 // Admin module pages are lazy-loaded: the authentication entry loads only the
 // login + application shell. Admin feature bundles are fetched on demand so the
 // public homepage never downloads them, and the login page stays lightweight.
-const AdminDashboard = lazy(() =>
+const AdminDashboard = lazyWithRetry(() =>
   import('../features/dashboard/pages/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
 );
-const AdminDevoteesManager = lazy(() => import('../features/users/pages/AdminDevoteesManager'));
-const AdminPlaylists = lazy(() =>
+const AdminDevoteesManager = lazyWithRetry(() => import('../features/users/pages/AdminDevoteesManager'));
+const AdminPlaylists = lazyWithRetry(() =>
   import('../features/playlists/pages/AdminPlaylists').then((m) => ({ default: m.AdminPlaylists }))
 );
-const AdminNotificationsManager = lazy(() =>
+const AdminNotificationsManager = lazyWithRetry(() =>
   import('../features/notifications/pages/AdminNotificationsManager').then((m) => ({ default: m.AdminNotificationsManager }))
 );
-const AdminBannerManager = lazy(() =>
+const AdminBannerManager = lazyWithRetry(() =>
   import('../features/banners/pages/AdminBannerManager').then((m) => ({ default: m.AdminBannerManager }))
 );
-const AdminCategoryManager = lazy(() =>
+const AdminCategoryManager = lazyWithRetry(() =>
   import('../features/categories/pages/AdminCategoryManager').then((m) => ({ default: m.AdminCategoryManager }))
 );
-const AdminReports = lazy(() => import('../features/dashboard/pages/AdminReports'));
-const AdminSettings = lazy(() =>
+const AdminReports = lazyWithRetry(() => import('../features/dashboard/pages/AdminReports'));
+const AdminSettings = lazyWithRetry(() =>
   import('../features/dashboard/pages/AdminSettings').then((m) => ({ default: m.AdminSettings }))
 );
-const AdminSupport = lazy(() =>
+const AdminSupport = lazyWithRetry(() =>
   import('../features/dashboard/pages/AdminSupport').then((m) => ({ default: m.AdminSupport }))
 );
-const AdminBooks = lazy(() =>
+const AdminBooks = lazyWithRetry(() =>
   import('../features/books/pages/AdminBooks').then((m) => ({ default: m.AdminBooks }))
 );
-const AdminSearch = lazy(() =>
+const AdminSearch = lazyWithRetry(() =>
   import('../components/admin/AdminSearch').then((m) => ({ default: m.AdminSearch }))
 );
-const AdminStutiManager = lazy(() =>
+const AdminStutiManager = lazyWithRetry(() =>
   import('../features/stuti/pages/AdminStutiManager').then((m) => ({ default: m.AdminStutiManager }))
 );
-const AdminAddBhajan = lazy(() =>
+const AdminAddBhajan = lazyWithRetry(() =>
   import('../features/audio/pages/AdminAddBhajan').then((m) => ({ default: m.AdminAddBhajan }))
 );
-const AdminBhajanList = lazy(() =>
+const AdminBhajanList = lazyWithRetry(() =>
   import('../features/audio/pages/AdminBhajanList').then((m) => ({ default: m.AdminBhajanList }))
 );
-const AdminMediaLibrary = lazy(() =>
+const AdminMediaLibrary = lazyWithRetry(() =>
   import('../components/media/AdminMediaLibrary').then((m) => ({ default: m.AdminMediaLibrary }))
 );
 

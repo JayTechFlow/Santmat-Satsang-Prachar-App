@@ -45,6 +45,7 @@ import {
   matchesBhajanCategory,
   sortCategoriesWithSystemFirst,
   getCreatableCategories,
+  getCategoryDisplayLabel,
 } from '../../categories/config/systemCategories';
 
 export const AdminBhajanList: React.FC = () => {
@@ -101,7 +102,6 @@ export const AdminBhajanList: React.FC = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editArtist, setEditArtist] = useState('');
   const [editCategory, setEditCategory] = useState('');
-  const [editSubCategory, setEditSubCategory] = useState('');
   const [editDuration, setEditDuration] = useState('');
   const [editImageUrl, setEditImageUrl] = useState('');
   const [editAudioUrl, setEditAudioUrl] = useState('');
@@ -157,7 +157,6 @@ export const AdminBhajanList: React.FC = () => {
         (b.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (b.artist || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (b.category || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (b.subCategory && (b.subCategory || '').toLowerCase().includes(searchQuery.toLowerCase())) ||
         (b.storagePath && (b.storagePath || '').toLowerCase().includes(searchQuery.toLowerCase())) ||
         (b.audioUrl && (b.audioUrl || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -233,10 +232,8 @@ export const AdminBhajanList: React.FC = () => {
     setEditingBhajan(bhajan);
     setEditTitle(bhajan.title);
     setEditArtist(bhajan.artist);
-    const normalizedCategory =
-      bhajan.category === 'शाही भजनावली' ? 'शाही भजनवाली' : bhajan.category;
+    const normalizedCategory = getCategoryDisplayLabel(bhajan.category);
     setEditCategory(normalizedCategory);
-    setEditSubCategory(bhajan.subCategory || '');
     setEditDuration(bhajan.duration);
     setEditImageUrl(bhajan.imageUrl);
     setEditAudioUrl(bhajan.audioUrl || '');
@@ -300,20 +297,24 @@ export const AdminBhajanList: React.FC = () => {
     const finalAudioUrl = editAudioUrl.trim();
     const finalStoragePath = extractStoragePath(finalAudioUrl);
 
-    updateBhajan(editingBhajan.id, {
+    const updates: Partial<Bhajan> = {
       title: editTitle.trim(),
       artist: editArtist.trim(),
       category: editCategory,
-      subCategory: editSubCategory,
       duration: editDuration,
       imageUrl: editImageUrl,
-      audioUrl: finalAudioUrl || undefined,
-      storagePath: finalStoragePath || undefined,
       lyrics: editLyrics,
       status: editStatus,
-      scheduledDate: editStatus === 'शेड्यूल किया गया' ? editScheduledDate : undefined,
-      scheduledTime: editStatus === 'शेड्यूल किया गया' ? editScheduledTime : undefined,
-    });
+    };
+
+    if (finalAudioUrl) updates.audioUrl = finalAudioUrl;
+    if (finalStoragePath) updates.storagePath = finalStoragePath;
+    if (editStatus === 'शेड्यूल किया गया') {
+      if (editScheduledDate) updates.scheduledDate = editScheduledDate;
+      if (editScheduledTime) updates.scheduledTime = editScheduledTime;
+    }
+
+    updateBhajan(editingBhajan.id, updates);
     showToast('भजन की जानकारी सफलतापूर्वक अपडेट की गई!');
     setEditingBhajan(null);
   };
@@ -365,16 +366,11 @@ export const AdminBhajanList: React.FC = () => {
       },
       {
         key: 'category',
-        header: 'श्रेणी / उप-श्रेणी',
+        header: 'श्रेणी',
         sortable: true,
         render: (item) => (
           <div className="whitespace-nowrap">
-            <span className="font-bold text-stone-800">{item.category}</span>
-            {item.subCategory && (
-              <span className="block text-[0.68rem] text-stone-500 font-semibold mt-0.5">
-                {item.subCategory}
-              </span>
-            )}
+            <span className="font-bold text-stone-800">{getCategoryDisplayLabel(item.category)}</span>
           </div>
         )
       }
@@ -593,8 +589,7 @@ export const AdminBhajanList: React.FC = () => {
 
                     <div className="flex items-center justify-between border-t border-stone-100 pt-2.5 text-[0.68rem] font-bold text-stone-600">
                       <div>
-                        <span>{item.category}</span>
-                        {item.subCategory && <span className="text-stone-400 font-normal"> / {item.subCategory}</span>}
+                        <span>{getCategoryDisplayLabel(item.category)}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span>{item.duration}</span>
@@ -756,15 +751,9 @@ export const AdminBhajanList: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[0.65rem] font-bold text-stone-400 uppercase tracking-widest block">श्रेणी (Category)</span>
-                    <span className="font-bold text-stone-800 text-xs block mt-1">{selectedBhajanForDrawer.category}</span>
-                  </div>
-                  <div>
-                    <span className="text-[0.65rem] font-bold text-stone-400 uppercase tracking-widest block">उप-श्रेणी</span>
-                    <span className="font-semibold text-stone-600 text-xs block mt-1">{selectedBhajanForDrawer.subCategory || 'सामान्य'}</span>
-                  </div>
+                <div>
+                  <span className="text-[0.65rem] font-bold text-stone-400 uppercase tracking-widest block">श्रेणी (Category)</span>
+                  <span className="font-bold text-stone-800 text-xs block mt-1">{getCategoryDisplayLabel(selectedBhajanForDrawer.category)}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-1">
@@ -1089,32 +1078,19 @@ export const AdminBhajanList: React.FC = () => {
               </div>
 
               {/* Category Selector */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-stone-700 mb-1">श्रेणी</label>
-                  <select
-                    value={editCategory}
-                    onChange={(e) => setEditCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500 text-xs font-semibold text-stone-800 cursor-pointer"
-                  >
-                    {creatableCategoryOptions.map((cat) => (
-                      <option key={cat.id || cat.name} value={cat.name}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-stone-700 mb-1">उप-श्रेणी</label>
-                  <input
-                    type="text"
-                    value={editSubCategory}
-                    onChange={(e) => setEditSubCategory(e.target.value)}
-                    placeholder="उप-श्रेणी दर्ज करें"
-                    className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500 font-semibold"
-                  />
-                </div>
+              <div>
+                <label className="block font-bold text-stone-700 mb-1">श्रेणी</label>
+                <select
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:border-amber-500 text-xs font-semibold text-stone-800 cursor-pointer"
+                >
+                  {creatableCategoryOptions.map((cat) => (
+                    <option key={cat.id || cat.name} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Duration & Status */}

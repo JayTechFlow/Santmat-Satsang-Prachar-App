@@ -46,7 +46,6 @@ export interface BhajanEntity {
   title: string;
   artist: string;
   category: string;
-  subCategory?: string;
   duration: string;
   durationSeconds: number;
   audioUrl?: string;
@@ -113,7 +112,7 @@ export interface CategoryEntity {
   name: string;
   description?: string;
   icon?: string;
-  subCategories: string[];
+  subCategories?: string[];
   isFeatured?: boolean;
   order?: number;
   active?: boolean;
@@ -217,7 +216,6 @@ export interface Bhajan {
   title: string;
   artist: string;
   category: string;
-  subCategory?: string;
   duration: string;
   durationSeconds: number;
   imageUrl: string;
@@ -278,14 +276,14 @@ export interface Playlist {
 }
 
 /**
- * Category & Sub-Category Model
+ * Category Model
  */
 export interface CategoryItem {
   id: string;
   name: string;
   description?: string;
   icon?: string;
-  subCategories: string[];
+  subCategories?: string[];
   isFeatured?: boolean;
   order?: number;
   active?: boolean;

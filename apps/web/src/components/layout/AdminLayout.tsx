@@ -1,9 +1,15 @@
 /**
  * ============================================================================
- * Santmat Satsang Prachar — Enterprise Admin Layout Shell
+ * Santmat Satsang Prachar — Enterprise Admin Layout Shell (Redesigned)
  * ============================================================================
  * Coordinates sidebar state, responsive mode, header, and content.
  * Manages global search modal (⌘K) and passes search trigger to header.
+ *
+ * Redesigned with modern UI principles:
+ * - Clean visual hierarchy
+ * - Reduced visual clutter
+ * - Improved responsive behavior
+ * - Consistent spacing and typography
  */
 import { useState, useEffect, useCallback } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -22,39 +28,67 @@ export const AdminLayout: React.FC = () => {
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      // Global ⌘K search shortcut (both Mac and Windows)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k' && !e.repeat) {
         e.preventDefault();
-        setSearchOpen((prev) => !prev);
+        setSearchOpen(true);
+      }
+
+      // ESC to close modals/panels
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
       }
     };
+
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, []);
 
-  const contentMarginLeft = sidebar.isDesktop
-    ? sidebar.collapsed
-      ? 'ml-[--sidebar-collapsed-width]'
-      : 'ml-[--sidebar-width]'
-    : 'ml-0';
+  // Close search on navigation
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [location.pathname]);
 
   return (
-    <div className="flex h-screen w-full bg-background text-stone-900 overflow-hidden font-['Mukta']">
-      <AdminSidebar sidebar={sidebar} />
+    <div className="flex min-h-screen bg-background font-['Mukta']">
+      {/* Mobile/Tablet Sidebar Overlay */}
+      {(sidebar.mobileOpen || (sidebar.isTablet && !sidebar.collapsed)) && (
+        <div
+          className="fixed inset-0 z-40 bg-stone-900/40 backdrop-blur-sm lg:hidden"
+          onClick={sidebar.closeOverlay}
+        />
+      )}
 
-      <div
-        className={`flex-1 flex flex-col h-full overflow-hidden transition-[margin] duration-300 ${contentMarginLeft}`}
-      >
+      {/* Sidebar - Responsive behavior handled internally */}
+      <AdminSidebar
+        isSidebarOpen={sidebar.isVisible}
+        onToggleSidebar={sidebar.toggleMobile}
+        onCloseSidebar={sidebar.closeOverlay}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex flex-col flex-1 w-full">
+        {/* Header with contextual actions */}
         <AdminHeader
-          sidebar={sidebar}
+          onToggleSidebar={sidebar.toggleMobile}
+          isSidebarOpen={sidebar.mobileOpen}
           onOpenSearch={handleOpenSearch}
           routeKey={location.pathname}
         />
-        <main className="flex-1 overflow-y-auto bg-background-alt">
-          <Outlet />
+
+        {/* Page Content with consistent padding */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto w-full max-w-[1600px]">
+            <Outlet />
+          </div>
         </main>
       </div>
 
-      <GlobalSearchModal isOpen={searchOpen} onClose={handleCloseSearch} />
+      {/* Global Search Modal */}
+      <GlobalSearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
     </div>
   );
 };

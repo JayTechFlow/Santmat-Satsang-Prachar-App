@@ -51,6 +51,7 @@ import { bookService } from '../../books/services/bookService';
 import { bannerService } from '../../banners/services/bannerService';
 import { StatCard } from '../components/StatCard';
 import { QuickAction } from '../components/QuickAction';
+import { PieChart } from '../components/PieChart';
 import { NamasteIcon } from '../../../components/shared/DevotionalIcons';
 import { AdminPageHeader } from '../../../components/admin';
 
@@ -184,7 +185,17 @@ export const AdminDashboard: React.FC = () => {
   const categoryShare = useMemo(() => {
     const counts = new Map<string, number>();
     bhajans.forEach((b) => {
-      const cat = b.category || 'अन्य';
+      const rawCat = (b.category || '').trim();
+      let cat = rawCat;
+      if (!rawCat || rawCat.toLowerCase() === 'general' || rawCat === 'सामान्य') {
+        cat = 'सामान्य भक्ति (अन्य)';
+      } else if (rawCat.includes('शाही') || rawCat.includes('भजनावली') || rawCat.includes('भजनवाली')) {
+        cat = 'शाही भजनावली';
+      } else if (rawCat.includes('पदावली')) {
+        cat = 'पदावली भजन';
+      } else if (rawCat.includes('स्वागत')) {
+        cat = 'स्वागत गीत';
+      }
       counts.set(cat, (counts.get(cat) || 0) + 1);
     });
     const totalCount = bhajans.length || 1;
@@ -192,6 +203,7 @@ export const AdminDashboard: React.FC = () => {
       .slice(0, CATEGORY_COLORS.length)
       .map(([name, count], idx) => ({
         name,
+        count,
         percent: Math.round((count / totalCount) * 100),
         color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
       }));
@@ -423,7 +435,7 @@ export const AdminDashboard: React.FC = () => {
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto font-['Mukta'] select-none">
+    <div className="admin-container p-4 sm:p-6 space-y-6 select-none">
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: Canonical AdminPageHeader + Timeline Selector            */}
@@ -435,18 +447,18 @@ export const AdminDashboard: React.FC = () => {
         icon={<TrendingUp className="w-4 h-4" />}
         subtitle={
           <span>
-            समयावधि: <strong className="text-stone-800 font-bold">{timelineLabel(selectedTimeline)}</strong>
-            {analyticsLoading && <span className="text-stone-500 ml-2">लोड हो रहा…</span>}
+            समयावधि: <strong className="font-semibold text-text-primary">{timelineLabel(selectedTimeline)}</strong>
+            {analyticsLoading && <span className="text-text-muted ml-2">लोड हो रहा…</span>}
             {!analyticsLoading && analyticsError && (
-              <span className="text-red-600 ml-2" role="alert">{analyticsError}</span>
+              <span className="text-danger ml-2" role="alert">{analyticsError}</span>
             )}
             {!analyticsLoading && !analyticsError && (
-              <span className="text-emerald-600 ml-2">लाइव डेटा (Live Data)</span>
+              <span className="text-success ml-2">लाइव डेटा (Live Data)</span>
             )}
           </span>
         }
         actions={
-          <nav aria-label="समयावधि चयन" className="flex flex-wrap items-center gap-1 bg-stone-100/80 p-1.5 rounded-[0.625rem] border border-stone-200/80 shrink-0">
+          <nav aria-label="समयावधि चयन" className="flex flex-wrap items-center gap-1 bg-stone-100/80 p-1.5 rounded-md border border-stone-200/80 shrink-0">
             {timelineTabs.map((tab) => {
               const isActive = selectedTimeline === tab.id;
               return (
@@ -454,10 +466,10 @@ export const AdminDashboard: React.FC = () => {
                   key={tab.id}
                   onClick={() => setSelectedTimeline(tab.id)}
                   aria-pressed={isActive}
-                  className={`px-3 py-1.5 rounded-[0.625rem] text-xs font-extrabold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EA580C]/40 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 cursor-pointer ${
                     isActive
-                      ? 'bg-[#EA580C] text-white shadow-xs'
-                      : 'text-stone-600 hover:text-stone-950 hover:bg-stone-200/70'
+                      ? 'bg-brand text-white shadow-xs'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-stone-200/70'
                   }`}
                 >
                   {tab.label}
@@ -471,7 +483,7 @@ export const AdminDashboard: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: Analytics KPI Strip (4 cards from Cloud Function)       */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <section aria-label="एनालिटिक्स सांख्यिकी" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section aria-label="एनालिटिक्स सांख्यिकी" className="admin-grid admin-grid-cols-4 gap-4">
         <StatCard
           value={formatIndian(analyticsKpis.totalPlays)}
           label="कुल भजन प्ले (Total Plays)"
@@ -480,7 +492,7 @@ export const AdminDashboard: React.FC = () => {
           loading={analyticsLoading}
           error={!!analyticsError}
           onRetry={fetchAnalytics}
-          iconBg="bg-orange-50 border-orange-200 text-orange-600"
+          iconBg="bg-brand/10 border-brand/20 text-brand"
         />
         <StatCard
           value={analyticsKpis.totalHours === null ? '—' : `${formatIndian(analyticsKpis.totalHours)} घंटे`}
@@ -490,7 +502,7 @@ export const AdminDashboard: React.FC = () => {
           loading={analyticsLoading}
           error={!!analyticsError}
           onRetry={fetchAnalytics}
-          iconBg="bg-amber-50 border-amber-200 text-amber-700"
+          iconBg="bg-warning/10 border-warning/20 text-warning"
         />
         <StatCard
           value={formatIndian(analyticsKpis.peakActive)}
@@ -501,7 +513,7 @@ export const AdminDashboard: React.FC = () => {
           loading={analyticsLoading}
           error={!!analyticsError}
           onRetry={fetchAnalytics}
-          iconBg="bg-emerald-50 border-emerald-200 text-emerald-700"
+          iconBg="bg-success/10 border-success/20 text-success"
         />
         <StatCard
           value={`${formatIndian(bhajans.length)} भजन`}
@@ -519,11 +531,11 @@ export const AdminDashboard: React.FC = () => {
       {/* SECTION 3: Alerts / Attention Center                               */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {alerts.length > 0 && (
-        <section aria-label="ध्यान दें" className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 sm:p-5">
+        <section aria-label="ध्यान दें" className="bg-warning/10 border border-warning/30 rounded-xl p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-3">
-            <CircleAlert className="w-5 h-5 text-amber-700" aria-hidden="true" />
-            <h2 className="font-black text-sm text-amber-900">ध्यान दें (Attention Required)</h2>
-            <span className="ml-auto text-[0.68rem] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
+            <CircleAlert className="w-5 h-5 text-warning" aria-hidden="true" />
+            <h2 className="font-bold text-sm text-warning">ध्यान दें (Attention Required)</h2>
+            <span className="ml-auto text-[0.68rem] font-semibold text-warning bg-warning/15 border border-warning/30 px-2 py-0.5 rounded-full">
               {alerts.length}
             </span>
           </div>
@@ -533,17 +545,17 @@ export const AdminDashboard: React.FC = () => {
                 key={alert.id}
                 onClick={() => alert.route && navigate(alert.route)}
                 className={`w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                  alert.route ? 'hover:bg-amber-100/70 cursor-pointer' : 'cursor-default'
+                  alert.route ? 'hover:bg-warning/20 cursor-pointer' : 'cursor-default'
                 } ${
-                  alert.severity === 'warning' ? 'bg-amber-100/50 border border-amber-200' : 'bg-stone-50 border border-stone-200'
+                  alert.severity === 'warning' ? 'bg-warning/10 border border-warning/20' : 'bg-stone-50 border border-stone-200'
                 }`}
               >
                 <CircleAlert className={`w-4 h-4 shrink-0 ${
-                  alert.severity === 'warning' ? 'text-amber-700' : 'text-stone-500'
+                  alert.severity === 'warning' ? 'text-warning' : 'text-text-muted'
                 }`} aria-hidden="true" />
-                <span className="text-xs font-bold text-stone-800">{alert.text}</span>
+                <span className="text-sm font-medium text-text-primary">{alert.text}</span>
                 {alert.route && (
-                  <span className="ml-auto text-[0.68rem] font-bold text-amber-800 hover:underline shrink-0">
+                  <span className="ml-auto text-xs font-semibold text-brand hover:underline shrink-0">
                     देखें →
                   </span>
                 )}
@@ -556,10 +568,10 @@ export const AdminDashboard: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SECTION 4: Content Overview (health counts)                        */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <section aria-label="सामग्री स्वास्थ्य" className="bg-white rounded-xl p-4 sm:p-6 border border-stone-200 shadow-xs">
+      <section aria-label="सामग्री स्वास्थ्य" className="admin-card p-4 sm:p-6">
         <div className="flex items-center justify-between border-b border-stone-100 pb-3 mb-4">
-          <h2 className="font-black text-base text-stone-900 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-text-primary leading-snug flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-success" aria-hidden="true" />
             <span>सामग्री स्वास्थ्य (Content Health)</span>
           </h2>
         </div>
@@ -568,19 +580,19 @@ export const AdminDashboard: React.FC = () => {
             <button
               key={item.label}
               onClick={() => navigate(item.route)}
-              className="p-3 rounded-lg border border-stone-200 bg-stone-50/50 hover:bg-white hover:shadow-xs transition-all text-center group cursor-pointer"
+              className="p-3 rounded-lg border border-stone-200 bg-surface hover:shadow-xs transition-all text-center group cursor-pointer"
             >
-              <div className="flex items-center justify-center gap-1.5 mb-1 text-stone-500 group-hover:text-[#EA580C] transition-colors">
+              <div className="flex items-center justify-center gap-1.5 mb-1 text-text-secondary group-hover:text-brand transition-colors">
                 {item.icon}
               </div>
-              <p className="font-black text-lg text-stone-900 leading-tight">
+              <p className="font-bold text-lg text-text-primary leading-tight">
                 {item.loading ? (
                   <span className="inline-block w-8 h-5 bg-stone-200 rounded animate-pulse" />
                 ) : (
                   formatIndian(item.count)
                 )}
               </p>
-              <p className="text-[0.68rem] font-bold text-stone-500 mt-0.5">{item.label}</p>
+              <p className="text-xs font-semibold text-text-secondary mt-1 truncate">{item.label}</p>
             </button>
           ))}
         </div>
@@ -592,15 +604,15 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Playback Trend Chart (8 cols) */}
-        <section aria-label="भजन श्रवण रुझान" className="lg:col-span-8 bg-white rounded-xl p-4 sm:p-6 border border-stone-200 shadow-xs space-y-4">
+        <section aria-label="भजन श्रवण रुझान" className="lg:col-span-8 admin-card p-4 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
             <div className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-[#EA580C]" aria-hidden="true" />
-              <h3 className="font-black text-base text-stone-900">
+              <BarChart3 className="w-5 h-5 text-brand" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-text-primary leading-snug">
                 भजन श्रवण रुझान ग्राफ (Playback Curve)
               </h3>
             </div>
-            <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+            <span className="text-xs font-semibold text-warning bg-warning/15 border border-warning/30 px-3 py-1 rounded-full">
               {timelineLabel(selectedTimeline)}
             </span>
           </div>
@@ -608,17 +620,17 @@ export const AdminDashboard: React.FC = () => {
           {analyticsLoading ? (
             <div className="h-60 w-full flex items-center justify-center" aria-busy="true">
               <div className="text-center space-y-2">
-                <RefreshCw className="w-6 h-6 text-stone-400 animate-spin mx-auto" />
-                <p className="text-xs text-stone-500">चार्ट लोड हो रहा…</p>
+                <RefreshCw className="w-6 h-6 text-text-muted animate-spin mx-auto" />
+                <p className="text-sm text-text-secondary">चार्ट लोड हो रहा…</p>
               </div>
             </div>
           ) : analyticsError ? (
             <div className="h-60 w-full flex items-center justify-center" role="alert">
-              <p className="text-xs text-red-600">{analyticsError}</p>
+              <p className="text-sm font-medium text-danger">{analyticsError}</p>
             </div>
           ) : chartData.points.length === 0 ? (
             <div className="h-60 w-full flex items-center justify-center">
-              <p className="text-xs text-stone-500">इस समयावधि में कोई डेटा नहीं</p>
+              <p className="text-sm text-text-secondary">इस समयावधि में कोई डेटा नहीं</p>
             </div>
           ) : (
             <div className="h-60 w-full pt-2" role="img" aria-label="भजन श्रवण रुझान ग्राफ">
@@ -697,15 +709,15 @@ export const AdminDashboard: React.FC = () => {
         </section>
 
         {/* Category Distribution (4 cols) */}
-        <section aria-label="श्रेणी अनुसार वितरण" className="lg:col-span-4 bg-white rounded-xl p-4 sm:p-6 border border-stone-200 shadow-xs space-y-4">
+        <section aria-label="श्रेणी अनुसार वितरण" className="lg:col-span-4 bg-surface rounded-xl border border-stone-200/80 shadow-xs p-4 sm:p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-            <h3 className="font-black text-base text-stone-900 flex items-center gap-2">
-              <FolderTree className="w-4 h-4 text-amber-700" aria-hidden="true" />
+            <h3 className="text-xl font-bold text-text-primary leading-snug flex items-center gap-2">
+              <FolderTree className="w-4 h-4 text-warning" aria-hidden="true" />
               <span>श्रेणी वितरण (Category Distribution)</span>
             </h3>
             <button
               onClick={() => navigate('/admin/categories')}
-              className="text-xs font-bold text-amber-800 hover:underline cursor-pointer"
+              className="text-xs font-semibold text-brand hover:underline cursor-pointer"
             >
               प्रबंधन →
             </button>
@@ -713,48 +725,20 @@ export const AdminDashboard: React.FC = () => {
 
           {categoryShare.length === 0 ? (
             <div className="py-8 text-center">
-              <p className="text-xs text-stone-500">कोई भजन उपलब्ध नहीं</p>
+              <p className="text-sm text-text-secondary">कोई भजन उपलब्ध नहीं</p>
             </div>
           ) : (
-            <div className="space-y-3.5">
-              {categoryShare.map((cat, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs font-bold">
-                    <span className="text-stone-800">{cat.name}</span>
-                    <span className="text-stone-900 font-black">{cat.percent}%</span>
-                  </div>
-                  <div
-                    className="h-2 bg-stone-100 rounded-full overflow-hidden"
-                    role="progressbar"
-                    aria-valuenow={cat.percent}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${cat.name}: ${cat.percent}%`}
-                  >
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${cat.percent}%`, backgroundColor: cat.color }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <PieChart
+              data={categoryShare.map(cat => ({
+                name: cat.name,
+                value: cat.count,
+                color: cat.color
+              }))}
+              title=""
+              height={180}
+              width={180}
+            />
           )}
-
-          <div className="pt-2">
-            <div className="p-3.5 rounded-lg bg-amber-50/70 border border-amber-200 flex items-center justify-between gap-2">
-              <div>
-                <p className="font-bold text-xs text-amber-950">नई श्रेणी जोड़ें</p>
-                <p className="text-[0.68rem] text-amber-800">मोबाइल ऐप पर नई भक्ति श्रेणी प्रकाशित करें</p>
-              </div>
-              <button
-                onClick={() => navigate('/admin/categories')}
-                className="px-3 py-1.5 bg-[#EA580C] hover:bg-[#C2410C] text-white rounded-[0.625rem] text-xs font-bold shadow-xs shrink-0 cursor-pointer"
-              >
-                + जोड़ें
-              </button>
-            </div>
-          </div>
         </section>
       </div>
 
@@ -764,20 +748,20 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Top 5 Bhajans by Plays (6 cols) */}
-        <section aria-label="शीर्ष लोकप्रिय भजन" className="lg:col-span-6 bg-white rounded-xl p-4 sm:p-6 border border-stone-200 shadow-xs space-y-4">
+        <section aria-label="शीर्ष लोकप्रिय भजन" className="lg:col-span-6 admin-card p-4 sm:p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-stone-100 pb-3">
             <div>
-              <h3 className="font-black text-base text-stone-900 flex items-center gap-2">
-                <Award className="w-5 h-5 text-amber-600" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-text-primary leading-snug flex items-center gap-2">
+                <Award className="w-5 h-5 text-warning" aria-hidden="true" />
                 <span>शीर्ष लोकप्रिय भजन (Top by Plays)</span>
               </h3>
-              <p className="text-[0.72rem] text-stone-500 mt-0.5">
+              <p className="text-xs text-text-secondary mt-1">
                 भक्तों द्वारा सर्वाधिक श्रवण किए गए अमृतमयी भजन
               </p>
             </div>
             <button
               onClick={() => navigate('/admin/bhajan-list')}
-              className="text-xs font-bold text-amber-800 hover:underline shrink-0 cursor-pointer"
+              className="text-xs font-semibold text-brand hover:underline shrink-0 cursor-pointer"
             >
               सभी {bhajans.length} भजन देखें →
             </button>
@@ -785,7 +769,7 @@ export const AdminDashboard: React.FC = () => {
 
           {topBhajans.length === 0 ? (
             <div className="py-8 text-center">
-              <p className="text-xs text-stone-500">कोई भजन उपलब्ध नहीं</p>
+              <p className="text-sm text-text-secondary">कोई भजन उपलब्ध नहीं</p>
             </div>
           ) : (
             <div className="space-y-2.5">
@@ -839,16 +823,16 @@ export const AdminDashboard: React.FC = () => {
         </section>
 
         {/* Quick Admin Actions (6 cols) */}
-        <section aria-label="त्वरित कार्य" className="lg:col-span-6 bg-white rounded-xl p-4 sm:p-6 border border-stone-200 shadow-xs space-y-4">
-          <h3 className="font-black text-base text-stone-900 flex items-center gap-2 border-b border-stone-100 pb-3">
-            <Sparkles className="w-5 h-5 text-orange-600" aria-hidden="true" />
+        <section aria-label="त्वरित कार्य" className="lg:col-span-6 admin-card p-4 sm:p-6 space-y-4">
+          <h3 className="text-xl font-bold text-text-primary leading-snug flex items-center gap-2 border-b border-stone-100 pb-3">
+            <Sparkles className="w-5 h-5 text-brand" aria-hidden="true" />
             <span>त्वरित प्रबंधन कार्य (Quick Actions)</span>
           </h3>
 
           {quickActions.length === 0 ? (
             <div className="py-8 text-center">
               <Shield className="w-8 h-8 text-stone-300 mx-auto mb-2" />
-              <p className="text-xs text-stone-500">आपकी भूमिका के लिए कोई त्वरित कार्य उपलब्ध नहीं</p>
+              <p className="text-sm text-text-secondary">आपकी भूमिका के लिए कोई त्वरित कार्य उपलब्ध नहीं</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

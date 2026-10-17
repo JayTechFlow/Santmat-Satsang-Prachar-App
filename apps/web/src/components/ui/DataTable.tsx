@@ -18,15 +18,17 @@ export interface DataTableProps<T> {
   onToggleSelection?: (id: string) => void;
   onSelectAll?: (ids: string[]) => void;
   onClearSelection?: () => void;
+  emptyState?: React.ReactNode;
+  loading?: boolean;
 }
 
-const DataTableRow = React.memo(<T extends any>({ 
-  item, 
-  columns, 
-  id, 
-  isSelected, 
-  selectable, 
-  onToggleSelection 
+const DataTableRow = React.memo(<T extends any>({
+  item,
+  columns,
+  id,
+  isSelected,
+  selectable,
+  onToggleSelection
 }: {
   item: T;
   columns: Column<T>[];
@@ -36,20 +38,20 @@ const DataTableRow = React.memo(<T extends any>({
   onToggleSelection?: (id: string) => void;
 }) => {
   return (
-    <tr className={`border-b border-stone-100 transition-colors ${isSelected ? 'bg-amber-50/60' : 'hover:bg-stone-50/50'}`}>
+    <tr className={`border-b border-stone-100 transition-colors ${isSelected ? 'bg-brand/5' : 'hover:bg-stone-50/50'}`}>
       {selectable && (
-        <td className="p-3 w-10 sticky left-0 z-5 bg-white">
-          <input 
-            type="checkbox" 
+        <td className="p-3 w-10 sticky left-0 z-10 bg-surface">
+          <input
+            type="checkbox"
             checked={isSelected}
             onChange={() => onToggleSelection && onToggleSelection(id)}
-            className="w-4 h-4 rounded-md border-stone-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+            className="w-4 h-4 rounded border-stone-300 text-brand focus:ring-brand cursor-pointer"
             aria-label={`Select row ${String(id)}`}
           />
         </td>
       )}
       {columns.map((col) => (
-        <td key={col.key as string} className="p-3.5 text-xs text-stone-700 font-medium">
+        <td key={col.key as string} className="p-3.5 text-sm text-text-primary">
           {col.render ? col.render(item) : String((item as any)[col.key] || '')}
         </td>
       ))}
@@ -57,16 +59,18 @@ const DataTableRow = React.memo(<T extends any>({
   );
 }) as <T extends any>(props: { item: T; columns: Column<T>[]; id: string; isSelected: boolean; selectable: boolean; onToggleSelection?: (id: string) => void; key?: React.Key }) => React.JSX.Element;
 
-const DataTableComponent = <T extends any>({ 
-  data, 
-  columns, 
-  keyExtractor, 
+const DataTableComponent = <T extends any>({
+  data,
+  columns,
+  keyExtractor,
   onSort,
   selectable = false,
   selectedIds = [],
   onToggleSelection,
   onSelectAll,
-  onClearSelection
+  onClearSelection,
+  emptyState,
+  loading = false
 }: DataTableProps<T>) => {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -82,7 +86,7 @@ const DataTableComponent = <T extends any>({
 
   const sortedData = React.useMemo(() => {
     if (onSort || !sortKey) return data;
-    
+
     return [...data].sort((a: any, b: any) => {
       const aVal = a[sortKey];
       const bVal = b[sortKey];
@@ -107,63 +111,90 @@ const DataTableComponent = <T extends any>({
     }
   }, [data, keyExtractor, onSelectAll, onClearSelection]);
 
+  if (loading) {
+    return (
+      <div className="admin-card p-8">
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-text-secondary">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (data.length === 0 && emptyState) {
+    return (
+      <div className="admin-card">
+        {emptyState}
+      </div>
+    );
+  }
+
   return (
-    <div className="relative overflow-x-auto rounded-xl border border-stone-200 shadow-xs bg-white font-['Mukta']">
-      <table className="w-full text-left border-collapse">
-        <thead className="bg-stone-50 border-b border-stone-200">
-          <tr>
-            {selectable && (
-              <th className="p-3 w-10 sticky left-0 z-10 bg-stone-50">
-                <input 
-                  type="checkbox" 
-                  checked={allSelected} 
-                  ref={input => { if (input) input.indeterminate = someSelected; }}
-                  onChange={handleSelectAll}
-                  className="w-4 h-4 rounded-md border-stone-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
-                  aria-label="Select all rows"
+    <div className="admin-card overflow-hidden font-['Mukta']">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-stone-50/70 border-b border-stone-200">
+            <tr>
+              {selectable && (
+                <th className="p-3.5 w-10 sticky left-0 z-20 bg-stone-50/70">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={input => { if (input) input.indeterminate = someSelected; }}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-stone-300 text-brand focus:ring-brand cursor-pointer"
+                    aria-label="Select all rows"
+                  />
+                </th>
+              )}
+              {columns.map((col) => (
+                <th
+                  key={col.key as string}
+                  className={`p-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wide ${col.sortable ? "cursor-pointer select-none hover:text-text-primary" : "select-none"}`}
+                  onClick={() => col.sortable && handleSort(col.key as string)}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>{col.header}</span>
+                    {col.sortable && (
+                      <span className="text-stone-400">
+                        {sortKey === col.key ? (
+                          sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-brand" /> : <ArrowDown className="w-3.5 h-3.5 text-brand" />
+                        ) : (
+                          <ArrowUpDown className="w-3.5 h-3.5" />
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData.map((item) => {
+              const id = keyExtractor(item);
+              const isSelected = selectedIds.includes(id);
+              return (
+                <DataTableRow
+                  key={id}
+                  item={item}
+                  columns={columns}
+                  id={id}
+                  isSelected={isSelected}
+                  selectable={selectable}
+                  onToggleSelection={onToggleSelection}
                 />
-              </th>
-            )}
-            {columns.map((col) => (
-              <th
-                key={col.key as string}
-                className={`p-3.5 text-xs font-bold text-stone-700 tracking-wide ${col.sortable ? "cursor-pointer select-none hover:text-stone-900" : "select-none"}`}
-                onClick={() => col.sortable && handleSort(col.key as string)}
-              >
-                <div className="flex items-center gap-1.5">
-                  <span>{col.header}</span>
-                  {col.sortable && (
-                    <span className="text-stone-400">
-                      {sortKey === col.key ? (
-                        sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                      ) : (
-                        <ArrowUpDown className="w-3.5 h-3.5" />
-                      )}
-                    </span>
-                  )}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map((item) => {
-            const id = keyExtractor(item);
-            const isSelected = selectedIds.includes(id);
-            return (
-              <DataTableRow 
-                key={id}
-                item={item}
-                columns={columns}
-                id={id}
-                isSelected={isSelected}
-                selectable={selectable}
-                onToggleSelection={onToggleSelection}
-              />
-            );
-          })}
-        </tbody>
-      </table>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {data.length === 0 && !emptyState && (
+          <div className="p-12 text-center">
+            <p className="text-text-secondary">No data available</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

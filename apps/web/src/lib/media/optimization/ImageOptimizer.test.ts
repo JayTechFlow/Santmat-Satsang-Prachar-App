@@ -11,6 +11,15 @@ const mockGetContext = vi.fn(() => ({
   drawImage: mockDrawImage,
 }));
 
+// Mock URL.createObjectURL and URL.revokeObjectURL
+const mockCreateObjectURL = vi.fn((file) => `mock-url-${file.name}`);
+const mockRevokeObjectURL = vi.fn();
+
+global.URL = {
+  createObjectURL: mockCreateObjectURL,
+  revokeObjectURL: mockRevokeObjectURL,
+} as any;
+
 global.document = {
   createElement: vi.fn((tag) => {
     if (tag === 'canvas') {

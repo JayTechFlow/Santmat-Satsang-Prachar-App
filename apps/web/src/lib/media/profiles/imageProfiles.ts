@@ -269,7 +269,16 @@ export async function validateImageAgainstProfile(
   }
 
   // 3. Pixel dimensions & aspect ratio (browser environment)
-  if (typeof Image === 'undefined') {
+  if (typeof Image === 'undefined' || typeof URL === 'undefined') {
+    return {
+      valid: errors.length === 0,
+      errors,
+      warnings,
+    };
+  }
+
+  // Check if required browser APIs are available
+  if (typeof URL.createObjectURL === 'undefined' || typeof URL.revokeObjectURL === 'undefined') {
     return {
       valid: errors.length === 0,
       errors,
@@ -279,10 +288,25 @@ export async function validateImageAgainstProfile(
 
   return new Promise<ImageValidationResult>((resolve) => {
     const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
+    let objectUrl: string | null = null;
+
+    try {
+      objectUrl = URL.createObjectURL(file);
+    } catch (urlError) {
+      errors.push('फ़ाइल ऑब्जेक्ट URL बनाने में विफल।');
+      resolve({ valid: false, errors, warnings });
+      return;
+    }
 
     img.onload = () => {
-      URL.revokeObjectURL(objectUrl);
+      if (objectUrl) {
+        try {
+          URL.revokeObjectURL(objectUrl);
+        } catch (revokeError) {
+          // Ignore revoke errors
+        }
+      }
+
       const width = img.naturalWidth;
       const height = img.naturalHeight;
       const ratio = width / height;
@@ -309,7 +333,13 @@ export async function validateImageAgainstProfile(
     };
 
     img.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
+      if (objectUrl) {
+        try {
+          URL.revokeObjectURL(objectUrl);
+        } catch (revokeError) {
+          // Ignore revoke errors
+        }
+      }
       errors.push('इमेज लोड करने में विफल। फ़ाइल भ्रष्ट हो सकती है।');
       resolve({ valid: false, errors, warnings });
     };

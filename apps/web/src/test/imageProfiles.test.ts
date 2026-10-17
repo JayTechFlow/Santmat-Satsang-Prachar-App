@@ -1,9 +1,39 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   IMAGE_PROFILES,
   getImageProfile,
   validateImageAgainstProfile,
 } from '../lib/media/profiles/imageProfiles';
+
+// Mock browser APIs for Node Vitest
+const mockCreateObjectURL = vi.fn((file) => `mock-url-${file.name}`);
+const mockRevokeObjectURL = vi.fn();
+
+global.URL = {
+  createObjectURL: mockCreateObjectURL,
+  revokeObjectURL: mockRevokeObjectURL,
+} as any;
+
+let imageWidthMock = 4000;
+let imageHeightMock = 3000;
+
+global.Image = class {
+  onload: () => void = () => {};
+
+  get naturalWidth() {
+    return imageWidthMock;
+  }
+
+  get naturalHeight() {
+    return imageHeightMock;
+  }
+
+  set src(_url: string) {
+    setTimeout(() => {
+      this.onload();
+    }, 0);
+  }
+} as any;
 
 describe('Enterprise Image Profiles & Android UI Alignment', () => {
   it('defines all canonical Android-aligned image profiles', () => {
@@ -99,7 +129,7 @@ describe('Enterprise Image Profiles & Android UI Alignment', () => {
   describe('validateImageAgainstProfile validation logic', () => {
     it('rejects an image exceeding maximum allowed file size', async () => {
       const fakeFile = new File(['a'.repeat(100)], 'huge.webp', { type: 'image/webp' });
-      Object.defineProperty(fakeFile, 'size', { value: 10 * 1024 * 1024 }); // 10MB > 3MB banner limit
+      Object.defineProperty(fakeFile, 'size', { value: 4 * 1024 * 1024 }); // 4MB > 3MB banner limit
 
       const result = await validateImageAgainstProfile(fakeFile, IMAGE_PROFILES.banner);
       expect(result.valid).toBe(false);

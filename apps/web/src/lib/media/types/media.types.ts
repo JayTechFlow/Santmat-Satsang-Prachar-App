@@ -35,7 +35,6 @@ export const MediaCategory = {
   AVATAR: 'avatar',
   EVENT: 'event',
   NOTIFICATION: 'notification',
-  GENERAL: 'general',
 } as const;
 export type MediaCategory = (typeof MediaCategory)[keyof typeof MediaCategory];
 

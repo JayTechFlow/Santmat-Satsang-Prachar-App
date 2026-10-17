@@ -84,11 +84,11 @@ export const AnalyticsTrendChart: React.FC<AnalyticsTrendChartProps> = ({
   const formatValue = (value: number): string => (asHours ? formatHoursCompact(value) : formatIndian(value));
 
   return (
-    <div className="admin-card p-5 space-y-3">
+    <div className="bg-surface rounded-xl border border-stone-200/80 shadow-xs p-5 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-black text-sm text-stone-900">{title}</h3>
+        <h3 className="font-bold text-text-primary">{title}</h3>
         {!available ? (
-          <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-warning/15 text-warning border border-warning/30">
             डेटा एकत्र नहीं
           </span>
         ) : null}
@@ -96,13 +96,13 @@ export const AnalyticsTrendChart: React.FC<AnalyticsTrendChartProps> = ({
 
       {!available ? (
         <div className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-stone-200 bg-stone-50/60 py-10 text-center">
-          <p className="text-sm font-bold text-stone-400">—</p>
-          <p className="text-[11px] font-semibold text-amber-700 max-w-xs">{unavailableReason}</p>
+          <p className="text-sm font-bold text-text-secondary">—</p>
+          <p className="text-[11px] font-semibold text-warning max-w-xs">{unavailableReason}</p>
         </div>
       ) : points.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-stone-200 bg-stone-50/60 py-10 text-center">
-          <p className="text-sm font-bold text-stone-400">कोई दिनांक डेटा नहीं</p>
-          <p className="text-[11px] font-semibold text-stone-400">चयनित अवधि में कोई रिकॉर्ड नहीं मिला।</p>
+          <p className="text-sm font-bold text-text-secondary">कोई दिनांक डेटा नहीं</p>
+          <p className="text-[11px] font-semibold text-text-secondary">चयनित अवधि में कोई रिकॉर्ड नहीं मिला।</p>
         </div>
       ) : (
         <>
@@ -143,7 +143,7 @@ export const AnalyticsTrendChart: React.FC<AnalyticsTrendChartProps> = ({
 
               {/* Series line */}
               {linePath ? (
-                <path d={linePath} fill="none" stroke="#EA580C" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+                <path d={linePath} fill="none" stroke="#EA580C" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
               ) : null}
 
               {/* Partial days are drawn hollow so an in-progress day is never

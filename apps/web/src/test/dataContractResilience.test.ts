@@ -29,18 +29,10 @@ describe('Data Contract Resilience & Normalization Tests', () => {
       expect(result.status).toBe('प्रकाशित');
     });
 
-    it('should treat empty subCategory as undefined (no forced default)', () => {
-      expect(normalizeBhajanEntity('bhajan-1', { subCategory: '' }).subCategory).toBeUndefined();
-      expect(normalizeBhajanEntity('bhajan-1', { subCategory: null }).subCategory).toBeUndefined();
-      expect(normalizeBhajanEntity('bhajan-1', { subCategory: undefined }).subCategory).toBeUndefined();
-    });
-
-    it('should treat whitespace-only subCategory as falsy-empty', () => {
-      expect(normalizeBhajanEntity('bhajan-1', { subCategory: '   ' }).subCategory).toBe('');
-    });
-
-    it('should keep a real subCategory after trimming', () => {
-      expect(normalizeBhajanEntity('bhajan-1', { subCategory: '  भक्ति  ' }).subCategory).toBe('भक्ति');
+    it('should ignore subCategory input on normalizeBhajanEntity', () => {
+      expect((normalizeBhajanEntity('bhajan-1', { subCategory: '' }) as any).subCategory).toBeUndefined();
+      expect((normalizeBhajanEntity('bhajan-1', { subCategory: '   ' }) as any).subCategory).toBeUndefined();
+      expect((normalizeBhajanEntity('bhajan-1', { subCategory: '  भक्ति  ' }) as any).subCategory).toBeUndefined();
     });
   });
 

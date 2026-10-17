@@ -45,27 +45,29 @@ describe('Admin CMS ↔ Android Product Alignment Contract Tests', () => {
     });
 
     it('4. Category delete safety enforces General protection', () => {
-      const generalNames = ['general', 'सामान्य'];
-      const isGeneralFallback = (name: string) => generalNames.includes(name.toLowerCase());
+      const protectedNames = ['general', 'सामान्य'];
+      const isProtectedCategory = (name: string) => protectedNames.includes(name.toLowerCase());
 
-      expect(isGeneralFallback('General')).toBe(true);
-      expect(isGeneralFallback('सामान्य')).toBe(true);
-      expect(isGeneralFallback('गुरु महिमा')).toBe(false);
+      expect(isProtectedCategory('General')).toBe(true);
+      expect(isProtectedCategory('सामान्य')).toBe(true);
+      expect(isProtectedCategory('गुरु महिमा')).toBe(false);
     });
 
-    it('5. General uniqueness strategy prevents duplicate General categories', () => {
-      const existingCategories = [
-        { id: 'cat-general', name: 'General', subCategories: [], active: true }
-      ];
-      const isDuplicateGeneral = (name: string) => {
-        const target = name.trim().toLowerCase();
-        return ['general', 'सामान्य'].includes(target) && 
-               existingCategories.some(c => ['general', 'सामान्य'].includes(c.name.toLowerCase()));
+    it('5. General protection strategy prevents unsafe category operations', () => {
+      const protectedNames = ['general', 'सामान्य'];
+      const isProtectedOperation = (targetName: string, existingCategories: Array<{name: string}>) => {
+        const target = targetName.trim().toLowerCase();
+        return protectedNames.includes(target) &&
+               existingCategories.some(c => protectedNames.includes(c.name.toLowerCase()));
       };
 
-      expect(isDuplicateGeneral('General')).toBe(true);
-      expect(isDuplicateGeneral('सामान्य')).toBe(true);
-      expect(isDuplicateGeneral('संतवाणी')).toBe(false);
+      const existingCategories = [
+        { name: 'General' }
+      ];
+
+      expect(isProtectedOperation('General', existingCategories)).toBe(true);
+      expect(isProtectedOperation('सामान्य', existingCategories)).toBe(true);
+      expect(isProtectedOperation('संतवाणी', existingCategories)).toBe(false);
     });
   });
 
@@ -76,7 +78,6 @@ describe('Admin CMS ↔ Android Product Alignment Contract Tests', () => {
         title: 'हे प्रभु आनंद दाता',
         artist: 'स्वामी संतसेवी जी',
         category: 'गुरु महिमा',
-        subCategory: 'मानस ध्यान',
         duration: '05:30',
         durationSeconds: 330,
         imageUrl: 'https://example.com/thumb.jpg',
@@ -86,7 +87,6 @@ describe('Admin CMS ↔ Android Product Alignment Contract Tests', () => {
       });
 
       expect(bhajan.category).toBe('गुरु महिमा');
-      expect(bhajan.subCategory).toBe('मानस ध्यान');
     });
 
     it('7. Audio edit retains single canonical category assignment', () => {
@@ -108,7 +108,7 @@ describe('Admin CMS ↔ Android Product Alignment Contract Tests', () => {
       const bhajan = normalizeBhajanEntity('bhajan-1', {
         title: 'भजन पद',
         artist: 'कलाकार',
-        category: 'General',
+        category: 'गुरु महिमा',
       });
 
       expect((bhajan as any).isFeatured).toBeUndefined();
@@ -118,7 +118,7 @@ describe('Admin CMS ↔ Android Product Alignment Contract Tests', () => {
     it('9. Obsolete multi-category controls are absent', () => {
       const bhajan = normalizeBhajanEntity('bhajan-1', {
         title: 'भजन पद',
-        category: 'General',
+        category: 'गुरु महिमा',
       });
 
       expect((bhajan as any).categoryIds).toBeUndefined();

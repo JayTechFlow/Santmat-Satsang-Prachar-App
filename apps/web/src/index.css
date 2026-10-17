@@ -2,111 +2,276 @@
 
 /*
  * ============================================================================
- * Santmat Satsang Prachar — Design Token Foundation
+ * Santmat Satsang Prachar — Design Token Foundation (Redesigned)
  * ============================================================================
- * Minimal token layer preserving existing visual identity.
- * Shell components reference these tokens; feature pages remain unchanged.
+ * Modern design system implementation following the specification in
+ * docs/design/design-system-spec.md with refined typography, spacing, and color
+ * for a cleaner, more professional admin experience.
  */
-
 @theme {
-  /* ── Brand ─────────────────────────────────────────────────── */
-  --color-brand: #EA580C;
-  --color-brand-hover: #C2410C;
-  --color-brand-light: #FFF7ED;
-  --color-brand-border: #FED7AA;
+  /* ── Brand Colors ──────────────────────────────────────────── */
+  --color-brand: #EA580C;           /* Primary saffron */
+  --color-brand-hover: #C2410C;     /* Hover state */
+  --color-brand-active: #9A3412;    /* Active/pressed state */
+  --color-brand-light: #FFF7ED;     /* Light background/tint */
+  --color-brand-border: #FED7AA;    /* Border variant */
 
-  /* ── Surfaces ─────────────────────────────────────────────── */
-  --color-surface: #FFFFFF;
-  --color-background: #FBF9F5;
-  --color-background-alt: #FAF8F5;
+  /* ── Neutral Palette ───────────────────────────────────────── */
+  --color-surface: #FFFFFF;         /* Card/panel backgrounds */
+  --color-background: #FBF9F5;      /* Page background */
+  --color-background-alt: #FAF8F5;  /* Alternative sections */
 
-  /* ── Text ─────────────────────────────────────────────────── */
-  --color-text-primary: #1C1917;
-  --color-text-secondary: #78716C;
-  --color-text-muted: #A8A29E;
+  /* ── Typography Colors ─────────────────────────────────────── */
+  --color-text-primary: #1C1917;    /* Main text */
+  --color-text-secondary: #78716C;  /* Supporting text */
+  --color-text-muted: #A8A29E;      /* Disabled/placeholder text */
 
-  /* ── Semantic ─────────────────────────────────────────────── */
-  --color-danger: #DC2626;
-  --color-danger-light: #FEF2F2;
-  --color-success: #059669;
-  --color-success-light: #ECFDF5;
-  --color-warning: #D97706;
-  --color-warning-light: #FFFBEB;
+  /* ── Semantic Colors ───────────────────────────────────────── */
+  --color-success: #059669;         /* Positive actions/states */
+  --color-success-light: #ECFDF5;   /* Success backgrounds */
+  --color-warning: #D97706;         /* Warnings/caution */
+  --color-warning-light: #FFFBEB;   /* Warning backgrounds */
+  --color-danger: #DC2626;          /* Errors/destructive actions */
+  --color-danger-light: #FEF2F2;    /* Error backgrounds */
+  --color-info: #0284C7;            /* Informational content */
+  --color-info-light: #EFF6FF;      /* Info backgrounds */
 
-  /* ── Shell Dimensions ─────────────────────────────────────── */
-  --sidebar-width: 256px;
-  --sidebar-collapsed-width: 64px;
-  --header-height: 64px;
+  /* ── Layout Tokens ─────────────────────────────────────────── */
+  --sidebar-width: 16rem;           /* 256px */
+  --header-height: 4rem;            /* 64px */
 
-  /* ── Z-Index Layers ──────────────────────────────────────── */
-  --z-header: 20;
+  /* ── Z-Index System ────────────────────────────────────────── */
+  --z-header: 30;
   --z-sidebar-backdrop: 40;
-  --z-popover: 50;
-  --z-modal: 60;
+  --z-sidebar: 50;
+  --z-popover: 60;
+  --z-modal-backdrop: 70;
+  --z-modal: 80;
 
-  /* ── Typography ───────────────────────────────────────────── */
-  --font-family-sans: 'Mukta', ui-sans-serif, system-ui, sans-serif;
+  /* ── Typography System ─────────────────────────────────────── */
+  --font-family-base: 'Mukta', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-  /* ── Radius System (enterprise, restrained) ──────────────── */
-  --radius-control: 0.625rem;   /* inputs, buttons, selects */
-  --radius-card: 0.75rem;       /* cards, panels */
-  --radius-pill: 9999px;        /* badges, chips, avatars */
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;          /* 12px */
+  --font-size-sm: 0.875rem;         /* 14px */
+  --font-size-base: 1rem;           /* 16px */
+  --font-size-lg: 1.125rem;         /* 18px */
+  --font-size-xl: 1.25rem;          /* 20px */
+  --font-size-2xl: 1.5rem;          /* 24px */
+  --font-size-3xl: 2rem;            /* 32px */
 
-  /* ── Focus Ring (accessible, consistent) ─────────────────── */
-  --color-focus: #EA580C;
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /* ── Spacing System (8px grid) ─────────────────────────────── */
+  --spacing-xxs: 0.25rem;           /* 4px */
+  --spacing-xs: 0.5rem;             /* 8px */
+  --spacing-sm: 0.75rem;            /* 12px */
+  --spacing-md: 1rem;               /* 16px */
+  --spacing-lg: 1.5rem;             /* 24px */
+  --spacing-xl: 2rem;               /* 32px */
+  --spacing-xxl: 2.5rem;            /* 40px */
+  --spacing-xxxl: 3rem;             /* 48px */
+
+  /* ── Radius System ─────────────────────────────────────────── */
+  --radius-sm: 0.375rem;            /* 6px - badges, small elements */
+  --radius-base: 0.5rem;            /* 8px - buttons, inputs */
+  --radius-md: 0.75rem;             /* 12px - cards, panels */
+  --radius-lg: 1rem;                /* 16px - modals, large containers */
+  --radius-full: 9999px;            /* pill shapes */
+
+  /* ── Focus Ring ────────────────────────────────────────────── */
+  --color-focus-ring: #EA580C;
+  --focus-ring-offset: 2px;
+  --focus-ring-width: 2px;
 }
 
 /*
  * ============================================================================
- * Component Utility Layer
+ * Component Utility Layer (Redesigned)
  * ============================================================================
- * Canonical form & interactive styles shared across all admin pages.
- * Keep Tailwind v4 inline utilities as the primary mechanism; these classes
- * only codify repeated, identical patterns so pages stay consistent.
+ * Consistent component styles for the redesigned admin interface.
+ * Uses design tokens to ensure visual harmony and accessibility.
  */
-
 @layer components {
   /* ── Form Controls ─────────────────────────────────────────── */
   .admin-input {
-    @apply w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-[0.625rem] text-xs font-medium text-stone-900 placeholder:text-stone-400 outline-none transition-all
-      focus:bg-white focus:border-[#FED7AA] focus:ring-2 focus:ring-[#EA580C]/25;
+    @apply w-full px-3 py-2.5 text-sm bg-surface border border-stone-200 rounded-md
+           text-text-primary placeholder:text-text-muted transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand-border;
   }
 
   .admin-select {
-    @apply w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-[0.625rem] text-xs font-bold text-stone-800 outline-none transition-all cursor-pointer
-      focus:bg-white focus:border-[#FED7AA] focus:ring-2 focus:ring-[#EA580C]/25;
+    @apply w-full px-3 py-2.5 text-sm bg-surface border border-stone-200 rounded-md
+           text-text-primary transition-all duration-200 appearance-none
+           focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand-border;
   }
 
   .admin-textarea {
-    @apply w-full p-3.5 bg-stone-50 border border-stone-200 rounded-[0.625rem] text-xs text-stone-800 outline-none transition-all leading-relaxed
-      focus:bg-white focus:border-[#FED7AA] focus:ring-2 focus:ring-[#EA580C]/25;
+    @apply w-full px-3 py-2.5 text-sm bg-surface border border-stone-200 rounded-md
+           text-text-primary placeholder:text-text-muted transition-all duration-200 leading-relaxed
+           focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand-border;
   }
 
   .admin-input-error {
-    @apply border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-500/20 bg-red-50/40;
+    @apply border-danger focus:ring-danger/20 focus:border-danger bg-danger-light/30;
   }
 
-  /* ── Surface / Cards ───────────────────────────────────────── */
+  /* ── Buttons ───────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center font-semibold transition-all
+           rounded-md cursor-pointer select-none active:scale-[0.98] focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-1;
+  }
+
+  .btn-primary {
+    @apply bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-xs hover:shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-surface border border-stone-300 text-text-primary hover:bg-stone-100
+           active:bg-stone-200 shadow-xs;
+  }
+
+  .btn-tertiary {
+    @apply bg-stone-100 text-text-primary hover:bg-stone-200 active:bg-stone-300;
+  }
+
+  .btn-destructive {
+    @apply bg-danger hover:bg-danger/90 active:bg-danger/80 text-white shadow-xs;
+  }
+
+  .btn-ghost {
+    @apply text-text-secondary hover:bg-stone-100 hover:text-text-primary;
+  }
+
+  /* ── Cards & Panels ────────────────────────────────────────── */
   .admin-card {
-    @apply bg-white border border-stone-200 rounded-[0.75rem] shadow-xs;
+    @apply bg-surface border border-stone-200/80 rounded-xl shadow-xs transition-all duration-200 overflow-hidden;
   }
 
-  /* ── Toast (fixed, consistent corner) ─────────────────────── */
+  .admin-card-subtle {
+    @apply bg-stone-50/70 border-stone-200 shadow-none;
+  }
+
+  /* ── Layout Containers ─────────────────────────────────────── */
+  .admin-container {
+    @apply mx-auto w-full max-w-[1600px];
+  }
+
+  .admin-section {
+    @apply mb-8 last:mb-0;
+  }
+
+  .admin-grid {
+    @apply grid gap-6;
+  }
+
+  .admin-grid-cols-1 { @apply grid-cols-1; }
+  .admin-grid-cols-2 { @apply grid-cols-1 sm:grid-cols-2; }
+  .admin-grid-cols-3 { @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3; }
+  .admin-grid-cols-4 { @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-4; }
+
+  /* ── Typography ────────────────────────────────────────────── */
+  .admin-h1 { @apply text-3xl font-bold text-text-primary leading-tight; }
+  .admin-h2 { @apply text-2xl font-bold text-text-primary leading-snug; }
+  .admin-h3 { @apply text-xl font-bold text-text-primary leading-snug; }
+  .admin-h4 { @apply text-lg font-semibold text-text-primary leading-normal; }
+
+  .admin-body-large { @apply text-base text-text-primary leading-relaxed; }
+  .admin-body-medium { @apply text-sm text-text-primary leading-relaxed; }
+  .admin-body-small { @apply text-xs text-text-primary leading-relaxed; }
+
+  .admin-caption { @apply text-xs text-text-secondary; }
+  .admin-overline { @apply text-xs font-semibold text-text-secondary uppercase tracking-wide; }
+
+  /* ── Status Indicators ─────────────────────────────────────── */
+  .status-success { @apply bg-success/15 text-success border border-success/30; }
+  .status-warning { @apply bg-warning/15 text-warning border border-warning/30; }
+  .status-danger { @apply bg-danger/15 text-danger border border-danger/30; }
+  .status-info { @apply bg-info/15 text-info border border-info/30; }
+
+  /* ── Badges ────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold leading-none;
+  }
+
+  .badge-primary { @apply bg-brand/15 text-brand; }
+  .badge-success { @apply bg-success/15 text-success; }
+  .badge-warning { @apply bg-warning/15 text-warning; }
+  .badge-danger { @apply bg-danger/15 text-danger; }
+  .badge-muted { @apply bg-stone-100 text-text-secondary; }
+
+  /* ── Toast Notifications ───────────────────────────────────── */
   .admin-toast {
-    @apply fixed top-5 right-5 z-50 px-5 py-3 rounded-[0.75rem] shadow-xl flex items-center gap-2 font-bold text-sm transition-all duration-200;
+    @apply fixed top-5 right-5 z-[80] px-5 py-3 rounded-lg shadow-xl flex items-center gap-2 font-semibold text-sm transition-all duration-200;
   }
 
-  .admin-toast-success { @apply bg-emerald-600 text-white; }
-  .admin-toast-error { @apply bg-red-600 text-white; }
+  .admin-toast-success { @apply bg-success text-white; }
+  .admin-toast-error { @apply bg-danger text-white; }
+  .admin-toast-warning { @apply bg-warning text-stone-900; }
+  .admin-toast-info { @apply bg-brand text-white; }
 
-  /* ── Scrollbar (subtle, warm) ─────────────────────────────── */
-  *::-webkit-scrollbar { width: 10px; height: 10px; }
-  *::-webkit-scrollbar-track { background: transparent; }
+  /* ── Focus States ──────────────────────────────────────────── */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-1;
+  }
+}
+
+/*
+ * ============================================================================
+ * Global Styles
+ * ============================================================================
+ * Base styles and element resets to ensure consistency.
+ */
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans antialiased;
+  }
+
+  /* ── Focus Visible (Accessibility) ─────────────────────────── */
+  *:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* ── Scrollbar Customization ───────────────────────────────── */
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
   *::-webkit-scrollbar-thumb {
     background-color: #E7E5E4;
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
-  *::-webkit-scrollbar-thumb:hover { background-color: #D6D3D1; }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #D6D3D1;
+  }
+
+  /* ── Typography Defaults ───────────────────────────────────── */
+  h1 { @apply text-3xl font-bold text-text-primary leading-tight; }
+  h2 { @apply text-2xl font-bold text-text-primary leading-snug; }
+  h3 { @apply text-xl font-bold text-text-primary leading-snug; }
+  h4 { @apply text-lg font-semibold text-text-primary leading-normal; }
+
+  p {
+    @apply text-sm text-text-primary leading-relaxed;
+  }
+
+  /* ── Selection Color ───────────────────────────────────────── */
+  ::selection {
+    background-color: var(--color-brand-light);
+    color: var(--color-brand);
+  }
 }

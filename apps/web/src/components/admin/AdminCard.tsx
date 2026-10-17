@@ -26,32 +26,30 @@ export const AdminCard: React.FC<AdminCardProps> = ({
   variant = 'default',
 }) => {
   const variantStyles = {
-    default: 'bg-white border-stone-200/80 shadow-xs',
-    subtle: 'bg-stone-50/70 border-stone-200 shadow-none',
-    warning: 'bg-amber-50/40 border-amber-200/70 shadow-xs',
-    danger: 'bg-red-50/30 border-red-200/70 shadow-xs',
+    default: 'admin-card',
+    subtle: 'admin-card admin-card-subtle',
+    warning: 'admin-card border-warning/30 bg-warning/5',
+    danger: 'admin-card border-danger/30 bg-danger/5',
   };
 
   return (
-    <div
-      className={`rounded-xl border transition-all duration-200 overflow-hidden ${variantStyles[variant]} ${className}`}
-    >
+    <div className={`${variantStyles[variant]} ${className}`}>
       {(title || actions) && (
         <div
-          className={`px-5 py-4 sm:px-6 sm:py-4.5 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${headerClassName}`}
+          className={`px-6 py-5 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${headerClassName}`}
         >
-          <div className="flex items-center gap-3">
-            {icon && <span className="text-stone-500 shrink-0">{icon}</span>}
+          <div className="flex items-start gap-3">
+            {icon && <span className="text-text-secondary mt-0.5">{icon}</span>}
             <div>
               {typeof title === 'string' ? (
-                <h3 className="text-base sm:text-lg font-bold text-stone-900 leading-tight">
+                <h3 className="text-lg font-bold text-text-primary leading-tight">
                   {title}
                 </h3>
               ) : (
                 title
               )}
               {subtitle && (
-                <p className="text-xs sm:text-sm text-stone-500 mt-0.5">{subtitle}</p>
+                <p className="text-sm text-text-secondary mt-1">{subtitle}</p>
               )}
             </div>
           </div>
@@ -59,10 +57,10 @@ export const AdminCard: React.FC<AdminCardProps> = ({
         </div>
       )}
 
-      <div className={`p-5 sm:p-6 ${bodyClassName}`}>{children}</div>
+      <div className={`p-6 ${bodyClassName}`}>{children}</div>
 
       {footer && (
-        <div className="px-5 py-3.5 sm:px-6 border-t border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+        <div className="px-6 py-4 border-t border-stone-100 bg-stone-50/30 flex items-center justify-between gap-3">
           {footer}
         </div>
       )}

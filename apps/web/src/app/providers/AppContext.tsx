@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useMemo, ReactNode } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../lib/firebase/config';
 import { Bhajan, StutiItem, NotificationItem, Playlist, CategoryItem } from '../../types/common/index';
@@ -43,6 +43,9 @@ interface AppContextType {
   updateBhajan: (id: string, data: Partial<Bhajan>) => void;
   deleteBhajan: (id: string) => void;
 
+  // Derived Properties
+  unreadNotifications: number;
+
   // Backend Data Loading & Error State
   dataLoading: boolean;
   dataError: string | null;
@@ -58,6 +61,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+
+  // Derived properties
+  const unreadNotifications = useMemo(() => {
+    return notifications.filter((n) => !n.isRead).length;
+  }, [notifications]);
 
   // Playback state (HTML5 audio preview)
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -384,6 +392,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addBhajan,
         updateBhajan,
         deleteBhajan,
+        unreadNotifications,
         dataLoading,
         dataError,
       }}

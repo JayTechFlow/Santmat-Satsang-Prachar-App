@@ -203,7 +203,6 @@ export const AdminAddBhajan: React.FC = () => {
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [category, setCategory] = useState('');
-  const [subCategory, setSubCategory] = useState('');
   const [lyrics, setLyrics] = useState('');
   const [duration, setDuration] = useState('');
   const [durationSeconds, setDurationSeconds] = useState(0);
@@ -258,11 +257,6 @@ export const AdminAddBhajan: React.FC = () => {
     return getCreatableCategories(sortCategoriesWithSystemFirst(categories));
   }, [categories]);
 
-  const activeSubCategories = useMemo(() => {
-    const foundCat = creatableCategories.find((c) => c.name === category);
-    return foundCat?.subCategories || [];
-  }, [category, creatableCategories]);
-
   const wordCount = useMemo(() => {
     if (!lyrics.trim()) return 0;
     return lyrics.trim().split(/\s+/).filter(Boolean).length;
@@ -287,12 +281,6 @@ export const AdminAddBhajan: React.FC = () => {
       delete next.category;
       return next;
     });
-    const found = creatableCategories.find((c) => c.name === newCategory);
-    if (found && found.subCategories.length > 0) {
-      setSubCategory(found.subCategories[0]);
-    } else {
-      setSubCategory('');
-    }
   };
 
   const handleAudioFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -636,7 +624,6 @@ export const AdminAddBhajan: React.FC = () => {
           title: title.trim(),
           artist: artist.trim(),
           category,
-          subCategory: subCategory || undefined,
           duration: duration || undefined,
           durationSeconds: durationSeconds || undefined,
           lyrics: lyrics || undefined,
@@ -812,7 +799,7 @@ export const AdminAddBhajan: React.FC = () => {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div data-error-field="category">
                 <label htmlFor="bhajan-category" className="block font-bold text-stone-700 mb-1">
                   श्रेणी (Category) <span className="text-red-500">*</span>
@@ -834,30 +821,6 @@ export const AdminAddBhajan: React.FC = () => {
                   ))}
                 </select>
                 <ErrorText field="category" />
-              </div>
-
-              <div>
-                <label htmlFor="bhajan-subcategory" className="block font-bold text-stone-700 mb-1">
-                  उप-श्रेणी (Sub Category)
-                </label>
-                <select
-                  id="bhajan-subcategory"
-                  name="subCategory"
-                  value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
-                  disabled={activeSubCategories.length === 0}
-                  className="admin-select disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {activeSubCategories.length === 0 ? (
-                    <option value="">उप-श्रेणी उपलब्ध नहीं</option>
-                  ) : (
-                    activeSubCategories.map((sub) => (
-                      <option key={sub} value={sub}>
-                        {sub}
-                      </option>
-                    ))
-                  )}
-                </select>
               </div>
 
               <div>

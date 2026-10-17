@@ -14,13 +14,35 @@ import {
 import { db } from '../../../lib/firebase/config';
 import { BhajanEntity, ServiceResponse } from '../../../types/common/index';
 
+/**
+ * Sanitizes a payload object by stripping any undefined property values recursively
+ * to prevent Firestore SDK "Unsupported field value: undefined" errors.
+ */
+export function sanitizeFirestorePayload<T extends Record<string, any>>(obj: T): Record<string, any> {
+  const cleaned: Record<string, any> = {};
+  Object.keys(obj).forEach((key) => {
+    const val = obj[key];
+    if (val !== undefined) {
+      if (val !== null && typeof val === 'object' && !Array.isArray(val) && !(val instanceof Date)) {
+        if (val.constructor && val.constructor.name === 'Object') {
+          cleaned[key] = sanitizeFirestorePayload(val);
+        } else {
+          cleaned[key] = val;
+        }
+      } else {
+        cleaned[key] = val;
+      }
+    }
+  });
+  return cleaned;
+}
+
 export function normalizeBhajanEntity(id: string, data: any): BhajanEntity {
   return {
     id,
     title: String(data.title || '').trim(),
     artist: String(data.artist || '').trim(),
     category: String(data.category || '').trim(),
-    subCategory: data.subCategory ? String(data.subCategory).trim() : undefined,
     duration: String(data.duration || '00:00').trim(),
     durationSeconds: Number(data.durationSeconds || 0),
     audioUrl: data.audioUrl ? String(data.audioUrl).trim() : undefined,
@@ -92,8 +114,9 @@ export class BhajanService {
    */
   async addBhajan(payload: Omit<BhajanEntity, 'id'>): Promise<ServiceResponse<BhajanEntity>> {
     try {
+      const sanitizedPayload = sanitizeFirestorePayload(payload);
       const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-        ...payload,
+        ...sanitizedPayload,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -126,13 +149,15 @@ export class BhajanService {
    */
   async updateBhajan(id: string, updates: Partial<BhajanEntity>): Promise<ServiceResponse<void>> {
     try {
+      const sanitizedUpdates = sanitizeFirestorePayload(updates);
       const docRef = doc(db, COLLECTION_NAME, id);
       await updateDoc(docRef, {
-        ...updates,
+        ...sanitizedUpdates,
         updatedAt: serverTimestamp()
       });
       return { success: true };
     } catch (error: any) {
+      console.error('Error updating bhajan:', error);
       return { success: false, error: error.message || 'Failed to update bhajan' };
     }
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, CircleAlert } from 'lucide-react';
+import { ArrowUpRight, CircleAlert, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface StatCardProps {
   value: string;
@@ -12,11 +12,12 @@ interface StatCardProps {
   error?: boolean;
   onRetry?: () => void;
   iconBg?: string;
+  trendLabel?: string;
 }
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-white rounded-[0.75rem] p-5 border border-stone-200 shadow-xs animate-pulse" aria-busy="true">
+    <div className="bg-surface rounded-xl border border-stone-200/80 shadow-xs p-5 animate-pulse" aria-busy="true">
       <div className="flex items-center justify-between">
         <div className="space-y-2 flex-1">
           <div className="h-3 w-24 bg-stone-200 rounded" />
@@ -31,23 +32,22 @@ function StatCardSkeleton() {
 
 function StatCardError({ label, onRetry }: { label: string; onRetry?: () => void }) {
   return (
-    <div className="bg-white rounded-[0.75rem] p-5 border border-red-200 shadow-xs" role="alert">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <p className="text-xs font-bold text-stone-500">{label}</p>
-          <p className="text-sm font-bold text-red-700">डेटा उपलब्ध नहीं</p>
+    <div className="bg-surface rounded-xl border border-danger/30 bg-danger/5 p-5" role="alert">
+      <div className="flex items-start gap-3">
+        <CircleAlert className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <p className="text-text-primary font-medium">डेटा लोड होने में समस्या</p>
+          <p className="text-sm text-text-secondary mt-1">
+            {label} के लिए आँकड़े प्राप्त करने में असमर्थ
+          </p>
           {onRetry && (
             <button
-              type="button"
               onClick={onRetry}
-              className="text-[0.72rem] font-bold text-red-600 hover:underline"
+              className="mt-2 text-sm font-medium text-brand hover:underline"
             >
-              पुनः प्रयास
+              पुनः प्रयास करें
             </button>
           )}
-        </div>
-        <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-200 text-red-400 flex items-center justify-center">
-          <CircleAlert className="w-6 h-6" aria-hidden="true" />
         </div>
       </div>
     </div>
@@ -63,7 +63,8 @@ export function StatCard({
   loading = false,
   error = false,
   onRetry,
-  iconBg = 'bg-orange-50 border-orange-200 text-orange-600',
+  iconBg = 'bg-brand/10',
+  trendLabel = 'पिछले 30 दिनों में'
 }: StatCardProps) {
   const navigate = useNavigate();
 
@@ -72,37 +73,36 @@ export function StatCard({
 
   return (
     <div
-      onClick={drillDown ? () => navigate(drillDown) : undefined}
-      className={`bg-white rounded-[0.75rem] p-5 border border-stone-200 shadow-xs flex items-center justify-between ${
-        drillDown ? 'hover:shadow-md hover:border-stone-300 transition-all cursor-pointer group' : ''
-      }`}
-      role={drillDown ? 'link' : undefined}
-      tabIndex={drillDown ? 0 : undefined}
-      onKeyDown={drillDown ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(drillDown); } } : undefined}
+      className="bg-surface rounded-xl border border-stone-200/80 shadow-xs p-5 hover:shadow-md transition-all duration-200 cursor-pointer"
+      onClick={() => drillDown && navigate(drillDown)}
     >
-      <div className="space-y-1 min-w-0">
-        <p className="text-xs font-bold text-stone-500 truncate">{label}</p>
-        <h3 className="font-black text-2xl text-stone-900 leading-tight">{value}</h3>
-        {trend && (
-          <span
-            className={`text-[0.72rem] font-bold flex items-center gap-1 ${
-              trend.positive ? 'text-emerald-700' : 'text-red-600'
-            }`}
-          >
-            {trend.value}
-          </span>
-        )}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-text-secondary font-medium">{label}</p>
+          <p className="text-2xl font-bold text-text-primary mt-1">{value}</p>
+          {trend && (
+            <div className={`flex items-center gap-1 mt-2 text-sm ${trend.positive ? 'text-success' : 'text-danger'}`}>
+              {trend.positive ? (
+                <TrendingUp className="w-4 h-4" />
+              ) : (
+                <TrendingDown className="w-4 h-4" />
+              )}
+              <span className="font-medium">{trend.value}</span>
+            </div>
+          )}
+          {trend && (
+            <p className="text-xs text-text-secondary mt-1">
+              {trendLabel}
+            </p>
+          )}
+        </div>
+        <div
+          className={`${iconBg} w-12 h-12 rounded-xl flex items-center justify-center`}
+          data-testid="stat-card-icon-container"
+        >
+          {icon}
+        </div>
       </div>
-      <div
-        className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${
-          drillDown ? 'group-hover:scale-105 transition-transform' : ''
-        } ${iconBg}`}
-      >
-        {icon}
-      </div>
-      {drillDown && (
-        <ArrowUpRight className="absolute top-4 right-4 w-4 h-4 text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-      )}
     </div>
   );
 }
